@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guild War Token Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .upload-section {
+            background: #2a2a3e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #4a9eff;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .file-input-label:hover {
+            transform: scale(1.05);
+        }
+
+        .file-name {
+            display: block;
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .guilds-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .guild-column {
+            background: #2a2a3e;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .guild-header {
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .guild-1 .guild-header {
+            background: #4a9eff;
+        }
+
+        .guild-2 .guild-header {
+            background: #6c757d;
+        }
+
+        .unassigned .guild-header {
+            background: #5a5a6e;
+        }
+
+        .player-card {
+            background: #3a3a4e;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: move;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(74, 158, 255, 0.3);
+            border-color: #4a9eff;
+        }
+
+        .player-card.dragging {
+            opacity: 0.5;
+        }
+
+        .player-card.drag-over {
+            border-color: #667eea;
+            background: #e9ecef;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #e0e0e0;
+        }
+
+        .player-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        .tokens-remaining {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .tokens-used {
+            color: #dc3545;
+        }
+
+        .stats-section {
+            background: #2a2a3e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .stats-section h2 {
+            color: #e0e0e0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #4a9eff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .guilds-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ Guild War Token Tracker</h1>
+        
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="jsonFile" accept=".json">
+                <label for="jsonFile" class="file-input-label">📁 Upload Guild War JSON File</label>
+            </div>
+            <span class="file-name" id="fileName">No file selected</span>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="guild-column unassigned" style="margin-bottom: 20px;">
+                <div class="guild-header">Unassigned Players</div>
+                <div class="player-list" id="unassignedPlayers"></div>
+            </div>
+            <div class="guilds-container">
+                <div class="guild-column guild-1" data-guild="1">
+                    <div class="guild-header" id="guild1Name">Guild 1</div>
+                    <div class="player-list" id="guild1Players"></div>
+                </div>
+
+                <div class="guild-column guild-2" data-guild="2">
+                    <div class="guild-header" id="guild2Name">Guild 2</div>
+                    <div class="player-list" id="guild2Players"></div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h2 style="margin-bottom: 20px; color: #333;">📊 Overall Statistics</h2>
+                <div class="stats-grid" id="statsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameData = null;
+        let playerStats = {};
+
+        document.getElementById('jsonFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        gameData = JSON.parse(event.target.result);
+                        processGameData();
+                        document.getElementById('content').style.display = 'block';
+                    } catch (error) {
+                        alert('Error parsing JSON file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function processGameData() {
+            const eventData     = gameData.eventResults[0].eventResponseData;
+            const users         = eventData.playerData;
+            const activityLogs  = eventData.activityLogs;
+            const guildData     = eventData.guildData;
+
+            // Set guild names
+            document.getElementById('guild1Name').textContent = guildData[0].name;
+            document.getElementById('guild2Name').textContent = guildData[1].name;
+
+            // Create user lookup map
+            const userMap = {};
+            users.forEach(user => {
+                userMap[user.userId] = user.displayName;
+            });
+
+            // Initialize player stats (everyone starts with 10 tokens)
+            playerStats = {};
+            users.forEach(user => {
+                playerStats[user.userId] = {
+                    displayName: user.displayName,
+                    tokensUsed: 0,
+                    tokensRemaining: 10,
+                    attacks: 0,
+                    guild: null,
+                    battles: {
+                        '0med': { hit: 0, cleanup: 0, failed: 0 },
+                        '1med': { hit: 0, cleanup: 0, failed: 0 },
+                        '2med': { hit: 0, cleanup: 0, failed: 0 }
+                    }
+                };
+            });
+
+            // Auto-assign guilds based on teamIndex in activity logs
+            activityLogs.forEach(log => {
+                if (log.userId && log.teamIndex) {
+                    if (playerStats[log.userId]) {
+                        playerStats[log.userId].guild = log.teamIndex;
+                    }
+                }
+            });
+
+            // Count and classify attacks
+            activityLogs.forEach(log => {
+                if (log.type === 'battleFinished' && log.attacker) {
+                    const attackerId = log.attacker.userId;
+                    if (playerStats[attackerId]) {
+                        // Count med buffs
+                        const medCount = (log.buffs || []).filter(b => b.abilityId === 'EnvDefenderHealthBuff2').length;
+                        const medLevel = medCount > 2 ? 2 : medCount; // Cap at 2
+                        
+                        // Determine result
+                        let result;
+                        if (log.score >= 1100) {
+                            result = 'hit';
+                        } else {
+                            // Check if any attacker unit survived (has remainingHPAfter)
+                            const hasSurvivors = (log.attacker.units || []).some(unit => unit.remainingHPAfter !== undefined);
+                            result = hasSurvivors ? 'cleanup' : 'failed';
+                        }
+                        
+                        // Initialize battle stats if needed
+                        if (!playerStats[attackerId].battles) {
+                            playerStats[attackerId].battles = {
+                                '0med': { hit: 0, cleanup: 0, failed: 0 },
+                                '1med': { hit: 0, cleanup: 0, failed: 0 },
+                                '2med': { hit: 0, cleanup: 0, failed: 0 }
+                            };
+                        }
+                        
+                        // Record the battle
+                        playerStats[attackerId].battles[medLevel + 'med'][result]++;
+                        playerStats[attackerId].tokensUsed++;
+                        playerStats[attackerId].tokensRemaining--;
+                        playerStats[attackerId].attacks++;
+                    }
+                }
+            });
+
+            renderPlayers();
+            renderStats();
+        }
+
+        function renderPlayers() {
+            const guild1        = document.getElementById('guild1Players');
+            const guild2        = document.getElementById('guild2Players');
+            const unassigned    = document.getElementById('unassignedPlayers');
+
+            guild1.innerHTML = '';
+            guild2.innerHTML = '';
+            unassigned.innerHTML = '';
+
+            // Separate players by guild assignment
+            const guild1Players = [];
+            const guild2Players = [];
+            const unassignedPlayers = [];
+
+            Object.entries(playerStats).forEach(([userId, stats]) => {
+                if (stats.guild === 1) {
+                    guild1Players.push({ userId, stats });
+                } else if (stats.guild === 2) {
+                    guild2Players.push({ userId, stats });
+                } else {
+                    unassignedPlayers.push({ userId, stats });
+                }
+            });
+
+            // Sort method and sorting
+            const sortByTokens = (a, b) => b.stats.tokensRemaining - a.stats.tokensRemaining;
+
+            guild1Players.sort(sortByTokens);
+            guild2Players.sort(sortByTokens);
+            unassignedPlayers.sort(sortByTokens);
+
+            // Render each guild list
+            guild1Players.forEach(({ userId, stats }) => {
+                guild1.appendChild(createPlayerCard(userId, stats));
+            });
+
+            guild2Players.forEach(({ userId, stats }) => {
+                guild2.appendChild(createPlayerCard(userId, stats));
+            });
+
+            unassignedPlayers.forEach(({ userId, stats }) => {
+                unassigned.appendChild(createPlayerCard(userId, stats));
+            });
+
+            // Hide unassigned box if empty
+            const unassignedBox = document.querySelector('.unassigned');
+            if (unassignedPlayers.length === 0) {
+                unassignedBox.style.display = 'none';
+            } else {
+                unassignedBox.style.display = 'block';
+            }
+            
+        }
+
+        function createPlayerCard(userId, stats) {
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            card.draggable = true;
+            card.dataset.userId = userId;
+
+            const formatStat = (count, type) => {
+                if (count === 0) return `${count}`;
+                
+                let color;
+                if (type === 'hit') color = '#4ade80'; // green
+                else if (type === 'cleanup') color = '#fbbf24'; // yellow
+                else color = '#f87171'; // red
+                
+                return `<span style="color: ${color}; font-weight: bold;">${count}</span>`;
+            };
+
+            const battleTable = `
+                <div style="font-size: 11px; color: #b0b0b0; line-height: 1.4;">
+                    <div>2med:  🎯 ${formatStat(stats.battles['2med'].hit, 'hit')}  🧹 ${formatStat(stats.battles['2med'].cleanup, 'cleanup')}  🚫 ${formatStat(stats.battles['2med'].failed, 'failed')}</div>
+                    <div>1med:  🎯 ${formatStat(stats.battles['1med'].hit, 'hit')}  🧹 ${formatStat(stats.battles['1med'].cleanup, 'cleanup')}  🚫 ${formatStat(stats.battles['1med'].failed, 'failed')}</div>
+                    <div>0med:  🎯 ${formatStat(stats.battles['0med'].hit, 'hit')}  🧹 ${formatStat(stats.battles['0med'].cleanup, 'cleanup')}  🚫 ${formatStat(stats.battles['0med'].failed, 'failed')}</div>
+                </div>
+            `;
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div class="player-name">${stats.displayName}</div>
+                        <div class="player-stats">
+                            <span class="tokens-remaining">🪙 ${stats.tokensRemaining} tokens</span>
+                        </div>
+                    </div>
+                    ${battleTable}
+                </div>
+            `;
+
+            // Drag events
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+
+            return card;
+        }
+
+        function handleDragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', e.target.dataset.userId);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        // Set up drop zones
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZones = document.querySelectorAll('.guild-column');
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    this.style.background = '#3a4a5e';
+                });
+
+                zone.addEventListener('dragleave', function(e) {
+                    this.style.background = '#2a2a3e';
+                });
+
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.background = '#2a2a3e';
+                    
+                    const userId = e.dataTransfer.getData('text/plain');
+                    const guildIndex = parseInt(this.dataset.guild);
+                    
+                    if (playerStats[userId]) {
+                        playerStats[userId].guild = guildIndex;
+                        renderPlayers();
+                        renderStats();
+                    }
+                });
+            });
+        });
+
+        function renderStats() {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            const guild1Players = Object.values(playerStats).filter(p => p.guild === 1);
+            const guild2Players = Object.values(playerStats).filter(p => p.guild === 2);
+            
+            const guild1TokensRemaining = guild1Players.reduce((sum, p) => sum + p.tokensRemaining, 0);
+            const guild2TokensRemaining = guild2Players.reduce((sum, p) => sum + p.tokensRemaining, 0);
+            
+            const guild1Attacks = guild1Players.reduce((sum, p) => sum + p.attacks, 0);
+            const guild2Attacks = guild2Players.reduce((sum, p) => sum + p.attacks, 0);
+
+            const totalTokensRemaining = Object.values(playerStats).reduce((sum, p) => sum + p.tokensRemaining, 0);
+            const totalAttacks = Object.values(playerStats).reduce((sum, p) => sum + p.attacks, 0);
+
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${guild1Players.length > 0 ? guild1TokensRemaining : 'N/A'}</div>
+                    <div class="stat-label">${document.getElementById('guild1Name').textContent} - Tokens Remaining</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${guild2Players.length > 0 ? guild2TokensRemaining : 'N/A'}</div>
+                    <div class="stat-label">${document.getElementById('guild2Name').textContent} - Tokens Remaining</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${guild1Players.length > 0 ? guild1Attacks : 'N/A'}</div>
+                    <div class="stat-label">${document.getElementById('guild1Name').textContent} - Total Attacks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${guild2Players.length > 0 ? guild2Attacks : 'N/A'}</div>
+                    <div class="stat-label">${document.getElementById('guild2Name').textContent} - Total Attacks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalTokensRemaining}</div>
+                    <div class="stat-label">Total Tokens Remaining</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${totalAttacks}</div>
+                    <div class="stat-label">Total Attacks Made</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
