@@ -55,7 +55,7 @@
         .file-input-label {
             display: inline-block;
             padding: 12px 24px;
-            background: #4a9eff;
+            background: #358cf0;
             color: white;
             border-radius: 6px;
             cursor: pointer;
@@ -92,15 +92,15 @@
         .guild-header {
             text-align: center;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 6px;
             margin-bottom: 15px;
-            font-size: 1.2em;
+            font-size: 0.9em;
             font-weight: bold;
             color: white;
         }
 
         .guild-1 .guild-header {
-            background: #4a9eff;
+            background: #6c757d;
         }
 
         .guild-2 .guild-header {
@@ -161,9 +161,10 @@
 
         .stats-section {
             background: #2a2a3e;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
         }
 
         .stats-section h2 {
@@ -172,15 +173,15 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr 1fr 1fr 1fr;
             gap: 20px;
         }
 
         .stat-card {
-            background: #4a9eff;
+            background: #358cf0;
             color: white;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 6px;
             text-align: center;
         }
 
@@ -221,6 +222,11 @@
             <span class="file-name" id="fileName">No file selected</span>
         </div>
 
+        <div class="stats-section" id="statsSection" style="display: none;">
+            <h2 style="margin-bottom: 20px; color: #e0e0e0;">📊 Overall Statistics</h2>
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
         <div id="content" style="display: none;">
             <div class="guild-column unassigned" style="margin-bottom: 20px;">
                 <div class="guild-header">Unassigned Players</div>
@@ -238,10 +244,6 @@
                 </div>
             </div>
 
-            <div class="stats-section">
-                <h2 style="margin-bottom: 20px; color: #333;">📊 Overall Statistics</h2>
-                <div class="stats-grid" id="statsGrid"></div>
-            </div>
         </div>
     </div>
 
@@ -411,21 +413,26 @@
             card.dataset.userId = userId;
 
             const formatStat = (count, type) => {
-                if (count === 0) return `${count}`;
-                
+                //if (count === 0) return `${count}`;
+                if (count == 0) return `<span style="color: #b0b0b0;"></span>`;
+
                 let color;
                 if (type === 'hit') color = '#4ade80'; // green
                 else if (type === 'cleanup') color = '#fbbf24'; // yellow
-                else color = '#f87171'; // red
+                else color = '#dc2626'; // darker red
+
+                if (count === 0) {
+                    return `<span style="color: #b0b0b0;">${count}</span>`;
+                }
                 
                 return `<span style="color: ${color}; font-weight: bold;">${count}</span>`;
             };
 
             const battleTable = `
-                <div style="font-size: 11px; color: #b0b0b0; line-height: 1.4;">
-                    <div>2med:  🎯 ${formatStat(stats.battles['2med'].hit, 'hit')}  🧹 ${formatStat(stats.battles['2med'].cleanup, 'cleanup')}  🚫 ${formatStat(stats.battles['2med'].failed, 'failed')}</div>
-                    <div>1med:  🎯 ${formatStat(stats.battles['1med'].hit, 'hit')}  🧹 ${formatStat(stats.battles['1med'].cleanup, 'cleanup')}  🚫 ${formatStat(stats.battles['1med'].failed, 'failed')}</div>
-                    <div>0med:  🎯 ${formatStat(stats.battles['0med'].hit, 'hit')}  🧹 ${formatStat(stats.battles['0med'].cleanup, 'cleanup')}  🚫 ${formatStat(stats.battles['0med'].failed, 'failed')}</div>
+                <div style="font-size: 11px; font-family: 'Courier New', monospace; color: #b0b0b0; line-height: 1.4;">
+                    <div>2med:  🎯 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].hit, 'hit')}</span>   🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span>   🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].failed, 'failed')}</span></div>
+                    <div>1med:  🎯 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].hit, 'hit')}</span>   🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span>   🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].failed, 'failed')}</span></div>
+                    <div>0med:  🎯 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].hit, 'hit')}</span>   🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span>   🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].failed, 'failed')}</span></div>
                 </div>
             `;
 
@@ -491,6 +498,7 @@
 
         function renderStats() {
             const statsGrid = document.getElementById('statsGrid');
+            const statsSection = document.getElementById('statsSection');
             
             const guild1Players = Object.values(playerStats).filter(p => p.guild === 1);
             const guild2Players = Object.values(playerStats).filter(p => p.guild === 2);
@@ -498,39 +506,98 @@
             const guild1TokensRemaining = guild1Players.reduce((sum, p) => sum + p.tokensRemaining, 0);
             const guild2TokensRemaining = guild2Players.reduce((sum, p) => sum + p.tokensRemaining, 0);
             
-            const guild1Attacks = guild1Players.reduce((sum, p) => sum + p.attacks, 0);
-            const guild2Attacks = guild2Players.reduce((sum, p) => sum + p.attacks, 0);
+            // Calculate global battle stats
+            const globalBattles = {
+                '0med': { hit: 0, cleanup: 0, failed: 0 },
+                '1med': { hit: 0, cleanup: 0, failed: 0 },
+                '2med': { hit: 0, cleanup: 0, failed: 0 }
+            };
 
-            const totalTokensRemaining = Object.values(playerStats).reduce((sum, p) => sum + p.tokensRemaining, 0);
-            const totalAttacks = Object.values(playerStats).reduce((sum, p) => sum + p.attacks, 0);
+            Object.values(playerStats).forEach(player => {
+                ['0med', '1med', '2med'].forEach(med => {
+                    globalBattles[med].hit += player.battles[med].hit;
+                    globalBattles[med].cleanup += player.battles[med].cleanup;
+                    globalBattles[med].failed += player.battles[med].failed;
+                });
+            });
 
-            statsGrid.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-value">${guild1Players.length > 0 ? guild1TokensRemaining : 'N/A'}</div>
-                    <div class="stat-label">${document.getElementById('guild1Name').textContent} - Tokens Remaining</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${guild2Players.length > 0 ? guild2TokensRemaining : 'N/A'}</div>
-                    <div class="stat-label">${document.getElementById('guild2Name').textContent} - Tokens Remaining</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${guild1Players.length > 0 ? guild1Attacks : 'N/A'}</div>
-                    <div class="stat-label">${document.getElementById('guild1Name').textContent} - Total Attacks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${guild2Players.length > 0 ? guild2Attacks : 'N/A'}</div>
-                    <div class="stat-label">${document.getElementById('guild2Name').textContent} - Total Attacks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${totalTokensRemaining}</div>
-                    <div class="stat-label">Total Tokens Remaining</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${totalAttacks}</div>
-                    <div class="stat-label">Total Attacks Made</div>
+            // Calculate guild-specific battle stats
+            const guild1Battles = {
+                '0med': { hit: 0, cleanup: 0, failed: 0 },
+                '1med': { hit: 0, cleanup: 0, failed: 0 },
+                '2med': { hit: 0, cleanup: 0, failed: 0 }
+            };
+
+            const guild2Battles = {
+                '0med': { hit: 0, cleanup: 0, failed: 0 },
+                '1med': { hit: 0, cleanup: 0, failed: 0 },
+                '2med': { hit: 0, cleanup: 0, failed: 0 }
+            };
+            
+            guild1Players.forEach(player => {
+                ['0med', '1med', '2med'].forEach(med => {
+                    guild1Battles[med].hit += player.battles[med].hit;
+                    guild1Battles[med].cleanup += player.battles[med].cleanup;
+                    guild1Battles[med].failed += player.battles[med].failed;
+                });
+            });
+
+            guild2Players.forEach(player => {
+                ['0med', '1med', '2med'].forEach(med => {
+                    guild2Battles[med].hit += player.battles[med].hit;
+                    guild2Battles[med].cleanup += player.battles[med].cleanup;
+                    guild2Battles[med].failed += player.battles[med].failed;
+                });
+            });
+            
+            const formatStat = (count, type) => {
+                //if (count === 0) return `${count}`;
+                if (count === 0) return `<span style="color: #b0b0b0;"></span>`;
+                
+                let color;
+                if (type === 'hit') color = '#4ade80';
+                else if (type === 'cleanup') color = '#fbbf24';
+                else color = '#dc2626';
+
+                if (count === 0) {
+                    return `<span style="color: #b0b0b0;">${count}</span>`;
+                }
+                
+                return `<span style="color: ${color}; font-weight: bold;">${count}</span>`;
+            };
+
+            const createBattleTable = (battles, title, span = 1) => `
+                <div class="stat-card" style="grid-column: span ${span};">
+                    <div class="stat-label" style="margin-bottom: 14px; font-size: 0.9em;">${title}</div>
+                    <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.6;">
+                        <div>2med:  🎯 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].hit, 'hit')}</span>  🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].cleanup, 'cleanup')}</span>  🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].failed, 'failed')}</span></div>
+                        <div>1med:  🎯 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].hit, 'hit')}</span>  🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].cleanup, 'cleanup')}</span>  🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].failed, 'failed')}</span></div>
+                        <div>0med:  🎯 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].hit, 'hit')}</span>  🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].cleanup, 'cleanup')}</span>  🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].failed, 'failed')}</span></div>
+                    </div>
                 </div>
             `;
+
+            statsGrid.innerHTML = `
+                <div style="grid-column: span 4; display: flex; justify-content: center; margin-bottom: 30px;">
+                    ${createBattleTable(globalBattles, 'Global Battle Statistics', 1)}
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-value">${guild1TokensRemaining}</div>
+                    <div class="stat-label">${document.getElementById('guild1Name').textContent} - Tokens Remaining</div>
+                </div>
+                ${createBattleTable(guild1Battles, document.getElementById('guild1Name').textContent + ' Battles')}
+                ${createBattleTable(guild2Battles, document.getElementById('guild2Name').textContent + ' Battles')}
+                <div class="stat-card">
+                    <div class="stat-value">${guild2TokensRemaining}</div>
+                    <div class="stat-label">${document.getElementById('guild2Name').textContent} - Tokens Remaining</div>
+                </div>
+            `;
+            
+            // Show stats section
+            statsSection.style.display = 'block';
         }
+
     </script>
 </body>
 </html>
