@@ -173,8 +173,9 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(8, 1fr);
+            column-gap: 15px;
+            row-gap: 20px;
         }
 
         .stat-card {
@@ -269,6 +270,35 @@
             }
         });
 
+        function getZoneProgression(activityLogs, teamIndex) {
+            const progression = [];
+            
+            activityLogs.forEach(log => {
+                if (log.teamIndex === teamIndex) {
+                    if (log.type === 'zoneDestroyed' && log.zone) {
+                        const zoneName = log.zone.type || 'Unknown';
+                        const attempts = log.totalAttempts || 0;
+                        progression.push({
+                            type: 'zone',
+                            name: zoneName,
+                            attempts: attempts,
+                            time: log.createdOn
+                        });
+                    } else if (log.type === 'wipeout') {
+                        progression.push({
+                            type: 'wipeout',
+                            time: log.createdOn
+                        });
+                    }
+                }
+            });
+            
+            // Sort by time
+            progression.sort((a, b) => a.time - b.time);
+            
+            return progression;
+        }
+
         function processGameData() {
             const eventData     = gameData.eventResults[0].eventResponseData;
             const users         = eventData.playerData;
@@ -349,7 +379,7 @@
             });
 
             renderPlayers();
-            renderStats();
+            renderStats(activityLogs);
         }
 
         function renderPlayers() {
@@ -496,16 +526,34 @@
             });
         });
 
-        function renderStats() {
+        function renderStats(activityLogs) {
             const statsGrid     = document.getElementById('statsGrid');
             const statsSection  = document.getElementById('statsSection');
             
             const guild1Players = Object.values(playerStats).filter(p => p.guild === 1);
             const guild2Players = Object.values(playerStats).filter(p => p.guild === 2);
+
+            const guild1Progression = getZoneProgression(activityLogs, 1);
+            const guild2Progression = getZoneProgression(activityLogs, 2);
             
             const guild1TokensRemaining = guild1Players.reduce((sum, p) => sum + p.tokensRemaining, 0);
             const guild2TokensRemaining = guild2Players.reduce((sum, p) => sum + p.tokensRemaining, 0);
             
+
+            // Get the war progression
+            const formatProgression = (progression) => {
+                if (progression.length === 0) return 'No zones destroyed yet';
+                
+                return progression.map(item => {
+                    if (item.type === 'wipeout') {
+                        return '<span style="color: #fbbf24; font-weight: bold;">WIPE</span>';
+                    } else {
+                        return `<span style="font-weight: bold;">${item.name}</span> (${item.attempts})`;
+                    }
+                // }).join(' → ');
+                }).join(' ➡️ ');
+            };
+
             // Calculate global battle stats
             const globalBattles = {
                 '0med': { hit: 0, cleanup: 0, failed: 0 },
@@ -605,8 +653,8 @@
             const guild2ProjectedCleanup    = Math.round(guild2Battles.total.cleanup    * guild2ScaleFactor);
             const guild2ProjectedFailed     = Math.round(guild2Battles.total.failed     * guild2ScaleFactor);
 
-            const createTokenStatsTable = (title, tokens_remaining, token_efficiency, projectedhits, projectedcleanups, projectedfails) => `
-                <div class="stat-card" style="text-align: left; padding: 15px;">
+            const createTokenStatsTable = (title, tokens_remaining, token_efficiency, projectedhits, projectedcleanups, projectedfails, span = 2) => `
+                <div class="stat-card" style="text-align: left; padding: 15px; grid-column: span ${span};">
                     <div style="font-size: 0.9em; margin-bottom: 8px; font-weight: bold; text-align: center;">${title}</div>
                     <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.8;">
                         <div>Remaining#: <span style="font-weight: bold;">${tokens_remaining}</span></div>
@@ -616,7 +664,7 @@
                 </div>
             `;
 
-            const createBattleTable = (title, battles, span = 1) => `
+            const createBattleTable = (title, battles, span = 2) => `
                 <div class="stat-card" style="grid-column: span ${span};">
                     <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em;">${title}</div>
                     <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.6;">
@@ -629,8 +677,20 @@
             `;
 
             statsGrid.innerHTML = `
-                <div style="grid-column: span 4; display: flex; justify-content: center; margin-bottom: 5px;">
-                    ${createBattleTable('Global Battle Statistics', globalBattles, 2)}
+                <div class="stat-card" style="grid-column: span 3; text-align: left; padding: 12px;">
+                    <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild1Name').textContent} Progression</div>
+                    <div style="font-size: 11px; line-height: 1.6; word-wrap: break-word;">
+                        ${formatProgression(guild1Progression)}
+                    </div>
+                </div>
+                                
+                ${createBattleTable('Global Battle Statistics', globalBattles, 2)}
+                
+                <div class="stat-card" style="grid-column: span 3; text-align: left; padding: 12px;">
+                    <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild2Name').textContent} Progression</div>
+                    <div style="font-size: 11px; line-height: 1.6; word-wrap: break-word;">
+                        ${formatProgression(guild2Progression)}
+                    </div>
                 </div>
 
                 ${createTokenStatsTable(document.getElementById('guild1Name').textContent + ' Tokens', guild1TokensRemaining, guild1Efficiency, guild1ProjectedHits, guild1ProjectedCleanup, guild1ProjectedFailed)}
