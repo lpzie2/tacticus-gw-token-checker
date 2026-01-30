@@ -55,7 +55,7 @@
         .file-input-label {
             display: inline-block;
             padding: 12px 24px;
-            background: #358cf0;
+            background: #4e98ec;
             color: white;
             border-radius: 6px;
             cursor: pointer;
@@ -178,7 +178,7 @@
         }
 
         .stat-card {
-            background: #358cf0;
+            background: #4e98ec;
             color: white;
             padding: 12px;
             border-radius: 6px;
@@ -417,9 +417,9 @@
                 if (count == 0) return `<span style="color: #b0b0b0;"></span>`;
 
                 let color;
-                if (type === 'hit') color = '#4ade80'; // green
+                if (type === 'hit') color = '#44d87a'; // green
                 else if (type === 'cleanup') color = '#fbbf24'; // yellow
-                else color = '#dc2626'; // darker red
+                else color = '#dc2626'; // red
 
                 if (count === 0) {
                     return `<span style="color: #b0b0b0;">${count}</span>`;
@@ -430,9 +430,9 @@
 
             const battleTable = `
                 <div style="font-size: 11px; font-family: 'Courier New', monospace; color: #b0b0b0; line-height: 1.4;">
-                    <div>2med:  🎯 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].hit, 'hit')}</span>   🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span>   🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].failed, 'failed')}</span></div>
-                    <div>1med:  🎯 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].hit, 'hit')}</span>   🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span>   🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].failed, 'failed')}</span></div>
-                    <div>0med:  🎯 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].hit, 'hit')}</span>   🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span>   🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].failed, 'failed')}</span></div>
+                    <div>2med:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].failed, 'failed')}</span></div>
+                    <div>1med:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].failed, 'failed')}</span></div>
+                    <div>0med:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].failed, 'failed')}</span></div>
                 </div>
             `;
 
@@ -555,9 +555,9 @@
                 if (count === 0) return `<span style="color: #b0b0b0;"></span>`;
                 
                 let color;
-                if (type === 'hit') color = '#4ade80';
+                if (type === 'hit') color = '#4cec86'; // lighter green
                 else if (type === 'cleanup') color = '#fbbf24';
-                else color = '#dc2626';
+                else color = '#ac2323'; // a darker red from the player cards.
 
                 if (count === 0) {
                     return `<span style="color: #b0b0b0;">${count}</span>`;
@@ -570,9 +570,9 @@
                 <div class="stat-card" style="grid-column: span ${span};">
                     <div class="stat-label" style="margin-bottom: 14px; font-size: 0.9em;">${title}</div>
                     <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.6;">
-                        <div>2med:  🎯 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].hit, 'hit')}</span>  🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].cleanup, 'cleanup')}</span>  🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].failed, 'failed')}</span></div>
-                        <div>1med:  🎯 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].hit, 'hit')}</span>  🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].cleanup, 'cleanup')}</span>  🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].failed, 'failed')}</span></div>
-                        <div>0med:  🎯 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].hit, 'hit')}</span>  🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].cleanup, 'cleanup')}</span>  🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].failed, 'failed')}</span></div>
+                        <div>2med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].failed, 'failed')}</span></div>
+                        <div>1med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].failed, 'failed')}</span></div>
+                        <div>0med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].failed, 'failed')}</span></div>
                     </div>
                 </div>
             `;
