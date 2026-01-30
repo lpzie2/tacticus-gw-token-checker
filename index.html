@@ -178,8 +178,8 @@
         }
 
         .stat-card {
-            background: #4e98ec;
-            color: white;
+            background: #3a3a4e;
+            color: #b0b0b0;
             padding: 12px;
             border-radius: 6px;
             text-align: center;
@@ -212,12 +212,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>⚔️ Guild War Token Tracker</h1>
+        <h1>⚔️ Tacticus Guild War Token Checker</h1>
         
         <div class="upload-section">
             <div class="file-input-wrapper">
                 <input type="file" id="jsonFile" accept=".json">
-                <label for="jsonFile" class="file-input-label">📁 Upload Guild War JSON File</label>
+                <label for="jsonFile" class="file-input-label">📁 Analyze Guild War JSON File</label>
             </div>
             <span class="file-name" id="fileName">No file selected</span>
         </div>
@@ -275,17 +275,17 @@
             const activityLogs  = eventData.activityLogs;
             const guildData     = eventData.guildData;
 
-            // Set guild names
+            // Guild names
             document.getElementById('guild1Name').textContent = guildData[0].name;
             document.getElementById('guild2Name').textContent = guildData[1].name;
 
-            // Create user lookup map
+            // User lookup map
             const userMap = {};
             users.forEach(user => {
                 userMap[user.userId] = user.displayName;
             });
 
-            // Initialize player stats (everyone starts with 10 tokens)
+            // Player stats (everyone starts with 10 tokens)
             playerStats = {};
             users.forEach(user => {
                 playerStats[user.userId] = {
@@ -357,13 +357,13 @@
             const guild2        = document.getElementById('guild2Players');
             const unassigned    = document.getElementById('unassignedPlayers');
 
-            guild1.innerHTML = '';
-            guild2.innerHTML = '';
-            unassigned.innerHTML = '';
+            guild1.innerHTML        = '';
+            guild2.innerHTML        = '';
+            unassigned.innerHTML    = '';
 
             // Separate players by guild assignment
-            const guild1Players = [];
-            const guild2Players = [];
+            const guild1Players     = [];
+            const guild2Players     = [];
             const unassignedPlayers = [];
 
             Object.entries(playerStats).forEach(([userId, stats]) => {
@@ -407,9 +407,9 @@
         }
 
         function createPlayerCard(userId, stats) {
-            const card = document.createElement('div');
-            card.className = 'player-card';
-            card.draggable = true;
+            const card      = document.createElement('div');
+            card.className  = 'player-card';
+            card.draggable  = true;
             card.dataset.userId = userId;
 
             const formatStat = (count, type) => {
@@ -417,9 +417,9 @@
                 if (count == 0) return `<span style="color: #b0b0b0;"></span>`;
 
                 let color;
-                if (type === 'hit') color = '#44d87a'; // green
-                else if (type === 'cleanup') color = '#fbbf24'; // yellow
-                else color = '#dc2626'; // red
+                if (type === 'hit') color = '#4cec86'; // green, colorblind safe
+                else if (type === 'cleanup') color = '#fbbf24'; // yellow, colorblind safe
+                else color = '#e45858'; // red, colorblind safe
 
                 if (count === 0) {
                     return `<span style="color: #b0b0b0;">${count}</span>`;
@@ -497,8 +497,8 @@
         });
 
         function renderStats() {
-            const statsGrid = document.getElementById('statsGrid');
-            const statsSection = document.getElementById('statsSection');
+            const statsGrid     = document.getElementById('statsGrid');
+            const statsSection  = document.getElementById('statsSection');
             
             const guild1Players = Object.values(playerStats).filter(p => p.guild === 1);
             const guild2Players = Object.values(playerStats).filter(p => p.guild === 2);
@@ -515,11 +515,18 @@
 
             Object.values(playerStats).forEach(player => {
                 ['0med', '1med', '2med'].forEach(med => {
-                    globalBattles[med].hit += player.battles[med].hit;
-                    globalBattles[med].cleanup += player.battles[med].cleanup;
-                    globalBattles[med].failed += player.battles[med].failed;
+                    globalBattles[med].hit      += player.battles[med].hit;
+                    globalBattles[med].cleanup  += player.battles[med].cleanup;
+                    globalBattles[med].failed   += player.battles[med].failed;
                 });
             });
+
+            // Add totals
+            globalBattles.total = {
+                hit:        globalBattles['0med'].hit       + globalBattles['1med'].hit     + globalBattles['2med'].hit,
+                cleanup:    globalBattles['0med'].cleanup   + globalBattles['1med'].cleanup + globalBattles['2med'].cleanup,
+                failed:     globalBattles['0med'].failed    + globalBattles['1med'].failed  + globalBattles['2med'].failed
+            };
 
             // Calculate guild-specific battle stats
             const guild1Battles = {
@@ -536,28 +543,40 @@
             
             guild1Players.forEach(player => {
                 ['0med', '1med', '2med'].forEach(med => {
-                    guild1Battles[med].hit += player.battles[med].hit;
-                    guild1Battles[med].cleanup += player.battles[med].cleanup;
-                    guild1Battles[med].failed += player.battles[med].failed;
+                    guild1Battles[med].hit      += player.battles[med].hit;
+                    guild1Battles[med].cleanup  += player.battles[med].cleanup;
+                    guild1Battles[med].failed   += player.battles[med].failed;
                 });
             });
 
             guild2Players.forEach(player => {
                 ['0med', '1med', '2med'].forEach(med => {
-                    guild2Battles[med].hit += player.battles[med].hit;
-                    guild2Battles[med].cleanup += player.battles[med].cleanup;
-                    guild2Battles[med].failed += player.battles[med].failed;
+                    guild2Battles[med].hit      += player.battles[med].hit;
+                    guild2Battles[med].cleanup  += player.battles[med].cleanup;
+                    guild2Battles[med].failed   += player.battles[med].failed;
                 });
             });
+
+            guild1Battles.total = {
+                hit:        guild1Battles['0med'].hit       + guild1Battles['1med'].hit     + guild1Battles['2med'].hit,
+                cleanup:    guild1Battles['0med'].cleanup   + guild1Battles['1med'].cleanup + guild1Battles['2med'].cleanup,
+                failed:     guild1Battles['0med'].failed    + guild1Battles['1med'].failed  + guild1Battles['2med'].failed
+            };
+
+            guild2Battles.total = {
+                hit:        guild2Battles['0med'].hit       + guild2Battles['1med'].hit     + guild2Battles['2med'].hit,
+                cleanup:    guild2Battles['0med'].cleanup   + guild2Battles['1med'].cleanup + guild2Battles['2med'].cleanup,
+                failed:     guild2Battles['0med'].failed    + guild2Battles['1med'].failed  + guild2Battles['2med'].failed
+            };
             
             const formatStat = (count, type) => {
                 //if (count === 0) return `${count}`;
                 if (count === 0) return `<span style="color: #b0b0b0;"></span>`;
                 
                 let color;
-                if (type === 'hit') color = '#4cec86'; // lighter green
-                else if (type === 'cleanup') color = '#fbbf24';
-                else color = '#ac2323'; // a darker red from the player cards.
+                if (type === 'hit') color = '#4cec86'; // green, colorblind safe
+                else if (type === 'cleanup') color = '#fbbf24'; // yellow, colorblind safe
+                else color = '#e45858'; // red, colorblind safe
 
                 if (count === 0) {
                     return `<span style="color: #b0b0b0;">${count}</span>`;
@@ -566,32 +585,58 @@
                 return `<span style="color: ${color}; font-weight: bold;">${count}</span>`;
             };
 
-            const createBattleTable = (battles, title, span = 1) => `
+            // Calculate efficiency and projections for Guild 1
+            const guild1TokensUsed          = guild1Players.reduce((sum, p) => sum + p.tokensUsed, 0);
+            const guild1SuccessfulAttacks   = guild1Battles.total.hit + guild1Battles.total.cleanup;
+            const guild1Efficiency          = guild1TokensUsed > 0 ? ((guild1SuccessfulAttacks / guild1TokensUsed) * 100).toFixed(1) : 0;
+
+            const guild1ScaleFactor         = guild1TokensUsed > 0 ? 300 / guild1TokensUsed : 0;
+            const guild1ProjectedHits       = Math.round(guild1Battles.total.hit        * guild1ScaleFactor);
+            const guild1ProjectedCleanup    = Math.round(guild1Battles.total.cleanup    * guild1ScaleFactor);
+            const guild1ProjectedFailed     = Math.round(guild1Battles.total.failed     * guild1ScaleFactor);
+
+            // Calculate efficiency and projections for Guild 2
+            const guild2TokensUsed          = guild2Players.reduce((sum, p) => sum + p.tokensUsed, 0);
+            const guild2SuccessfulAttacks   = guild2Battles.total.hit + guild2Battles.total.cleanup;
+            const guild2Efficiency          = guild2TokensUsed > 0 ? ((guild2SuccessfulAttacks / guild2TokensUsed) * 100).toFixed(1) : 0;
+
+            const guild2ScaleFactor         = guild2TokensUsed > 0 ? 300 / guild2TokensUsed : 0;
+            const guild2ProjectedHits       = Math.round(guild2Battles.total.hit        * guild2ScaleFactor);
+            const guild2ProjectedCleanup    = Math.round(guild2Battles.total.cleanup    * guild2ScaleFactor);
+            const guild2ProjectedFailed     = Math.round(guild2Battles.total.failed     * guild2ScaleFactor);
+
+            const createTokenStatsTable = (title, tokens_remaining, token_efficiency, projectedhits, projectedcleanups, projectedfails) => `
+                <div class="stat-card" style="text-align: left; padding: 15px;">
+                    <div style="font-size: 0.9em; margin-bottom: 8px; font-weight: bold; text-align: center;">${title}</div>
+                    <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.8;">
+                        <div>Remaining#: <span style="font-weight: bold;">${tokens_remaining}</span></div>
+                        <div>Efficiency:  <span style="font-weight: bold;">${token_efficiency}%</span></div>
+                        <div>Est. Final: ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(projectedhits, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(projectedcleanups, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(projectedfails, 'failed')}</span></div>
+                    </div>
+                </div>
+            `;
+
+            const createBattleTable = (title, battles, span = 1) => `
                 <div class="stat-card" style="grid-column: span ${span};">
-                    <div class="stat-label" style="margin-bottom: 14px; font-size: 0.9em;">${title}</div>
+                    <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em;">${title}</div>
                     <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.6;">
                         <div>2med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].failed, 'failed')}</span></div>
                         <div>1med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].failed, 'failed')}</span></div>
                         <div>0med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].failed, 'failed')}</span></div>
+                        <div>totl:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles.total.hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles.total.cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles.total.failed, 'failed')}</span></div>
                     </div>
                 </div>
             `;
 
             statsGrid.innerHTML = `
-                <div style="grid-column: span 4; display: flex; justify-content: center; margin-bottom: 30px;">
-                    ${createBattleTable(globalBattles, 'Global Battle Statistics', 1)}
+                <div style="grid-column: span 4; display: flex; justify-content: center; margin-bottom: 5px;">
+                    ${createBattleTable('Global Battle Statistics', globalBattles, 2)}
                 </div>
-                
-                <div class="stat-card">
-                    <div class="stat-value">${guild1TokensRemaining}</div>
-                    <div class="stat-label">${document.getElementById('guild1Name').textContent} - Tokens Remaining</div>
-                </div>
-                ${createBattleTable(guild1Battles, document.getElementById('guild1Name').textContent + ' Battles')}
-                ${createBattleTable(guild2Battles, document.getElementById('guild2Name').textContent + ' Battles')}
-                <div class="stat-card">
-                    <div class="stat-value">${guild2TokensRemaining}</div>
-                    <div class="stat-label">${document.getElementById('guild2Name').textContent} - Tokens Remaining</div>
-                </div>
+
+                ${createTokenStatsTable(document.getElementById('guild1Name').textContent + ' Tokens', guild1TokensRemaining, guild1Efficiency, guild1ProjectedHits, guild1ProjectedCleanup, guild1ProjectedFailed)}
+                ${createBattleTable(document.getElementById('guild1Name').textContent + ' Battles', guild1Battles)}
+                ${createBattleTable(document.getElementById('guild2Name').textContent + ' Battles', guild2Battles)}
+                ${createTokenStatsTable(document.getElementById('guild2Name').textContent + ' Tokens', guild2TokensRemaining, guild2Efficiency, guild2ProjectedHits, guild2ProjectedCleanup, guild2ProjectedFailed)}
             `;
             
             // Show stats section
