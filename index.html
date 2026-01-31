@@ -251,6 +251,7 @@
     <script>
         let gameData = null;
         let playerStats = {};
+        let activityLogs = null;
 
         document.getElementById('jsonFile').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -302,8 +303,9 @@
         function processGameData() {
             const eventData     = gameData.eventResults[0].eventResponseData;
             const users         = eventData.playerData;
-            const activityLogs  = eventData.activityLogs;
             const guildData     = eventData.guildData;
+
+            activityLogs  = eventData.activityLogs;
 
             // Guild names
             document.getElementById('guild1Name').textContent = guildData[0].name;
@@ -526,7 +528,7 @@
             });
         });
 
-        function renderStats(activityLogs) {
+        function renderStats() {
             const statsGrid     = document.getElementById('statsGrid');
             const statsSection  = document.getElementById('statsSection');
             
