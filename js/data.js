@@ -429,7 +429,7 @@ function getGuildWarStartTime(activityLogs) {
 function getGuildWarTimeStatus(startTime) {
     if (!startTime) return 'Unknown';
     
-    const GW_DURATION_HOURS = 30;
+    const GW_DURATION_HOURS = 35;
     const currentTime = Date.now();
     const elapsedHours = (currentTime - startTime) / (1000 * 60 * 60);
     

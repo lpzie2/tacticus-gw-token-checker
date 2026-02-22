@@ -13,6 +13,8 @@ const ZONE_POINTS = {
     'ArtilleryPosition1':   16000,
     'ArtilleryPosition2':   16000,
     'AntiAir':              16000,
+    'AntiAirBattery1':      16000,
+    'AntiAirBattery2':      16000,
     'WarpRift':             16000
 };
 
