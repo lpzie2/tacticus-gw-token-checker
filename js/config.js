@@ -113,6 +113,11 @@ const TEAM_META_DEFINITIONS = {
         requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigmek", "orksKillaKan", "orksNob"],
         requiredMOW: null
     },
+    "BT Orks": {
+        metaTeam: "Waarg!",
+        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigmek", "templChampion", "templSwordBrother"],
+        requiredMOW: null
+    },
     "Warped Flames": {
         metaTeam: "Psykers",
         requiredUnits: ["deathTyphus", "thousTerminator", "thousAhriman", "adeptRetributor", "worldTerminator"],
@@ -179,6 +184,11 @@ const TEAM_META_DEFINITIONS = {
     "Mechanical Orks": {
         metaTeam: "Mechanical",
         requiredUnits: ["orksWarboss", "admecMarshall", "admecManipulus"],
+        requiredMOW: null
+    },
+    "Core Orks": {
+        metaTeam: "Mechanical",
+        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigmek"],
         requiredMOW: null
     },
     "Piercing Orks": {

@@ -239,7 +239,7 @@ function renderStats() {
     };
 
     // calculate the guild scores.
-    const calculateGuildScore = (progression, guildPlayers) => {
+    const calculateGuildScore = (progression, activityLogs, teamIndex) => {
         let zoneScore = 0;
         
         progression.forEach(item => {
@@ -250,13 +250,26 @@ function renderStats() {
         
         let playerScore = 0;
         activityLogs.forEach(log => {
-            if (log.type === 'battleFinished' && log.score) {
-                const attackerId = log.attacker?.userId;
-                if (attackerId && guildPlayers.some(p => p.userId === attackerId)) {
-                    playerScore += log.score;
+            if (log.type === 'battleFinished' && log.score && log.teamIndex) {
+                if (log.teamIndex === teamIndex) {
+                    // scores include the zone kill, so let's catch those.
+                    if (log.score < 1602) {
+                        playerScore += log.score;
+                    } else if (log.score >= 10000 && log.score <= 11602) {
+                        playerScore += log.score - 10000;
+                    } else if (log.score >= 16000 && log.score <= 17602) {
+                        playerScore += log.score - 16000;
+                    } else if (log.score >= 30000 && log.score <= 31602) {
+                        playerScore += log.score - 30000;
+                    } else if (log.score >= 40000 && log.score <= 41602) {
+                        playerScore += log.score - 40000;
+                    }
                 }
             }
         });
+
+        //console.log("activityLogs: ", activityLogs);
+        //console.log("playerscore: ", playerScore);
         
         return {
             zoneScore:      zoneScore,
@@ -265,8 +278,8 @@ function renderStats() {
         };
     };
 
-    const guild1Score = calculateGuildScore(guild1Progression, guild1Players);
-    const guild2Score = calculateGuildScore(guild2Progression, guild2Players);
+    const guild1Score = calculateGuildScore(guild1Progression, activityLogs, 1);
+    const guild2Score = calculateGuildScore(guild2Progression, activityLogs, 2);
     
     const formatStat = (count, type) => {
         if (count === 0) return `<span style="color: #b0b0b0;"></span>`;
