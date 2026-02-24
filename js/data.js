@@ -42,9 +42,15 @@ function processGameData() {
 
     // auto-assign guilds based on teamIndex in activity logs
     activityLogs.forEach(log => {
-        if (log.userId && log.teamIndex) {
+        if (log.type === 'battleFinished' && log.userId && log.teamIndex) {
             if (playerData[log.userId]) {
                 playerData[log.userId].guild = log.teamIndex;
+            }
+        }
+        // lets also give the other value to the defender
+        if (log.type === 'battleFinished' && log.defender && log.defender.userId) {
+            if (playerData[log.defender.userId]) {
+                playerData[log.defender.userId].guild = 3 - log.teamIndex;
             }
         }
     });
