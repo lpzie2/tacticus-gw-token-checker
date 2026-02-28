@@ -180,7 +180,7 @@ h1 {
     padding: 12px;
     border-radius: 6px;
     margin-bottom: 15px;
-    font-size: 0.9em;
+    font-size: 1.2em;
     font-weight: bold;
     color: white;
 }
@@ -230,20 +230,43 @@ h1 {
 
 .player-name {
     font-weight: bold;
-    font-size: 12px;
+    font-size: 16px;
     margin-bottom: 4px;
     color: #fcfcfc;
 }
 
 .player-stats {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    gap: 4px;
+    color: #fcfcfc;
+}
+
+.battlecard {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    gap: 4px;
     color: #fcfcfc;
 }
 
 .tokens-remaining {
     color: #c2b11d;
+    font-weight: bold;
+}
+
+.att-score {
+    color: #1d9be4;
+    font-weight: bold;
+}
+
+.avg-def {
+    color: #f54933;
     font-weight: bold;
 }
 
