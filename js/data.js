@@ -23,8 +23,11 @@ function processGameData() {
             displayName: player.displayName,
             tokensRemaining: INITIAL_TOKENS,
             tokensUsed: 0,
+            tokensAte:  0, // used for statistics.
             attacks:    0,
             defends:    0,
+            scoreAtt:   0,
+            scoreDef:   0,
             guild:      null,
             battles: {
                 '0med': { hit: 0, cleanup: 0, failed: 0 },
@@ -60,8 +63,9 @@ function processGameData() {
     activityLogs.forEach(log => {
         if (log.type === 'battleFinished') {
 
-            const attackerId = log.userId;
-            const defenderId = log.defender.userId || null;
+            const attackerId  = log.userId;
+            const defenderId  = log.defender.userId || null;
+            const playerScore = extractPlayerScoreFromTotalScore(log.score || 0);
 
             // probably an abandoned fight _before_ selecting characters
             if (!log.attacker) {
@@ -73,6 +77,7 @@ function processGameData() {
                     zone:           log.zone,
                     attemptDebuff:  log.attemptDebuff || 0,
                     score:          log.score || 0,
+                    scorePlayer:    playerScore,
                     attacker:       null,
                     defender:       log.defender,
                     buffs:          log.buffs || [],
@@ -106,6 +111,7 @@ function processGameData() {
                     zone:           log.zone,
                     attemptDebuff:  log.attemptDebuff || 0,
                     score:          log.score || 0,
+                    scorePlayer:    playerScore,
                     attacker:       log.attacker,
                     defender:       log.defender,
                     buffs:          log.buffs || [],
@@ -122,6 +128,7 @@ function processGameData() {
 
                 if (defenderId && playerData[defenderId]) {
                     playerData[defenderId].defends++;
+                    playerData[defenderId].tokensAte++;
                     playerData[defenderId].battleAsDefender.push(log.id);
 
                     addDefenderTeam(defenderId, log.defender, log.id);
@@ -130,7 +137,7 @@ function processGameData() {
                 return;
             }
 
-            // otherwise, this should be a completeled fight.
+            // otherwise, this should be a completed fight.
 
             battleData[log.id] = {
                 attackerUserId: attackerId,
@@ -139,6 +146,7 @@ function processGameData() {
                 zone:           log.zone,
                 attemptDebuff:  log.attemptDebuff || 0,
                 score:          log.score || 0,
+                scorePlayer:    playerScore,
                 attacker:       log.attacker,
                 defender:       log.defender,
                 buffs:          log.buffs || [],
@@ -153,18 +161,20 @@ function processGameData() {
                 
             // determine the battle result for the Xmed display.
             let result;
-            if (log.score >= 1100) {
+            if (playerScore >= 1100) {
                 result = 'hit';
             } else {
-                // check if any attacker unit survived (has remainingHPAfter)
-                const hasSurvivors = (log.attacker.units || []).some(unit => unit.remainingHPAfter !== undefined);
-                result = hasSurvivors ? 'cleanup' : 'failed';
+                // check if any defender unit survived
+                const hasDefSurvivors = (log.defender.units || []).some(unit => unit.remainingHPAfter !== undefined);
+                // if defender has survivors -> failed, otherwise -> cleanup
+                result = hasDefSurvivors ? 'failed' : 'cleanup';
             }
                 
             // record the battle stats to both players
             playerData[attackerId].tokensRemaining--;
             playerData[attackerId].tokensUsed++;
             playerData[attackerId].attacks++;
+            playerData[attackerId].scoreAtt += playerScore;
             playerData[attackerId].battles[medCount + 'med'][result]++;
             playerData[attackerId].battleAsAttacker.push(log.id);
 
@@ -172,6 +182,8 @@ function processGameData() {
 
             if (defenderId && playerData[defenderId]) {
                 playerData[defenderId].defends++;
+                playerData[defenderId].tokensAte++;
+                playerData[defenderId].scoreDef += playerScore;
                 playerData[defenderId].battleAsDefender.push(log.id);
 
                 addDefenderTeam(defenderId, log.defender, log.id);
@@ -435,7 +447,6 @@ function getGuildWarStartTime(activityLogs) {
 function getGuildWarTimeStatus(startTime) {
     if (!startTime) return 'Unknown';
     
-    const GW_DURATION_HOURS = 35;
     const currentTime = Date.now();
     const elapsedHours = (currentTime - startTime) / (1000 * 60 * 60);
     
@@ -467,4 +478,20 @@ function getUnitIcon(unitId) {
 
 function getGuildTotalTokens(guildPlayers) {
     return guildPlayers.length * INITIAL_TOKENS;
+}
+
+function extractPlayerScoreFromTotalScore(score) {
+
+    if (score < UNIQUE_TILES[0]) {
+        return score;
+    }
+
+    for (const base of UNIQUE_TILES) {
+        if (score >= base && score <= base + MAX_PLAYER_SCORE) {
+            return score - base;
+        }
+    }
+    
+    console.warn(`Score ${score} didn't match any tile base`, UNIQUE_TILES);
+    return score;
 }

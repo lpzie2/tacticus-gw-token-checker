@@ -18,7 +18,13 @@ const ZONE_POINTS = {
     'WarpRift':             16000
 };
 
-const INITIAL_TOKENS = 10
+const UNIQUE_TILES = [...new Set(Object.values(ZONE_POINTS))].sort((a, b) => a - b);
+
+const MAX_PLAYER_SCORE = 1601;
+
+const INITIAL_TOKENS = 10;
+
+const GW_DURATION_HOURS = 35;
 
 const FACTION_PREFIXES = {
         'ultra' : 'Ultramarines',

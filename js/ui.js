@@ -59,6 +59,9 @@ function createPlayerCard(userId, stats) {
     card.draggable  = true;
     card.dataset.userId = userId;
 
+    // to avoid div by zero
+    const avgDefScore = stats.tokensAte > 0 ? Math.round(stats.scoreDef / stats.tokensAte).toLocaleString() : '0';
+
     const formatStat = (count, type) => {
         if (count == 0) return `<span style="color: #b0b0b0;"></span>`;
 
@@ -75,22 +78,27 @@ function createPlayerCard(userId, stats) {
     };
 
     const battleTable = `
-        <div style="font-size: 11px; font-family: 'Courier New', monospace; color: #fcfcfc; line-height: 1.4;">
-            <div>2med:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].failed, 'failed')}</span></div>
-            <div>1med:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].failed, 'failed')}</span></div>
-            <div>0med:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].failed, 'failed')}</span></div>
+        <div class="battlecard">
+            <div>💊💊:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].hit, 'hit')}</span> 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span> 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].failed, 'failed')}</span></div>
+            <div>💊💥:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].hit, 'hit')}</span> 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span> 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].failed, 'failed')}</span></div>
+            <div>💥💥:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].hit, 'hit')}</span> 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span> 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].failed, 'failed')}</span></div>
         </div>
     `;
 
     card.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <div class="player-name">${stats.displayName}</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="player-name">${stats.displayName}</div>
+            
+            <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
+                
                 <div class="player-stats">
-                    <span class="tokens-remaining">🪙 ${stats.tokensRemaining} tokens</span>
+                    <div><span class="tokens-remaining">🪙 ${stats.tokensRemaining.toLocaleString()}</span></div>
+                    <div><span class="att-score">⚔️ ${stats.scoreAtt.toLocaleString()}</span></div>
+                    <div><span class="avg-def">🛡️ ${avgDefScore.toLocaleString()}</span></div>
                 </div>
+                
+                ${battleTable}
             </div>
-            ${battleTable}
         </div>
     `;
 
