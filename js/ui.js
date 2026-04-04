@@ -217,7 +217,7 @@ function createBattleLineHTML(battle, perspective) {
 
     function unitColumn(unitId, isAtt, idx) {
         if (!unitId) return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
-            <div style="width:36px; height:36px; border-radius:50%; background:${theme.bg}; border:2px solid ${theme.bg};"></div>
+            <div style="width:36px; height:36px; border-radius:50%; background: #45455e; border:2px solid #45455e;"></div>
         </div>`;
 
         const isDead        = isAtt     ? attDied[idx]      : defDied[idx];
@@ -253,7 +253,7 @@ function createBattleLineHTML(battle, perspective) {
             <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
                 <div style="position:relative; width:36px; height:36px;">
                     <img src="${getUnitIcon(unitId)}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid ${rarityBorderColor}; filter:${filterStyle};" title="${unitId}" onerror="this.style.display='none'">
-                    <img src="img/rank/rank_${rankPadded}.png" style="position:absolute; bottom:-4px; right:-6px; width:20px; height:20px; filter:${filterStyle};">
+                    <img src="img/rank/rank_${rankPadded}.png" style="position:absolute; bottom:-4px; right:-6px; width:23px; height:23px; filter:${filterStyle};">
                 </div>
                 ${hpHTML}
             </div>
@@ -267,7 +267,7 @@ function createBattleLineHTML(battle, perspective) {
         const filterStyle   = lost ? 'grayscale(25%) brightness(0.7)' : 'none';
 
         if (!unitId || unitId === 'none') return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
-            <div style="width:36px; height:36px; border-radius:50%; background:${theme.bg}; border:2px solid ${theme.bg};"></div>
+            <div style="width:36px; height:36px; border-radius:50%; background: #45455e; border:2px solid #45455e;"></div>
         </div>`;
 
         return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
@@ -288,13 +288,13 @@ function createBattleLineHTML(battle, perspective) {
         : `Defense #${battle.battleNumber}`;
 
     return `
-        <div style="background:${theme.bg}; border-radius:8px; padding:10px; margin-bottom:10px; border-left:10px solid ${theme.border};">
+        <div style="background: #45455e; border-radius:8px; padding:10px; margin-bottom:10px; border-left:6px solid ${theme.border}; border-right:3px solid ${theme.border};">
             <div style="display:flex; align-items:center; margin-bottom:8px; font-size:12px;">
                 <div style="display:flex; align-items:center; gap:12px; width:70%;">
-                    <span style="color:${theme.textMuted};">${battleLabel}</span>
+                    <span style="color:${theme.textMuted}; font-weight:bold;">${battleLabel}</span>
                     <span>${resultLabel}</span>
-                    <span style="color:${theme.textMuted}; text-transform:capitalize;">${battle.rarity}</span>
-                    <span style="color:${theme.token};" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '—'}</span>
+                    <span style="color:${theme.textMuted}; text-transform:capitalize; font-weight:bold;">${battle.rarity}</span>
+                    <span style="color:${theme.token}; font-weight:bold;" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '—'}</span>
                 </div>
                 <div style="width:30%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '—'}</div>
             </div>
@@ -402,11 +402,11 @@ function setPlayerGuild(userId, guild) {
 function sortButtonsHTML(guild) {
     const state = guildSortState[guild];
     const buttons = [
-        { key: 'tokensRemaining', icon: '🪙' },
-        { key: 'scoreAtt',        icon: '⚔️' },
-        { key: 'scoreDef',        icon: '🛡️' },
+        { key: 'tokensRemaining',   icon: '🪙' },
+        { key: 'scoreAtt',          icon: '⚔️' },
+        { key: 'scoreDef',          icon: '🛡️' },
         { key: 'performanceMetric', icon: '⭐' },
-        { key: 'defaultLines',    icon: '🤖' },
+        { key: 'defaultLines',      icon: '🤖' },
     ];
 
     return buttons.map(({ key, icon }) => {
@@ -416,6 +416,199 @@ function sortButtonsHTML(guild) {
         return `<button
             onclick="event.stopPropagation(); setSortAndRender(${guild}, '${key}')"
             style="background:${bg}; border:none; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
-            title="Sort by ${key}">${icon}${arrow}</button>`;
+            title="Sort by ${key}">${icon}${arrow}</button>`
+    }).join('') + `<button
+        onclick="event.stopPropagation(); openRankingOverlay(${guild})"
+        style="background:#3a3a4e; border:1px solid #555; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer; margin-left:4px;"
+        title="Show ranking">🏆</button>`;
+}
+
+// the legends page html code
+function buildLegendHTML() {
+    const iconRows = [
+        { icon: '🪙', label: 'Tokens remaining' },
+        { icon: '⚔️', label: 'Player attack score total' },
+        { icon: '🛡️', label: 'Player defense score per token eaten' },
+        { icon: '⭐', label: 'Performance metric (see below)' },
+        { icon: '🤖', label: 'Fights against NPC lines' },
+        { icon: '💊💊', label: '2 medicae buffs active' },
+        { icon: '💊💥', label: '1 medipack buff active' },
+        { icon: '💥💥', label: '0 medipack buffs active' },
+        { icon: '✅', label: 'Win (score ≥ 1100)' },
+        { icon: '🧹', label: 'Cleanup (all defenders dead, score < 1100)' },
+        { icon: '🚫', label: 'Loss (defenders survived)' },
+        { icon: '🏆', label: 'Ranking of the guild based on sort method.' },
+        { icon: `<button style="background:#6c757d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">⇄</button>`,  label: 'Swap player to other guild' },
+        { icon: `<button style="background:#1d6fa4; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">⚔️</button>`, label: 'Show attack battle details' },
+        { icon: `<button style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">🛡️</button>`, label: 'Show defense battle details' },
+        { icon: `<button style="background:#4a7a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">← G1</button>`, label: 'Assign unassigned player to guild 1' },
+        { icon: `<button style="background:#4a4a7a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">G2 →</button>`, label: 'Assign unassigned player to guild 2' },
+    ];
+
+    const perfRows = [
+        { label: 'Win w/ 5 survivors', keys: ['2medWin5', '1medWin5', '0medWin5'] },
+        { label: 'Win w/ 4 survivors', keys: ['2medWin4', '1medWin4', '0medWin4'] },
+        { label: 'Win w/ 3 survivors', keys: ['2medWin3', '1medWin3', '0medWin3'] },
+        { label: 'Win w/ 2 survivors', keys: ['2medWin2', '1medWin2', '0medWin2'] },
+        { label: 'Win w/ 1 survivor',  keys: ['2medWin1', '1medWin1', '0medWin1'] },
+        { label: 'Win w/ 0 survivors', keys: ['2medWin0', '1medWin0', '0medWin0'] },
+        { label: 'Cleanup',            keys: ['2medCleanup', '1medCleanup', '0medCleanup'] },
+        { label: 'Loss',               keys: ['2medLoss', '1medLoss', '0medLoss'] },
+        { label: 'Win vs 5 NPCs',      keys: ['npc5Win', 'npc5Win', 'npc5Win'] },
+        { label: 'Win vs 4 NPCs',      keys: ['npc4Win', 'npc4Win', 'npc4Win'] },
+        { label: 'Win vs 3 NPCs',      keys: ['npc3Win', 'npc3Win', 'npc3Win'] },
+        { label: 'Win vs 2 NPCs',      keys: ['npc2Win', 'npc2Win', 'npc2Win'] },
+        { label: 'Win vs 1 NPCs',      keys: ['npc1Win', 'npc1Win', 'npc1Win'] },
+        { label: 'Loss vs NPCs',       keys: ['npcLoss', 'npcLoss', 'npcLoss'] },
+    ];
+
+    const addonRows = [
+        { label: 'Tough map',  keys: ['2medToughMap',  '1medToughMap',  '0medToughMap']  },
+        { label: 'Tough team', keys: ['2medToughTeam', '1medToughTeam', '0medToughTeam'] },
+    ];
+
+    const iconRowsHTML = iconRows.map(({ icon, label }) => `
+        <tr>
+            <td style="padding:4px 12px 4px 0; font-size:16px;">${icon}</td>
+            <td style="padding:4px 0; font-size:12px; color:#ccc;">${label}</td>
+        </tr>
+    `).join('');
+
+    const perfRowsHTML = perfRows.map(({ label, keys }) => `
+        <tr>
+            <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[0]] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[1]] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[2]] ?? '—'}</td>
+        </tr>
+    `).join('');
+
+    const addonRowsHTML = addonRows.map(({ label, keys }) => `
+        <tr>
+            <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[0]] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[1]] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[2]] ?? '—'}</td>
+        </tr>
+    `).join('');
+
+    return `
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Icons & Buttons</h3>
+        <table style="margin-bottom:24px; border-collapse:collapse;">
+            ${iconRowsHTML}
+        </table>
+        <br>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">⭐ Performance Values</h3>
+        <table style="border-collapse:collapse; width:100%;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding:4px 12px 8px 0; font-size:12px; color:#aaa;">Outcome</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">💊💊</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">💊💥</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">💥💥</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${perfRowsHTML}
+            </tbody>
+        </table>
+        <br><br>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Performance Addons</h3>
+        <table style="border-collapse:collapse; width:100%;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding:4px 12px 8px 0; font-size:12px; color:#aaa;">Condition</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">💊💊</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">💊💥</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">💥💥</th>
+                </tr>
+            </thead>
+            <tbody>${addonRowsHTML}</tbody>
+        </table>
+    `;
+}
+
+function openRankingOverlay(guild) {
+    document.getElementById('rankingOverlay').classList.add('active');
+    const { html, plainText } = buildRankingHTML(guild);
+    document.getElementById('rankingContent').innerHTML = html;
+    document.getElementById('rankingCopyBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(plainText);
+    });
+}
+
+// ranking overlay html code.
+function buildRankingHTML(guild) {
+    const { key, dir } = guildSortState[guild];
+    const guildName    = document.getElementById(`guild${guild}Name`).textContent;
+
+    const statMeta = {
+        tokensRemaining:   { icon: '🪙', label: 'Tokens Remaining' },
+        scoreAtt:          { icon: '⚔️', label: 'Attack Score'     },
+        scoreDef:          { icon: '🛡️', label: 'Defense Score'    },
+        performanceMetric: { icon: '⭐', label: 'Performance'      },
+        defaultLines:      { icon: '🤖', label: 'NPC Lines'        },
+    };
+
+    const { icon, label } = statMeta[key] ?? { icon: '?', label: key };
+    const dirLabel = dir === 'desc' ? '↓' : '↑';
+
+    // get and sort players
+    const players = Object.entries(playerData)
+        .filter(([_, stats]) => stats.guild === guild)
+        .map(([userId, stats]) => ({ userId, stats }));
+
+    const mul = dir === 'desc' ? -1 : 1;
+    players.sort((a, b) => mul * (a.stats[key] - b.stats[key]));
+
+    // build rows
+    const chunkSize = 10;
+    const columns = [0, 1, 2].map(col => {
+        const chunk = players.slice(col * chunkSize, (col + 1) * chunkSize);
+        const colRows = chunk.map(({ stats }, i) => {
+            const rank = col * chunkSize + i + 1;
+            const value = key === 'performanceMetric'
+                ? stats[key].toFixed(2)
+                : stats[key].toLocaleString();
+            return `
+                <div style="display:flex; align-items:center; gap:6px; padding:6px 8px; background:${rank % 2 === 0 ? '#3a3a4e' : '#2a2a3e'}; border-radius:6px; margin-bottom:3px;">
+                    <span style="color:#888; font-size:11px; width:20px; text-align:right;">${rank}.</span>
+                    <span style="flex:1; font-size:12px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${stats.displayName}</span>
+                    <span style="font-size:12px; white-space:nowrap;">${icon} ${value}</span>
+                </div>
+            `;
+        }).join('');
+        return `<div style="flex:1; min-width:0;">${colRows}</div>`;
     }).join('');
+
+    const rows = `<div style="display:flex; gap:10px;">${columns}</div>`;
+
+    // plain text for clipboard
+    const plainText = [
+        `${guildName} — sorted by ${icon} ${label} ${dirLabel}`,
+        '',
+        ...players.map(({ stats }, i) => {
+            const value = key === 'performanceMetric'
+                ? stats[key].toFixed(2)
+                : stats[key].toLocaleString();
+            return `${String(i + 1).padStart(2, ' ')}. ${stats.displayName} — ${icon} ${value}`;
+        })
+    ].join('\n');
+
+    return {
+        html: `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
+                <div>
+                    <div style="font-size:1.1em; font-weight:bold;">${guildName}</div>
+                    <div style="font-size:12px; color:#aaa; margin-top:2px;">Sorted by ${icon} ${label} ${dirLabel}</div>
+                </div>
+            <button id="rankingCopyBtn"
+                style="background:#425974; border:none; border-radius:6px; color:white; font-size:12px; padding:6px 12px; cursor:pointer;">
+                📋
+            </button>
+            </div>
+            ${rows}
+        `,
+        plainText
+    };
 }

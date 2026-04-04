@@ -98,6 +98,29 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// legends listeners
+document.getElementById('legendButton').addEventListener('click', function() {
+    document.getElementById('legendOverlay').classList.add('active');
+    document.getElementById('legendContent').innerHTML = buildLegendHTML();
+});
+
+document.getElementById('closeLegend').addEventListener('click', function() {
+    document.getElementById('legendOverlay').classList.remove('active');
+});
+
+document.getElementById('legendOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
+// ranking overlay listeners
+document.getElementById('closeRanking').addEventListener('click', function() {
+    document.getElementById('rankingOverlay').classList.remove('active');
+});
+
+document.getElementById('rankingOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
 // set up drop zones
 document.addEventListener('DOMContentLoaded', function() {
     const dropZones = document.querySelectorAll('.guild-column');
