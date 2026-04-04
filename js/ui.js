@@ -432,8 +432,8 @@ function buildLegendHTML() {
         { icon: '⭐', label: 'Performance metric (see below)' },
         { icon: '🤖', label: 'Fights against NPC lines' },
         { icon: '💊💊', label: '2 medicae buffs active' },
-        { icon: '💊💥', label: '1 medipack buff active' },
-        { icon: '💥💥', label: '0 medipack buffs active' },
+        { icon: '💊💥', label: '1 medicae buff active' },
+        { icon: '💥💥', label: '0 medicae buffs active' },
         { icon: '✅', label: 'Win (score ≥ 1100)' },
         { icon: '🧹', label: 'Cleanup (all defenders dead, score < 1100)' },
         { icon: '🚫', label: 'Loss (defenders survived)' },
@@ -458,7 +458,7 @@ function buildLegendHTML() {
         { label: 'Win vs 4 NPCs',      keys: ['npc4Win', 'npc4Win', 'npc4Win'] },
         { label: 'Win vs 3 NPCs',      keys: ['npc3Win', 'npc3Win', 'npc3Win'] },
         { label: 'Win vs 2 NPCs',      keys: ['npc2Win', 'npc2Win', 'npc2Win'] },
-        { label: 'Win vs 1 NPCs',      keys: ['npc1Win', 'npc1Win', 'npc1Win'] },
+        { label: 'Win vs 1 NPC',       keys: ['npc1Win', 'npc1Win', 'npc1Win'] },
         { label: 'Loss vs NPCs',       keys: ['npcLoss', 'npcLoss', 'npcLoss'] },
     ];
 

@@ -401,7 +401,10 @@ const PERFORMANCE_ADDONS = {
     '0medToughMap':         0.10,
     '2medToughTeam':        0.20,
     '1medToughTeam':        0.15,
-    '0medToughTeam':        0.10,
+    '0medToughTeam':        0.10
+};
+
+const PERFORMANCE_WEIGHTS = {
     'weightsPerformance':   0.67,
     'weightsScore':         0.33
 };
@@ -410,11 +413,24 @@ const PERFORMANCE_TOUGH_MAPS = [
     'MC1_31', 'EC1_09', 'LHE_Desert_03', 'C1_70', 'MC1_11'
 ];
 
+const PERFORMANCE_TOUGH_LINES = {
+    'GSC_01':   ['genesPrimus', 'genesKelermorph'],
+    'DG_01':    ['deathRotbone']
+};
+
 // TODO: add more to this as it becomes important.
 // note: make sure to order them from more specific to least; order matters!
 // note: numbers at the end will be ignored when counting the teams.
 // null means any mow is fine
 const TEAM_META_DEFINITIONS = {
+
+    // 6 unit teams
+
+    "Judh Going Solo": {
+        metaTeam: "GSC",
+        requiredUnits: ["genesKelermorph", "custoVexilusPraetor", "eldarAutarch", "spaceWolfPriest", "genesMagus"],
+        requiredMOW: "darkaStormSpeeder"
+    },
 
     // 5 man teams
 
@@ -437,11 +453,6 @@ const TEAM_META_DEFINITIONS = {
         metaTeam: "GSC",
         requiredUnits: ["genesPrimus", "genesBiophagus", "genesKelermorph", "tauCrisis", "tauMarksman"],
         requiredMOW: null
-    },
-    "Judh Going Solo": {
-        metaTeam: "GSC",
-        requiredUnits: ["genesKelermorph", "custoVexilusPraetor", "eldarAutarch", "spaceWolfPriest", "genesMagus"],
-        requiredMOW: "darkaStormSpeeder"
     },
     "Summoning Nids": {
         metaTeam: "Tyranids",
@@ -614,12 +625,12 @@ const TEAM_META_DEFINITIONS = {
         metaTeam: "Waarg!",
         requiredUnits: ["orksWarboss", "orksRuntherd"],
         requiredMOW: null
-    },
+    }
 
     // 1 man teams (very risky to put units here, will mask a lot of different teams.)
-    "Sad Single Howl": {
-        metaTeam: "Howl",
-        requiredUnits: ["spaceBlackmane"],
-        requiredMOW: null
-    }
+    //"Sad Single Howl": {
+    //    metaTeam: "Howl",
+    //    requiredUnits: ["spaceBlackmane"],
+    //    requiredMOW: null
+    //}
 };
