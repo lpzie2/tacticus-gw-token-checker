@@ -203,12 +203,16 @@ h1 {
     gap: 8px;
 }
 
+.unassigned .player-list {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
 .player-card {
     background: #3a3a4e;
     padding: 10px;
     margin-bottom: 8px;
     border-radius: 6px;
-    cursor: move;
+    cursor: default;
     transition: all 0.3s;
     border: 2px solid transparent;
 }
@@ -230,7 +234,7 @@ h1 {
 
 .player-name {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 4px;
     color: #fcfcfc;
 }
@@ -240,18 +244,20 @@ h1 {
     flex-direction: column;
     justify-content: space-between;
     font-family: 'Courier New', monospace;
-    font-size: 14px;
+    font-size: 12px;
     gap: 4px;
     color: #fcfcfc;
 }
 
 .battlecard {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1fr;
+    gap: 2px 6px;
+    align-items:center;
     flex-direction: column;
     justify-content: space-between;
     font-family: 'Courier New', monospace;
-    font-size: 14px;
-    gap: 4px;
+    font-size: 12px;
     color: #fcfcfc;
 }
 
