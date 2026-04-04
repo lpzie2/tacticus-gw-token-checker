@@ -177,7 +177,7 @@ function createBattleLineHTML(battle, perspective) {
 
     let resultLabel;
     if (battle.abandoned) {
-        resultLabel = `<span style="color:#e45858;">ABANDONED</span>`;
+        resultLabel = `<span style="color: #7f43a7; font-weight:bold;">ABANDONED</span>`;
     } else if (isAttPerspective) {
         if (battle.battleScore >= 1100) {
             resultLabel = `<span style="color:${theme.win}; font-weight:bold;">✅ WON (${battle.battleScore})</span>`;
@@ -275,8 +275,10 @@ function createBattleLineHTML(battle, perspective) {
         </div>`;
     }
 
-    const attLost = !attDied.some((d, i) => attUnits[i] && d === false);
-    const defLost = battle.battleScore >= 1100;
+    const anyDefSurvived    = defFought.some((f, i) => defUnits[i] && f !== false && !defDied[i]);
+    const attackerWon       = !anyDefSurvived;
+    const attLost           = !attackerWon;
+    const defLost           = attackerWon;
 
     const attCols = attUnits.map((u, i) => unitColumn(u, true,  i)).join('') + mowColumn(battle.attMoW, battle.attMoWRarity, attLost);
     const defCols = defUnits.map((u, i) => unitColumn(u, false, i)).join('') + mowColumn(battle.defMoW, battle.defMoWRarity, defLost);
@@ -288,13 +290,13 @@ function createBattleLineHTML(battle, perspective) {
     return `
         <div style="background:${theme.bg}; border-radius:8px; padding:10px; margin-bottom:10px; border-left:10px solid ${theme.border};">
             <div style="display:flex; align-items:center; margin-bottom:8px; font-size:12px;">
-                <div style="display:flex; align-items:center; gap:12px; width:80%;">
+                <div style="display:flex; align-items:center; gap:12px; width:70%;">
                     <span style="color:${theme.textMuted};">${battleLabel}</span>
                     <span>${resultLabel}</span>
                     <span style="color:${theme.textMuted}; text-transform:capitalize;">${battle.rarity}</span>
                     <span style="color:${theme.token};" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '—'}</span>
                 </div>
-                <div style="width:20%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '—'}</div>
+                <div style="width:30%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '—'}</div>
             </div>
             <div style="display:flex; align-items:flex-start; gap:10px;">
                 <div style="flex:1; min-width:0;">

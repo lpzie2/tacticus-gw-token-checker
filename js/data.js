@@ -229,12 +229,14 @@ function processGameData() {
             const foughtNPCs = (log.defender.units || []).some(unit => unit.unitId === 'templNpc1Initiate');
             npcLine = foughtNPCs ? true : false;
 
-            // let's do some performance things. need to generate the keys.
+            // let's do some performance metric things. need to generate the keys.
             let attResultType;
             if (result === 'hit') {
                 attResultType = 'Win';
+            } else if (result === 'cleanup') {
+                attResultType = 'Cleanup';
             } else {
-                attResultType = attSurvivorsCount > 0 ? 'Loss' : 'Cleanup';
+                attResultType = 'Loss';
             }
 
             let attKey;
@@ -251,6 +253,7 @@ function processGameData() {
                 attKey = `${medCount}medWin${attSurvivorsCount}`;
             }
 
+            console.log(`key: |${attKey}| found: ${attKey in PERFORMANCE_METRIC} value: ${PERFORMANCE_METRIC[attKey]}`);
             const basePerformanceValue = PERFORMANCE_METRIC[attKey] ?? 100.0; // makes errors obvious.
 
             // final performance should also take into account the tough
@@ -316,7 +319,7 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
 
     const battleRarity      = getBattleRarityFromDefenderInfo(defender, attacker);
     const rarityCapInfo     = GUILDWAR_RARITY_CAPS[battleRarity];
-    console.log(rarityCapInfo);
+    //console.log(rarityCapInfo);
 
     // all the cases we handle:
     // attacker side:  
