@@ -24,11 +24,15 @@ function renderPlayers() {
     });
 
     // sort method and sorting
-    const sortByTokens = (a, b) => b.stats.tokensRemaining - a.stats.tokensRemaining;
+    function sortPlayers(players, guild) {
+        const { key, dir } = guildSortState[guild] || { key: 'tokensRemaining', dir: 'desc' };
+        const mul = dir === 'desc' ? -1 : 1;
+        players.sort((a, b) => mul * (a.stats[key] - b.stats[key]));
+    }
 
-    guild1Players.sort(sortByTokens);
-    guild2Players.sort(sortByTokens);
-    unassignedPlayers.sort(sortByTokens);
+    sortPlayers(guild1Players, 1);
+    sortPlayers(guild2Players, 2);
+    sortPlayers(unassignedPlayers, 1);
 
     // render each guild list
     guild1Players.forEach(({ userId, stats }) => {
@@ -50,7 +54,18 @@ function renderPlayers() {
     } else {
         unassignedBox.style.display = 'block';
     }
+
+    const sb1 = document.getElementById('guild1SortButtons');
+    const sb2 = document.getElementById('guild2SortButtons');
+
+    if (sb1) sb1.innerHTML = sortButtonsHTML(1);
+    if (sb2) sb2.innerHTML = sortButtonsHTML(2);
     
+}
+
+function buffsToIcons(buffs) {
+    if (!buffs || buffs.length === 0) return '';
+    return buffs.map(b => BUFF_ICONS[b] || '❓').join('');
 }
 
 function createPlayerCard(userId, stats) {
@@ -66,9 +81,10 @@ function createPlayerCard(userId, stats) {
         if (count == 0) return `<span style="color: #b0b0b0;"></span>`;
 
         let color;
-        if (type === 'hit') color = '#4cec86'; // green, colorblind safe
-        else if (type === 'cleanup') color = '#fbbf24'; // yellow, colorblind safe
-        else color = '#e45858'; // red, colorblind safe
+        if (type === 'hit')             color = '#4cec86'; // green, colorblind safe
+        else if (type === 'cleanup')    color = '#fbbf24'; // yellow, colorblind safe
+        else if (type === 'failed')     color = '#e45858'; // red, colorblind safe
+        else                            color = '#23f8ff'; // blue, for npc lines
 
         if (count === 0) {
             return `<span style="color: #b0b0b0;">${count}</span>`;
@@ -79,15 +95,45 @@ function createPlayerCard(userId, stats) {
 
     const battleTable = `
         <div class="battlecard">
-            <div>💊💊:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].hit, 'hit')}</span> 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span> 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['2med'].failed, 'failed')}</span></div>
-            <div>💊💥:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].hit, 'hit')}</span> 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span> 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['1med'].failed, 'failed')}</span></div>
-            <div>💥💥:  ✅ <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].hit, 'hit')}</span> 🧹 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span> 🚫 <span style="display: inline-block; width: 12px; text-align: right;">${formatStat(stats.battles['0med'].failed, 'failed')}</span></div>
+            <span>💊💊</span><span style="text-align:left;">✅ ${formatStat(stats.battles['2med'].hit, 'hit')}</span><span style="text-align:left;">🧹 ${formatStat(stats.battles['2med'].cleanup, 'cleanup')}</span><span style="text-align:left;">🚫 ${formatStat(stats.battles['2med'].failed, 'failed')}</span>
+            <span>💊💥</span><span style="text-align:left;">✅ ${formatStat(stats.battles['1med'].hit, 'hit')}</span><span style="text-align:left;">🧹 ${formatStat(stats.battles['1med'].cleanup, 'cleanup')}</span><span style="text-align:left;">🚫 ${formatStat(stats.battles['1med'].failed, 'failed')}</span>
+            <span>💥💥</span><span style="text-align:left;">✅ ${formatStat(stats.battles['0med'].hit, 'hit')}</span><span style="text-align:left;">🧹 ${formatStat(stats.battles['0med'].cleanup, 'cleanup')}</span><span style="text-align:left;">🚫 ${formatStat(stats.battles['0med'].failed, 'failed')}</span>
+            <span></span><span></span><span></span><span style="text-align:left;">🤖 ${formatStat(stats.defaultLines, 'npc')}</span>
         </div>
     `;
 
     card.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="player-name">${stats.displayName}</div>
+            ${stats.guild === null ? `
+                <div style="display:flex; gap:4px; margin-bottom:6px;">
+                    <button onclick="event.stopPropagation(); setPlayerGuild('${userId}', 1)"
+                        title="Move to Guild 1"
+                        style="flex:1; background:#4a7a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:4px 6px; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">← ${document.getElementById('guild1Name').textContent}</button>
+                    <button onclick="event.stopPropagation(); setPlayerGuild('${userId}', 2)"
+                        title="Move to Guild 2"
+                        style="flex:1; background:#4a4a7a; border:none; border-radius:4px; color:white; font-size:11px; padding:4px 6px; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${document.getElementById('guild2Name').textContent} →</button>
+                </div>
+            ` : ''}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <div class="player-name">${stats.displayName}</div>
+                <div style="display:flex; gap:4px;">
+                    ${stats.guild !== null ? `
+                        <button onclick="event.stopPropagation(); swapPlayerGuild('${userId}')"
+                            title="Swap guild"
+                            style="background:#6c757d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">⇄</button>
+                    ` : ''}
+                    <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'attacker')"
+                        title="Attack details"
+                        style="background:#1d6fa4; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">⚔️</button>
+                    <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'defender')"
+                        title="Defense details"
+                        style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🛡️</button>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <div style="font-size:12px; color:#888; font-style:italic;">${stats.mapAssignedTo || 'Unknown'}</div>
+            </div>
             
             <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
                 
@@ -95,6 +141,7 @@ function createPlayerCard(userId, stats) {
                     <div><span class="tokens-remaining">🪙 ${stats.tokensRemaining.toLocaleString()}</span></div>
                     <div><span class="att-score">⚔️ ${stats.scoreAtt.toLocaleString()}</span></div>
                     <div><span class="avg-def">🛡️ ${avgDefScore.toLocaleString()}</span></div>
+                    <div style="font-size:12px; color: #f7e013;">⭐ ${stats.performanceMetric.toFixed(2)}</div>
                 </div>
                 
                 ${battleTable}
@@ -109,6 +156,218 @@ function createPlayerCard(userId, stats) {
     return card;
 }
 
+function createBattleLineHTML(battle, perspective) {
+
+    const theme = RARITY_THEMES[battle.rarity] ?? RARITY_THEMES.common;
+
+    // perspective: 'attacker' or 'defender'
+    const isAttPerspective = perspective === 'attacker';
+
+    const attUnits      = battle.attUnits       || [];
+    const defUnits      = battle.defUnits       || [];
+    const attHP         = battle.attHP          || [];
+    const attMaxHP      = battle.attMaxHP       || [];
+    const defHPStart    = battle.defHPStart     || [];
+    const defMaxHPStart = battle.defMaxHPStart  || [];
+    const defHPEnd      = battle.defHPEnd       || [];
+    const defMaxHPEnd   = battle.defMaxHPEnd    || [];
+    const attDied       = battle.attDied        || [];
+    const defFought     = battle.defFought      || [];
+    const defDied       = battle.defDied        || [];
+
+    let resultLabel;
+    if (battle.abandoned) {
+        resultLabel = `<span style="color:#e45858;">ABANDONED</span>`;
+    } else if (isAttPerspective) {
+        if (battle.battleScore >= 1100) {
+            resultLabel = `<span style="color:${theme.win}; font-weight:bold;">✅ WON (${battle.battleScore})</span>`;
+        } else {
+            const anyAttSurvived = attDied.some((d, i) => attUnits[i] && d === false);
+            resultLabel = anyAttSurvived
+                ? `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEAN UP (${battle.battleScore})</span>`
+                : `<span style="color:${theme.loss}; font-weight:bold;">🚫 LOST (${battle.battleScore})</span>`;
+        }
+    } else {
+        // defender perspective
+        if (battle.battleScore >= 1100) {
+            resultLabel = `<span style="color:${theme.loss}; font-weight:bold;">💀 LOST (${battle.battleScore})</span>`;
+        } else {
+            const anyAttSurvived = attDied.some((d, i) => attUnits[i] && d === false);
+            resultLabel = anyAttSurvived
+                ? `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEANED UP (${battle.battleScore})</span>`
+                : `<span style="color:${theme.win}; font-weight:bold;">🛡️ HELD (${battle.battleScore})</span>`;
+        }
+    }
+
+    const buffsHTML = buffsToIcons(battle.battleBuffs);
+
+    function hpBar(current, max, label = null) {
+        if (label) {
+            return `<div style="font-size:9px; text-align:center; color:#888; line-height:1.2;">${label}</div>`;
+        }
+        const pct   = max > 0 ? Math.max(0, Math.min(100, (current / max) * 100)) : 0;
+        const color = pct > 50 ? theme.hpHigh : pct > 25 ? theme.hpMid : theme.hpLow;
+        return `
+            <div style="background:#222; border-radius:3px; height:5px; width:100%; margin-top:2px;" title="${current}/${max}">
+                <div style="width:${pct}%; background:${color}; height:100%; border-radius:3px;"></div>
+            </div>
+            <div style="font-size:9px; text-align:center; color:${theme.textMuted};">${current === max ? current : `${current}/${max}`}</div>
+        `;
+    }
+
+    function unitColumn(unitId, isAtt, idx) {
+        if (!unitId) return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+            <div style="width:36px; height:36px; border-radius:50%; background:${theme.bg}; border:2px solid ${theme.bg};"></div>
+        </div>`;
+
+        const isDead        = isAtt     ? attDied[idx]      : defDied[idx];
+        const fought        = isAtt     ? true              : defFought[idx];
+        //const opacity     = (!isAtt && defFought[idx] === false) ? '0.20' : isDead ? '0.40' : '1';
+        const filterStyle   = (!isAtt && defFought[idx] === false) ? 'grayscale(100%) brightness(0.3)' : isDead ? 'grayscale(25%) brightness(0.7)' : 'none';
+
+        const rarity            = isAtt ? battle.attRarity[idx] : battle.defRarity[idx];
+        const rarityBorderColor = RARITY_COLORS[rarity] ?? '#444';
+        const rankNum           = isAtt ? battle.attRankNum[idx] : battle.defRankNum[idx];
+        const rankPadded        = rankNum === -1 ? 'unknown' : String(rankNum).padStart(2, '0');
+
+        let hpHTML = '';
+        if (isAtt) {
+            const hp    = isDead ? 0           : (attHP[idx] || 0);
+            const maxHp = attMaxHP[idx] || 0;
+            hpHTML = hpBar(hp, maxHp);
+        } else {
+            if (fought === false) {
+                hpHTML = `<div style="font-size:10px; text-align:center; color:${theme.didNotFight}; line-height:1.4; margin-top:3px; font-weight:bold;">DID<br>NOT<br>FIGHT</div>`;
+            } else if (isDead) {
+                hpHTML = hpBar(defHPStart[idx] || 0, defMaxHPStart[idx] || 0)
+                    + `<div style="font-size:12px; text-align:center; color:${theme.vs}; line-height:1;">↓</div>`
+                    + `<div style="font-size:10px; text-align:center; color:${theme.dead}; font-weight:bold;">DEAD</div>`;
+            } else {
+                hpHTML = hpBar(defHPStart[idx] || 0, defMaxHPStart[idx] || 0)
+                    + `<div style="font-size:10px; text-align:center; color:${theme.vs}; line-height:1;">↓</div>`
+                    + hpBar(defHPEnd[idx] || 0, defMaxHPEnd[idx] || 0);
+            }
+        }
+
+        return `
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+                <div style="position:relative; width:36px; height:36px;">
+                    <img src="${getUnitIcon(unitId)}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid ${rarityBorderColor}; filter:${filterStyle};" title="${unitId}" onerror="this.style.display='none'">
+                    <img src="img/rank/rank_${rankPadded}.png" style="position:absolute; bottom:-4px; right:-6px; width:20px; height:20px; filter:${filterStyle};">
+                </div>
+                ${hpHTML}
+            </div>
+        `;
+    }
+
+    function mowColumn(unitId, rarity, lost) {
+
+        const borderColor   = RARITY_COLORS[rarity] ?? '#4d4d4d';
+        //const opacity       = lost ? '0.35' : '1';
+        const filterStyle   = lost ? 'grayscale(25%) brightness(0.7)' : 'none';
+
+        if (!unitId || unitId === 'none') return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+            <div style="width:36px; height:36px; border-radius:50%; background:${theme.bg}; border:2px solid ${theme.bg};"></div>
+        </div>`;
+
+        return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+            <img src="${getUnitIcon(unitId)}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid ${borderColor}; filter:${filterStyle};" title="${unitId}" onerror="this.style.display='none'">
+        </div>`;
+    }
+
+    const attLost = !attDied.some((d, i) => attUnits[i] && d === false);
+    const defLost = battle.battleScore >= 1100;
+
+    const attCols = attUnits.map((u, i) => unitColumn(u, true,  i)).join('') + mowColumn(battle.attMoW, battle.attMoWRarity, attLost);
+    const defCols = defUnits.map((u, i) => unitColumn(u, false, i)).join('') + mowColumn(battle.defMoW, battle.defMoWRarity, defLost);
+
+    const battleLabel = isAttPerspective
+        ? `Token #${battle.battleNumber}`
+        : `Defense #${battle.battleNumber}`;
+
+    return `
+        <div style="background:${theme.bg}; border-radius:8px; padding:10px; margin-bottom:10px; border-left:10px solid ${theme.border};">
+            <div style="display:flex; align-items:center; margin-bottom:8px; font-size:12px;">
+                <div style="display:flex; align-items:center; gap:12px; width:80%;">
+                    <span style="color:${theme.textMuted};">${battleLabel}</span>
+                    <span>${resultLabel}</span>
+                    <span style="color:${theme.textMuted}; text-transform:capitalize;">${battle.rarity}</span>
+                    <span style="color:${theme.token};" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '—'}</span>
+                </div>
+                <div style="width:20%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '—'}</div>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:10px;">
+                <div style="flex:1; min-width:0;">
+                    <!-- <div style="font-size:11px; color:${theme.textMuted}; text-align:center; margin-bottom:3px;">${isAttPerspective ? 'OFFENSE' : 'DEFENSE'}</div> -->
+                    <div style="display:flex; gap:4px; width:100%;">${isAttPerspective ? attCols : defCols}</div>
+                </div>
+                <div style="color:${theme.vs}; font-size:20px; align-self:center;">vs</div>
+                <div style="flex:1; min-width:0;">
+                    <!-- <div style="font-size:11px; color:${theme.textMuted}; text-align:center; margin-bottom:3px;">${isAttPerspective ? 'DEFENSE' : 'OFFENSE'}</div> -->
+                    <div style="display:flex; gap:4px; width:100%;">${isAttPerspective ? defCols : attCols}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function toggleBattleDetails(userId, perspective) {
+    const card = document.querySelector(`.player-card[data-user-id="${userId}"]`);
+    if (!card) return;
+
+    const detailId  = `battle-detail-${userId}-${perspective}`;
+    const existing  = card.querySelector('.battle-detail-panel');
+    const isSame    = existing?.id === detailId;
+
+    // if same panel is open, close it and restore
+    if (isSame) {
+        existing.remove();
+        card.style.gridColumn = '';
+        card.style.gridRow = '';
+        return;
+    }
+
+    // close any other open panel on any card and restore their span
+    document.querySelectorAll('.battle-detail-panel').forEach(el => {
+        const ownerCard = el.closest('.player-card');
+        if (ownerCard !== card) {
+            ownerCard.style.gridColumn = '';
+            ownerCard.style.gridRow = '';
+        }
+        el.remove();
+    });
+
+    const stats   = playerData[userId];
+    const battles = perspective === 'attacker'
+        ? stats.battleDetailsAsAttacker
+        : stats.battleDetailsAsDefender;
+
+    const title   = perspective === 'attacker' ? '⚔️ Attacks' : '🛡️ Defenses';
+
+    const linesHTML = battles.length === 0
+        ? '<div style="color:#888; text-align:center; padding:10px; font-size:11px;">No battles recorded.</div>'
+        : battles.map(b => createBattleLineHTML(b, perspective)).join('');
+
+    // span across both columns
+    card.style.gridColumn = '1 / -1';
+
+    const panel = document.createElement('div');
+    panel.id = detailId;
+    panel.className = 'battle-detail-panel';
+    panel.style.cssText = `
+        margin-top: 10px;
+        border-top: 1px solid #555;
+        padding-top: 10px;
+    `;
+    panel.innerHTML = `
+        <div style="font-size:11px; color:#aaa; font-weight:bold; margin-bottom:8px;">${title}</div>
+        ${linesHTML}
+    `;
+
+    card.appendChild(panel);
+}
+
+
 function handleDragStart(e) {
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -117,4 +376,44 @@ function handleDragStart(e) {
 
 function handleDragEnd(e) {
     e.target.classList.remove('dragging');
+}
+
+function swapPlayerGuild(userId) {
+    if (!playerData[userId]) return;
+
+    const current = playerData[userId].guild;
+
+    if (current === 1) playerData[userId].guild = 2;
+    else if (current === 2) playerData[userId].guild = 1;
+
+    renderPlayers();
+    renderStats();
+}
+
+function setPlayerGuild(userId, guild) {
+    if (!playerData[userId]) return;
+    playerData[userId].guild = guild;
+    renderPlayers();
+    renderStats();
+}
+
+function sortButtonsHTML(guild) {
+    const state = guildSortState[guild];
+    const buttons = [
+        { key: 'tokensRemaining', icon: '🪙' },
+        { key: 'scoreAtt',        icon: '⚔️' },
+        { key: 'scoreDef',        icon: '🛡️' },
+        { key: 'performanceMetric', icon: '⭐' },
+        { key: 'defaultLines',    icon: '🤖' },
+    ];
+
+    return buttons.map(({ key, icon }) => {
+        const isActive = state.key === key;
+        const arrow = isActive ? (state.dir === 'desc' ? ' ↓' : ' ↑') : '';
+        const bg = isActive ? '#5a6a8a' : '#3a3a4e';
+        return `<button
+            onclick="event.stopPropagation(); setSortAndRender(${guild}, '${key}')"
+            style="background:${bg}; border:none; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
+            title="Sort by ${key}">${icon}${arrow}</button>`;
+    }).join('');
 }

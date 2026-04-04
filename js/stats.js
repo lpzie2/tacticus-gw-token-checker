@@ -253,6 +253,8 @@ function renderStats() {
             if (log.type === 'battleFinished' && log.score && log.teamIndex) {
                 if (log.teamIndex === teamIndex) {
                     // scores include the zone kill, so let's catch those.
+                    //   because i might want to do something with these later.
+                    // really, score should be a parameter of the player obj, but this is fine for now.
                     if (log.score < 1602) {
                         playerScore += log.score;
                     } else if (log.score >= 10000 && log.score <= 11602) {

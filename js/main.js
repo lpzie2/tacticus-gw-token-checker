@@ -4,6 +4,23 @@ let playerData = {};
 let battleData = {};
 let activityLogs = null;
 
+// to do sorting.
+const guildSortState = {
+    1: { key: 'tokensRemaining', dir: 'desc' },
+    2: { key: 'tokensRemaining', dir: 'desc' },
+};
+
+function setSortAndRender(guild, key) {
+    const state = guildSortState[guild];
+    if (state.key === key) {
+        state.dir = state.dir === 'desc' ? 'asc' : 'desc';
+    } else {
+        state.key = key;
+        state.dir = 'desc';
+    }
+    renderPlayers();
+}
+
 // file uploading
 document.getElementById('jsonFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
