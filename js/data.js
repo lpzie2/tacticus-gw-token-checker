@@ -294,6 +294,13 @@ function processGameData() {
         }
     });
 
+    // let's compute avgDefScore for all players to sort it later.
+    Object.values(playerData).forEach(player => {
+        player.avgDefScore = player.tokensAte > 0
+            ? Math.round(player.scoreDef / player.tokensAte)
+            : 0;
+    });
+
     // fill in missing teams with placeholders
     fillMissingTeams();
 

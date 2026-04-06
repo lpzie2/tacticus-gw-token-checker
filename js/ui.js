@@ -71,11 +71,7 @@ function buffsToIcons(buffs) {
 function createPlayerCard(userId, stats) {
     const card      = document.createElement('div');
     card.className  = 'player-card';
-    card.draggable  = true;
     card.dataset.userId = userId;
-
-    // to avoid div by zero
-    const avgDefScore = stats.tokensAte > 0 ? Math.round(stats.scoreDef / stats.tokensAte).toLocaleString() : '0';
 
     const formatStat = (count, type) => {
         if (count == 0) return `<span style="color: #b0b0b0;"></span>`;
@@ -140,7 +136,7 @@ function createPlayerCard(userId, stats) {
                 <div class="player-stats">
                     <div><span class="tokens-remaining">🪙 ${stats.tokensRemaining.toLocaleString()}</span></div>
                     <div><span class="att-score">⚔️ ${stats.scoreAtt.toLocaleString()}</span></div>
-                    <div><span class="avg-def">🛡️ ${avgDefScore.toLocaleString()}</span></div>
+                    <div><span class="avg-def">🛡️ ${stats.avgDefScore.toLocaleString()}</span></div>
                     <div style="font-size:12px; color: #f7e013;">⭐ ${stats.performanceMetric.toFixed(2)}</div>
                 </div>
                 
@@ -148,10 +144,6 @@ function createPlayerCard(userId, stats) {
             </div>
         </div>
     `;
-
-    // drag events
-    card.addEventListener('dragstart', handleDragStart);
-    card.addEventListener('dragend', handleDragEnd);
 
     return card;
 }
@@ -369,17 +361,6 @@ function toggleBattleDetails(userId, perspective) {
     card.appendChild(panel);
 }
 
-
-function handleDragStart(e) {
-    e.target.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', e.target.dataset.userId);
-}
-
-function handleDragEnd(e) {
-    e.target.classList.remove('dragging');
-}
-
 function swapPlayerGuild(userId) {
     if (!playerData[userId]) return;
 
@@ -402,21 +383,21 @@ function setPlayerGuild(userId, guild) {
 function sortButtonsHTML(guild) {
     const state = guildSortState[guild];
     const buttons = [
-        { key: 'tokensRemaining',   icon: '🪙' },
-        { key: 'scoreAtt',          icon: '⚔️' },
-        { key: 'scoreDef',          icon: '🛡️' },
-        { key: 'performanceMetric', icon: '⭐' },
-        { key: 'defaultLines',      icon: '🤖' },
+        { key: 'tokensRemaining',   icon: '🪙', label: 'Tokens Remaining' },
+        { key: 'scoreAtt',          icon: '⚔️', label: 'Attack Score' },
+        { key: 'avgDefScore',       icon: '🛡️', label: 'Token Avg Def Score' },
+        { key: 'performanceMetric', icon: '⭐', label: 'Performance Metric' },
+        { key: 'defaultLines',      icon: '🤖', label: 'NPC Lines' },
     ];
 
-    return buttons.map(({ key, icon }) => {
+    return buttons.map(({ key, icon, label }) => {
         const isActive = state.key === key;
         const arrow = isActive ? (state.dir === 'desc' ? ' ↓' : ' ↑') : '';
         const bg = isActive ? '#5a6a8a' : '#3a3a4e';
         return `<button
             onclick="event.stopPropagation(); setSortAndRender(${guild}, '${key}')"
             style="background:${bg}; border:none; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
-            title="Sort by ${key}">${icon}${arrow}</button>`
+            title="Sort by ${label}">${icon}${arrow}</button>`
     }).join('') + `<button
         onclick="event.stopPropagation(); openRankingOverlay(${guild})"
         style="background:#3a3a4e; border:1px solid #555; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer; margin-left:4px;"
@@ -543,11 +524,11 @@ function buildRankingHTML(guild) {
     const guildName    = document.getElementById(`guild${guild}Name`).textContent;
 
     const statMeta = {
-        tokensRemaining:   { icon: '🪙', label: 'Tokens Remaining' },
-        scoreAtt:          { icon: '⚔️', label: 'Attack Score'     },
-        scoreDef:          { icon: '🛡️', label: 'Defense Score'    },
-        performanceMetric: { icon: '⭐', label: 'Performance'      },
-        defaultLines:      { icon: '🤖', label: 'NPC Lines'        },
+        tokensRemaining:   { icon: '🪙', label: 'Tokens Remaining'      },
+        scoreAtt:          { icon: '⚔️', label: 'Attack Score'          },
+        avgDefScore:       { icon: '🛡️', label: 'Token Avg Def. Score'  },
+        performanceMetric: { icon: '⭐', label: 'Performance'           },
+        defaultLines:      { icon: '🤖', label: 'NPC Lines'             },
     };
 
     const { icon, label } = statMeta[key] ?? { icon: '?', label: key };

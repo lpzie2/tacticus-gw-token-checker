@@ -120,34 +120,3 @@ document.getElementById('closeRanking').addEventListener('click', function() {
 document.getElementById('rankingOverlay').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('active');
 });
-
-// set up drop zones
-document.addEventListener('DOMContentLoaded', function() {
-    const dropZones = document.querySelectorAll('.guild-column');
-    
-    dropZones.forEach(zone => {
-        zone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            this.style.background = '#3a4a5e';
-        });
-
-        zone.addEventListener('dragleave', function(e) {
-            this.style.background = '#2a2a3e';
-        });
-
-        zone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.style.background = '#2a2a3e';
-            
-            const userId = e.dataTransfer.getData('text/plain');
-            const guildIndex = parseInt(this.dataset.guild);
-            
-            if (playerData[userId]) {
-                playerData[userId].guild = guildIndex;
-                renderPlayers();
-                renderStats();
-            }
-        });
-    });
-});

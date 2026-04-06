@@ -34,7 +34,7 @@ const MAX_PLAYER_SCORE = 1601;
 
 const INITIAL_TOKENS = 10;
 
-const GW_DURATION_HOURS = 35;
+const GW_DURATION_HOURS = 35.5;
 
 const FACTION_PREFIXES = {
     'ultra' : 'Ultramarines',
@@ -633,4 +633,65 @@ const TEAM_META_DEFINITIONS = {
     //    requiredUnits: ["spaceBlackmane"],
     //    requiredMOW: null
     //}
+};
+
+
+const MAP_ALTNAMES = {
+    
+};
+
+// guild war seasons by time range. allows automatic tile to map detection.
+const WAR_SCHEDULE = [
+    { startDate: 1774431000000, endDate: 1774818000000, season: 22, battle: 1 },
+    { startDate: 1774819800000, endDate: 1775034000000, season: 22, battle: 2 },
+    { startDate: 1775035800000, endDate: 1775250000000, season: 22, battle: 3 },
+    { startDate: 1775251800000, endDate: 1775466000000, season: 22, battle: 4 },
+    { startDate: 1775467800000, endDate: 1775682000000, season: 22, battle: 5 },
+    { startDate: 1775683800000, endDate: 1775898000000, season: 22, battle: 6 },
+    { startDate: 1777455000000, endDate: 1777842000000, season: 23, battle: 1 },
+    { startDate: 1777843800000, endDate: 1778058000000, season: 23, battle: 2 },
+    { startDate: 1778059800000, endDate: 1778274000000, season: 23, battle: 3 },
+    { startDate: 1778275800000, endDate: 1778490000000, season: 23, battle: 4 },
+    { startDate: 1778491800000, endDate: 1778706000000, season: 23, battle: 5 },
+    { startDate: 1778707800000, endDate: 1778922000000, season: 23, battle: 6 },
+];
+
+
+// guild war tile-to-map mapping.
+// get from https://lpzie2.github.io/tacticus-gw-tile-mapping/
+const SEASON_MAPS = {
+    '22.4': {
+        'Trenches1':          'LHE_Desert_05',
+        'Trenches2':          'C1_15',
+        'Trenches3':          'C1_23',
+        'HQ':                 'EC1_09',
+        'ArtilleryPosition1': 'PVP_desert_10',
+        'ArtilleryPosition2': 'LHE_Desert_02',
+        'AntiAirBattery1':    'LHE_Desert_06',
+        'AntiAirBattery2':    'EMC1_06',
+        'Armoury':            'LHE_Desert_04',
+        'Bunker1':            'MC1_31',
+        'Bunker2':            'MC1_11',
+        'SupplyDepot':        'CE2_06',
+        'MedicaeStation1':    'C1_70',
+        'MedicaeStation2':    'LHE_Desert_03',
+        'ComsStation':        'C1_37'
+    },
+    '22.5': {
+        "Trenches1": "EMC1_06",
+        "Trenches2": "LHE_Desert_04",
+        "Trenches3": "LHE_Desert_05",
+        "HQ": "MC1_11",
+        "ArtilleryPosition1": "C1_37",
+        "ArtilleryPosition2": "EC1_09",
+        "AntiAirBattery1": "C1_23",
+        "AntiAirBattery2": "CE2_06",
+        "Armoury": "LHE_Desert_02",
+        "Bunker1": "C1_70",
+        "Bunker2": "PVP_desert_10",
+        "SupplyDepot": "MC1_31",
+        "MedicaeStation1": "C1_15",
+        "MedicaeStation2": "LHE_Desert_03",
+        "ComsStation": "LHE_Desert_06"
+    }
 };
