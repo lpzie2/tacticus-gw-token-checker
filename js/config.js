@@ -606,26 +606,26 @@ const TEAM_META_DEFINITIONS = {
 
     // 2 man teams (you risk grouping up too many different teams at this point and beyond)
 
-    "Basic Death Guard": {
-        metaTeam: "Death Guard",
-        requiredUnits: ["deathBlightlord", "deathRotbone"],
-        requiredMOW: null
-    },
-    "Basic Double Howl": {
-        metaTeam: "Howl",
-        requiredUnits: ["spaceBlackmane", "tauAunShi"],
-        requiredMOW: null
-    },
-    "Single Howl": {
-        metaTeam: "Howl",
-        requiredUnits: ["spaceBlackmane", "worldKharn"],
-        requiredMOW: null
-    },
-    "Basic Orks": {
-        metaTeam: "Waarg!",
-        requiredUnits: ["orksWarboss", "orksRuntherd"],
-        requiredMOW: null
-    }
+    //"Basic Death Guard": {
+    //    metaTeam: "Death Guard",
+    //    requiredUnits: ["deathBlightlord", "deathRotbone"],
+    //    requiredMOW: null
+    //},
+    //"Basic Double Howl": {
+    //    metaTeam: "Howl",
+    //    requiredUnits: ["spaceBlackmane", "tauAunShi"],
+    //    requiredMOW: null
+    //},
+    //"Single Howl": {
+    //    metaTeam: "Howl",
+    //    requiredUnits: ["spaceBlackmane", "worldKharn"],
+    //    requiredMOW: null
+    //},
+    //"Basic Orks": {
+    //    metaTeam: "Waarg!",
+    //    requiredUnits: ["orksWarboss", "orksRuntherd"],
+    //    requiredMOW: null
+    //}
 
     // 1 man teams (very risky to put units here, will mask a lot of different teams.)
     //"Sad Single Howl": {

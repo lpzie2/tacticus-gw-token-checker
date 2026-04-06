@@ -253,7 +253,7 @@ function processGameData() {
                 attKey = `${medCount}medWin${attSurvivorsCount}`;
             }
 
-            console.log(`key: |${attKey}| found: ${attKey in PERFORMANCE_METRIC} value: ${PERFORMANCE_METRIC[attKey]}`);
+            //console.log(`key: |${attKey}| found: ${attKey in PERFORMANCE_METRIC} value: ${PERFORMANCE_METRIC[attKey]}`);
             const basePerformanceValue = PERFORMANCE_METRIC[attKey] ?? 100.0; // makes errors obvious.
 
             // final performance should also take into account the tough

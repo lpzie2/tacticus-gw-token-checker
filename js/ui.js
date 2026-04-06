@@ -182,20 +182,20 @@ function createBattleLineHTML(battle, perspective) {
         if (battle.battleScore >= 1100) {
             resultLabel = `<span style="color:${theme.win}; font-weight:bold;">✅ WON (${battle.battleScore})</span>`;
         } else {
-            const anyAttSurvived = attDied.some((d, i) => attUnits[i] && d === false);
-            resultLabel = anyAttSurvived
-                ? `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEAN UP (${battle.battleScore})</span>`
-                : `<span style="color:${theme.loss}; font-weight:bold;">🚫 LOST (${battle.battleScore})</span>`;
+            const anyDefSurvived = defHPEnd.some((hp, i) => defUnits[i] && hp > 0);
+            resultLabel = anyDefSurvived
+                ? `<span style="color:${theme.loss}; font-weight:bold;">🚫 LOST (${battle.battleScore})</span>`
+                : `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEAN UP (${battle.battleScore})</span>`;
         }
     } else {
         // defender perspective
         if (battle.battleScore >= 1100) {
             resultLabel = `<span style="color:${theme.loss}; font-weight:bold;">💀 LOST (${battle.battleScore})</span>`;
         } else {
-            const anyAttSurvived = attDied.some((d, i) => attUnits[i] && d === false);
-            resultLabel = anyAttSurvived
-                ? `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEANED UP (${battle.battleScore})</span>`
-                : `<span style="color:${theme.win}; font-weight:bold;">🛡️ HELD (${battle.battleScore})</span>`;
+            const anyDefSurvived = defHPEnd.some((hp, i) => defUnits[i] && hp > 0);
+            resultLabel = anyDefSurvived
+                ? `<span style="color:${theme.win}; font-weight:bold;">🛡️ HELD (${battle.battleScore})</span>`
+                : `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEANED UP (${battle.battleScore})</span>`;
         }
     }
 
