@@ -26,6 +26,7 @@ function renderPlayers() {
     // sort method and sorting
     function sortPlayers(players, guild) {
         const { key, dir } = guildSortState[guild] || { key: 'tokensRemaining', dir: 'desc' };
+        if (key === 'combinedRank') computeCombinedRanks(players);
         const mul = dir === 'desc' ? -1 : 1;
         players.sort((a, b) => mul * (a.stats[key] - b.stats[key]));
     }
@@ -387,6 +388,7 @@ function sortButtonsHTML(guild) {
         { key: 'scoreAtt',          icon: '⚔️', label: 'Attack Score' },
         { key: 'avgDefScore',       icon: '🛡️', label: 'Token Avg Def Score' },
         { key: 'performanceMetric', icon: '⭐', label: 'Performance Metric' },
+        { key: 'combinedRank',      icon: '🔷', label: 'Rank of Ranks (⭐, ⚔️)' },
         { key: 'defaultLines',      icon: '🤖', label: 'NPC Lines' },
     ];
 
@@ -411,6 +413,7 @@ function buildLegendHTML() {
         { icon: '⚔️', label: 'Player attack score total' },
         { icon: '🛡️', label: 'Player defense score per token eaten' },
         { icon: '⭐', label: 'Performance metric (see below)' },
+        { icon: '🔷', label: 'Rank of Combined Ranks (see below)' },
         { icon: '🤖', label: 'Fights against NPC lines' },
         { icon: '💊💊', label: '2 medicae buffs active' },
         { icon: '💊💥', label: '1 medicae buff active' },
@@ -448,6 +451,11 @@ function buildLegendHTML() {
         { label: 'Tough team', keys: ['2medToughTeam', '1medToughTeam', '0medToughTeam'] },
     ];
 
+    const combinedRankRows = [
+        { label: '⭐ Performance weight',   key: 'weightsPerformance' },
+        { label: '⚔️ Attack score weight',  key: 'weightsScore' },
+    ];
+
     const iconRowsHTML = iconRows.map(({ icon, label }) => `
         <tr>
             <td style="padding:4px 12px 4px 0; font-size:16px;">${icon}</td>
@@ -470,6 +478,13 @@ function buildLegendHTML() {
             <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[0]] ?? '—'}</td>
             <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[1]] ?? '—'}</td>
             <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[2]] ?? '—'}</td>
+        </tr>
+    `).join('');
+
+    const combinedRankRowsHTML = combinedRankRows.map(({ label, key }) => `
+        <tr>
+            <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">${PERFORMANCE_WEIGHTS[key] ?? '—'}</td>
         </tr>
     `).join('');
 
@@ -506,6 +521,21 @@ function buildLegendHTML() {
             </thead>
             <tbody>${addonRowsHTML}</tbody>
         </table>
+        <br><br>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">🔷 Combined Rank</h3>
+        <p style="font-size:11px; color:#888; margin-bottom:10px; line-height:1.6; max-width:400px;">
+            Each player is ranked 1–N within their guild separately for ⭐ Performance and ⚔️ Attack Score. 
+            Those ranks are inverted (so #1 becomes the highest value) and then combined using the weights below.
+        </p>
+        <table style="border-collapse:collapse; width:100%;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding:4px 12px 8px 0; font-size:12px; color:#aaa;">Field</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">Weight</th>
+                </tr>
+            </thead>
+            <tbody>${combinedRankRowsHTML}</tbody>
+        </table>
     `;
 }
 
@@ -528,6 +558,7 @@ function buildRankingHTML(guild) {
         scoreAtt:          { icon: '⚔️', label: 'Attack Score'          },
         avgDefScore:       { icon: '🛡️', label: 'Token Avg Def. Score'  },
         performanceMetric: { icon: '⭐', label: 'Performance'           },
+        combinedRank:      { icon: '🔷', label: 'Combined Rank'         },
         defaultLines:      { icon: '🤖', label: 'NPC Lines'             },
     };
 
@@ -592,4 +623,30 @@ function buildRankingHTML(guild) {
         `,
         plainText
     };
+}
+
+// seems ok here for now.
+function computeCombinedRanks(players) {
+    const n = players.length;
+
+    const assignRanks = (arr, key) => {
+        const sorted = [...arr].sort((a, b) => b.stats[key] - a.stats[key]);
+        sorted.forEach((p, i) => p._rankCache[key] = i + 1);
+    };
+
+    players.forEach(p => p._rankCache = {});
+    assignRanks(players, 'performanceMetric');
+    assignRanks(players, 'scoreAtt');
+
+    players.forEach(p => {
+        // invert: rank 1 becomes n, rank n becomes 1
+        const perfInverted  = (n + 1) - p._rankCache['performanceMetric'];
+        const scoreInverted = (n + 1) - p._rankCache['scoreAtt'];
+
+        // apply weights
+        p.stats.combinedRank = (perfInverted  * PERFORMANCE_WEIGHTS['weightsPerformance'])
+                             + (scoreInverted * PERFORMANCE_WEIGHTS['weightsScore']);
+
+        delete p._rankCache;
+    });
 }

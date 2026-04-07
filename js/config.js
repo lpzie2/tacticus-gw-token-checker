@@ -504,6 +504,16 @@ const TEAM_META_DEFINITIONS = {
         requiredUnits: ["deathTyphus", "thousTerminator", "thousAhriman", "adeptRetributor", "worldTerminator"],
         requiredMOW: null
     },
+    "Mechanical Advantage": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["tauCrisis", "ultraCalgar", "eldarMauganRa", "tauFarsight", "eldarRanger"],
+        requiredMOW: null
+    },
+    "Mechanical Wingspan": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["tauCrisis", "ultraCalgar", "eldarMauganRa", "tauFarsight", "eldarAutarch"],
+        requiredMOW: null
+    },
 
 
     // 4 man teams
@@ -637,7 +647,14 @@ const TEAM_META_DEFINITIONS = {
 
 
 const MAP_ALTNAMES = {
-    
+    'EC1_09':           'East Ridge',
+    'C1_23':            'Sniper\'s Nest',
+    'C1_37':            '3 Bridges',
+    'C1_70':            '5 Towers',
+    'MC1_11':           'Split',
+    'MC1_31':           'Bridge',
+    'LHE_Desert_02':    'Gulch',
+    'LHE_Desert_03':    'Oasis'
 };
 
 // guild war seasons by time range. allows automatic tile to map detection.
