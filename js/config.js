@@ -1,3 +1,5 @@
+const DEV_MODE = false; // hides a few tools that i used to place icons on maps.
+
 const ZONE_POINTS = {
     'HQ':                   40000,
     'SupplyDepot':          30000,
@@ -647,17 +649,240 @@ const TEAM_META_DEFINITIONS = {
 
 
 const MAP_ALTNAMES = {
-    'EC1_09':           'East Ridge',
+    'C1_15':            'Grasslands',
     'C1_23':            'Sniper\'s Nest',
-    'C1_37':            '3 Bridges',
-    'C1_70':            '5 Towers',
+    'C1_37':            'Three Bridges',
+    'C1_70':            'Five Pillars',
+    'CE2_06':           'Deathleaper\'s Cove',
+    'EC1_09':           'Right Ridge',
+    'EMC1_06':          'Left Ridge',
+    'LHE_Desert_02':    'Gulch',
+    'LHE_Desert_03':    'Oasis',
+    'LHE_Desert_04':    'Canyon',
+    'LHE_Desert_05':    'Peak',
+    'LHE_Desert_06':    'RV Point',
     'MC1_11':           'Split',
     'MC1_31':           'Bridge',
-    'LHE_Desert_02':    'Gulch',
-    'LHE_Desert_03':    'Oasis'
+    'PVP_desert_10':    'AFUITM',
+};
+
+// where to place the unit icons
+const MAP_SPAWN_POINTS = {
+    'C1_15': {
+        def: [  { x: 35.0, y: 24.5 }, // unit 01
+                { x: 42.5, y: 29.0 }, // unit 02
+                { x: 50.0, y: 24.5 }, // unit 03
+                { x: 57.5, y: 29.0 }, // unit 04
+                { x: 65.0, y: 24.5 }  // unit 05
+        ],
+        att: [  { x: 50.1, y: 85.9 },
+                { x: 57.1, y: 82.5 },
+                { x: 64.8, y: 86.3 },
+                { x: 72.1, y: 81.8 },
+                { x: 72.1, y: 74.1 },
+        ]
+    },
+    'C1_23': {
+        def: [  { x: 57.6, y: 27.7 },
+                { x: 58.3, y: 21.3 },
+                { x: 64.8, y: 24.8 },
+                { x: 73.0, y: 28.7 },
+                { x: 73.0, y: 20.2 }
+        ],
+        att: [  { x: 35.3, y: 77.9 },
+                { x: 35.5, y: 85.2 },
+                { x: 42.3, y: 83.4 },
+                { x: 49.9, y: 78.9 },
+                { x: 49.4, y: 87.1 }
+        ]
+    },
+    'C1_37': {
+        def: [  { x: 27.6, y: 34.8 },
+                { x: 34.8, y: 30.9 },
+                { x: 49.9, y: 30.4 },
+                { x: 57.4, y: 34.5 },
+                { x: 64.4, y: 30.7 }
+        ],
+        att: [  { x: 27.1, y: 82.1 },
+                { x: 34.6, y: 86.1 },
+                { x: 42.6, y: 82.0 },
+                { x: 65.3, y: 85.7 },
+                { x: 72.4, y: 81.4 }
+        ]
+    },
+    'C1_70': {
+        def: [  { x: 27.4, y: 26.6 },
+                { x: 35.1, y: 23.4 },
+                { x: 50.3, y: 29.8 },
+                { x: 64.9, y: 23.8 },
+                { x: 72.4, y: 19.1 }
+        ],
+        att: [  { x: 27.4, y: 73.4 },
+                { x: 34.9, y: 77.7 },
+                { x: 50.3, y: 85.0 },
+                { x: 65.3, y: 79.3 },
+                { x: 71.4, y: 82.9 }
+        ]
+    },
+    'CE2_06': {
+        def: [  { x: 30.3, y: 23.0 },
+                { x: 36.9, y: 19.5 },
+                { x: 51.0, y: 20.7 },
+                { x: 64.4, y: 18.9 },
+                { x: 70.3, y: 22.7 }
+        ],
+        att: [  { x: 30.3, y: 72.5 },
+                { x: 36.9, y: 77.5 },
+                { x: 44.0, y: 81.6 },
+                { x: 58.1, y: 81.4 },
+                { x: 63.9, y: 77.0 }
+        ]
+    },
+    'EC1_09': {
+        def: [  { x: 35.3, y: 25.7 },
+                { x: 42.4, y: 29.1 },
+                { x: 49.9, y: 24.6 },
+                { x: 57.4, y: 28.2 },
+                { x: 65.3, y: 32.5 }
+        ],
+        att: [  { x: 35.3, y: 86.4 },
+                { x: 42.4, y: 82.3 },
+                { x: 51.5, y: 87.7 },
+                { x: 58.1, y: 82.7 },
+                { x: 65.1, y: 78.4 }
+        ]
+    },
+    
+    'EMC1_06': {
+        def: [  { x: 35.8, y: 22.5 },
+                { x: 43.1, y: 18.2 },
+                { x: 57.6, y: 19.3 },
+                { x: 65.3, y: 22.5 },
+                { x: 49.8, y: 22.9 }
+        ],
+        att: [  { x: 27.4, y: 73.2 },
+                { x: 34.8, y: 69.1 },
+                { x: 50.1, y: 77.3 },
+                { x: 57.4, y: 81.4 },
+                { x: 72.6, y: 81.1 }
+        ]
+    },
+    'LHE_Desert_02': {
+        def: [  { x: 34.9, y: 25.2 },
+                { x: 42.4, y: 20.0 },
+                { x: 50.3, y: 23.2 },
+                { x: 57.4, y: 19.8 },
+                { x: 64.6, y: 24.8 }
+        ],
+        att: [  { x: 35.1, y: 78.0 },
+                { x: 42.3, y: 73.6 },
+                { x: 49.2, y: 79.3 },
+                { x: 57.1, y: 74.1 },
+                { x: 65.1, y: 77.3 }
+        ]
+    },
+    'LHE_Desert_03': {
+        def: [  { x: 65.1, y: 30.7 },
+                { x: 72.6, y: 25.9 },
+                { x: 65.1, y: 22.9 },
+                { x: 34.8, y: 33.2 },
+                { x: 28.3, y: 36.8 }
+        ],
+        att: [  { x: 36.0, y: 78.4 },
+                { x: 41.4, y: 83.0 },
+                { x: 35.8, y: 87.3 },
+                { x: 57.6, y: 83.4 },
+                { x: 66.4, y: 87.5 }
+        ]
+    },
+    'LHE_Desert_04': {
+        def: [  { x: 57.4, y: 26.8 },
+                { x: 49.8, y: 30.7 },
+                { x: 49.9, y: 23.4 },
+                { x: 43.7, y: 26.6 },
+                { x: 64.9, y: 39.6 }
+        ],
+        att: [  { x: 49.8, y: 78.9 },
+                { x: 43.0, y: 83.4 },
+                { x: 37.4, y: 86.6 },
+                { x: 57.1, y: 81.8 },
+                { x: 63.1, y: 85.9 }
+        ]
+    },
+    'LHE_Desert_05': {
+        def: [  { x: 72.8, y: 37.0 },
+                { x: 49.9, y: 25.0 },
+                { x: 64.2, y: 25.9 },
+                { x: 57.1, y: 28.7 },
+                { x: 72.6, y: 28.2 }
+        ],
+        att: [  { x: 27.3, y: 73.9 },
+                { x: 34.4, y: 78.4 },
+                { x: 42.3, y: 73.4 },
+                { x: 42.1, y: 82.3 },
+                { x: 65.3, y: 78.8 }
+        ]
+    },
+    'LHE_Desert_06': {
+        def: [  { x: 72.6, y: 27.0 },
+                { x: 64.9, y: 23.8 },
+                { x: 57.4, y: 27.5 },
+                { x: 42.3, y: 26.3 },
+                { x: 49.9, y: 22.7 }
+        ],
+        att: [  { x: 42.6, y: 82.5 },
+                { x: 49.8, y: 78.2 },
+                { x: 57.4, y: 82.7 },
+                { x: 65.1, y: 78.9 },
+                { x: 72.8, y: 82.1 }
+        ]
+    },
+    'MC1_11': {
+        def: [  { x: 72.1, y: 21.1 },
+                { x: 72.3, y: 29.5 },
+                { x: 72.1, y: 81.8 },
+                { x: 72.6, y: 73.2 },
+                { x: 72.1, y: 43.0 }
+        ],
+        att: [  { x: 28.5, y: 19.3 },
+                { x: 27.3, y: 26.8 },
+                { x: 27.3, y: 42.3 },
+                { x: 27.1, y: 74.5 },
+                { x: 28.5, y: 83.6 }
+        ]
+    },
+    'MC1_31': {
+        def: [  { x: 42.3, y: 27.3 },
+                { x: 49.8, y: 23.2 },
+                { x: 64.9, y: 29.8 },
+                { x: 64.9, y: 23.0 },
+                { x: 57.3, y: 19.1 }
+        ],
+        att: [  { x: 35.3, y: 70.5 },
+                { x: 43.0, y: 73.9 },
+                { x: 50.5, y: 77.9 },
+                { x: 57.4, y: 73.6 },
+                { x: 64.9, y: 76.6 }
+        ]
+    },
+    'PVP_desert_10': {
+        def: [  { x: 30.3, y: 16.6 },
+                { x: 43.1, y: 17.7 },
+                { x: 49.9, y: 21.6 },
+                { x: 63.5, y: 22.3 },
+                { x: 69.8, y: 18.6 }
+        ],
+        att: [  { x: 29.2, y: 68.2 },
+                { x: 36.2, y: 64.1 },
+                { x: 49.2, y: 77.3 },
+                { x: 63.9, y: 85.4 },
+                { x: 69.9, y: 81.3 }
+        ]
+    },
 };
 
 // guild war seasons by time range. allows automatic tile to map detection.
+// get from https://lpzie2.github.io/tacticus-gw-tile-mapping/
 const WAR_SCHEDULE = [
     { startDate: 1774431000000, endDate: 1774818000000, season: 22, battle: 1 },
     { startDate: 1774819800000, endDate: 1775034000000, season: 22, battle: 2 },
@@ -678,37 +903,54 @@ const WAR_SCHEDULE = [
 // get from https://lpzie2.github.io/tacticus-gw-tile-mapping/
 const SEASON_MAPS = {
     '22.4': {
-        'Trenches1':          'LHE_Desert_05',
-        'Trenches2':          'C1_15',
-        'Trenches3':          'C1_23',
-        'HQ':                 'EC1_09',
-        'ArtilleryPosition1': 'PVP_desert_10',
-        'ArtilleryPosition2': 'LHE_Desert_02',
-        'AntiAirBattery1':    'LHE_Desert_06',
-        'AntiAirBattery2':    'EMC1_06',
-        'Armoury':            'LHE_Desert_04',
-        'Bunker1':            'MC1_31',
-        'Bunker2':            'MC1_11',
-        'SupplyDepot':        'CE2_06',
-        'MedicaeStation1':    'C1_70',
-        'MedicaeStation2':    'LHE_Desert_03',
-        'ComsStation':        'C1_37'
+        'Trenches1':            'LHE_Desert_05',
+        'Trenches2':            'C1_15',
+        'Trenches3':            'C1_23',
+        'HQ':                   'EC1_09',
+        'ArtilleryPosition1':   'PVP_desert_10',
+        'ArtilleryPosition2':   'LHE_Desert_02',
+        'AntiAirBattery1':      'LHE_Desert_06',
+        'AntiAirBattery2':      'EMC1_06',
+        'Armoury':              'LHE_Desert_04',
+        'Bunker1':              'MC1_31',
+        'Bunker2':              'MC1_11',
+        'SupplyDepot':          'CE2_06',
+        'MedicaeStation1':      'C1_70',
+        'MedicaeStation2':      'LHE_Desert_03',
+        'ComsStation':          'C1_37'
     },
     '22.5': {
-        "Trenches1": "EMC1_06",
-        "Trenches2": "LHE_Desert_04",
-        "Trenches3": "LHE_Desert_05",
-        "HQ": "MC1_11",
-        "ArtilleryPosition1": "C1_37",
-        "ArtilleryPosition2": "EC1_09",
-        "AntiAirBattery1": "C1_23",
-        "AntiAirBattery2": "CE2_06",
-        "Armoury": "LHE_Desert_02",
-        "Bunker1": "C1_70",
-        "Bunker2": "PVP_desert_10",
-        "SupplyDepot": "MC1_31",
-        "MedicaeStation1": "C1_15",
-        "MedicaeStation2": "LHE_Desert_03",
-        "ComsStation": "LHE_Desert_06"
+        "Trenches1":            "EMC1_06",
+        "Trenches2":            "LHE_Desert_04",
+        "Trenches3":            "LHE_Desert_05",
+        "HQ":                   "MC1_11",
+        "ArtilleryPosition1":   "C1_37",
+        "ArtilleryPosition2":   "EC1_09",
+        "AntiAirBattery1":      "C1_23",
+        "AntiAirBattery2":      "CE2_06",
+        "Armoury":              "LHE_Desert_02",
+        "Bunker1":              "C1_70",
+        "Bunker2":              "PVP_desert_10",
+        "SupplyDepot":          "MC1_31",
+        "MedicaeStation1":      "C1_15",
+        "MedicaeStation2":      "LHE_Desert_03",
+        "ComsStation":          "LHE_Desert_06"
+    },
+    '22.6': {
+        "Trenches1":            "C1_70",
+        "Trenches2":            "EC1_09",
+        "Trenches3":            "MC1_11",
+        "HQ":                   "LHE_Desert_04",
+        "ArtilleryPosition1":   "C1_23",
+        "ArtilleryPosition2":   "EMC1_06",
+        "AntiAirBattery1":      "LHE_Desert_05",
+        "AntiAirBattery2":      "C1_37",
+        "Armoury":              "C1_15",
+        "Bunker1":              "CE2_06",
+        "Bunker2":              "MC1_31",
+        "SupplyDepot":          "LHE_Desert_06",
+        "MedicaeStation1":      "PVP_desert_10",
+        "MedicaeStation2":      "LHE_Desert_02",
+        "ComsStation":          "LHE_Desert_03"
     }
 };

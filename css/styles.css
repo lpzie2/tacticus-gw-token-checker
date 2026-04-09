@@ -59,7 +59,7 @@ h1 {
 
 .file-input-label:hover {
     background: #3a5a7e;
-    transform: scale(1.1);
+    transform: scale(1.02);
 }
 
 .file-name {
@@ -84,7 +84,7 @@ h1 {
 
 .help-button:hover {
     background: #3a5a7e;
-    transform: scale(1.1);
+    transform: scale(1.02);
 }
 
 .help-overlay {
@@ -218,7 +218,7 @@ h1 {
 }
 
 .player-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(0px);
     box-shadow: 0 3px 10px rgba(74, 158, 255, 0.3);
     border-color: #4a9eff;
 }

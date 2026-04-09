@@ -1,8 +1,10 @@
 // globals
-let gameData = null;
-let playerData = {};
-let battleData = {};
-let activityLogs = null;
+let gameData            = null;
+let playerData          = {};
+let battleData          = {};
+let activityLogs        = null;
+let currentSeasonKey    = null;
+let calibrateMode       = false;
 
 // to do sorting.
 const guildSortState = {
@@ -119,4 +121,23 @@ document.getElementById('closeRanking').addEventListener('click', function() {
 
 document.getElementById('rankingOverlay').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('active');
+});
+
+// map overlay listeners
+document.getElementById('closeMap').addEventListener('click', function() {
+    document.getElementById('mapOverlay').classList.remove('active');
+});
+
+document.getElementById('mapOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
+// calibration fn to get icon coords.
+document.getElementById('mapCalibrateBtn').addEventListener('click', function() {
+    calibrateMode = !calibrateMode;
+    this.style.background   = calibrateMode ? '#5a8a5a' : '#3a3a4e';
+    this.textContent        = calibrateMode ? '📍 Calibrating...' : '📍 Calibrate';
+    document.getElementById('mapCalibrateOutput').textContent = '';
+    document.getElementById('mapImageContainer').style.cursor = calibrateMode ? 'crosshair' : 'default';
+    document.getElementById('mapSpawnIcons').style.pointerEvents = calibrateMode ? 'none' : 'auto';
 });

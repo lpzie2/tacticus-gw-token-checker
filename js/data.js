@@ -7,6 +7,10 @@ function processGameData() {
 
     activityLogs        = eventData.activityLogs;
 
+    const midTimestamp  = getMiddleTimestamp(activityLogs);
+    currentSeasonKey    = midTimestamp ? detectSeasonKeyFromTimestamp(midTimestamp) : null;
+    console.log('Detected season key:', currentSeasonKey);
+
     // guild names
     document.getElementById('guild1Name').textContent = tmpGuildData[0]?.name ?? 'Guild 1';
     document.getElementById('guild2Name').textContent = tmpGuildData[1]?.name ?? 'Guild 2';
@@ -134,7 +138,7 @@ function processGameData() {
                     addDefenderTeam(defenderId, log.defender, log.id);
                 }
 
-                addFullFightDetails(log.id, attackerId, null, defenderId, log.defender, buffs, playerScore, abandoned, 0.0)
+                addFullFightDetails(log.id, attackerId, null, defenderId, log.defender, buffs, playerScore, abandoned, 0.0, log.zone)
 
                 return;
             }
@@ -177,7 +181,7 @@ function processGameData() {
                     addDefenderTeam(defenderId, log.defender, log.id);
                 }
 
-                addFullFightDetails(log.id, attackerId, log.attacker, defenderId, log.defender, buffs, playerScore, abandoned, 0.0)
+                addFullFightDetails(log.id, attackerId, log.attacker, defenderId, log.defender, buffs, playerScore, abandoned, 0.0, log.zone)
 
                 return;
             }
@@ -290,7 +294,7 @@ function processGameData() {
             playerData[attackerId].performancePerBattle.push(finalPerformanceValue);
             playerData[attackerId].performanceMetric += finalPerformanceValue;
 
-            addFullFightDetails(log.id, attackerId, log.attacker, defenderId, log.defender, buffs, playerScore, abandoned, finalPerformanceValue)
+            addFullFightDetails(log.id, attackerId, log.attacker, defenderId, log.defender, buffs, playerScore, abandoned, finalPerformanceValue, log.zone)
         }
     });
 
@@ -319,7 +323,7 @@ function getDefPerformancemModifier() {
     return 0.0;
 }
 
-function addFullFightDetails(battleId, attackerId, attacker, defenderId, defender, buffs, score=0, abandoned=false, performance=0.0) {
+function addFullFightDetails(battleId, attackerId, attacker, defenderId, defender, buffs, score=0, abandoned=false, performance=0.0, zone=null) {
     // need the performance, the att units, the attack max and remaining hp, 
     //  the unit progression, the rank progression, who died and started dead,
     //  and most of that for defense too.
@@ -537,7 +541,6 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
         return unit.remainingHPAfter ?? 0;
     });
 
-
     
     attPlayer.battleDetailsAsAttacker.push({
         battleNumber:   attPlayer.battleDetailsAsAttacker.length + 1,
@@ -574,7 +577,8 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
         battleScore:    score,
         abandoned:      abandoned,
         performance:    performance,
-        battleId:       battleId
+        battleId:       battleId,
+        battleTile:     zone?.type ?? null
     });
 
     if (defPlayer !== null) {
@@ -613,7 +617,8 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
             battleScore:    score,
             abandoned:      abandoned,
             performance:    performance,
-            battleId:       battleId
+            battleId:       battleId,
+            battleTile:     zone?.type ?? null
         });
     };
 }
@@ -630,7 +635,7 @@ function addAttackerTeam(attackerId, attacker, battleId) {
     const machineOfWar = attacker.machineOfWar ? attacker.machineOfWar.unitId : 'none';
     
     // create signature
-    const signature = units.sort().join('|') + `|MOW:${machineOfWar}`;
+    const signature = [...units].sort().join('|') + `|MOW:${machineOfWar}`;
     
     // check if this is a duplicate
     if (player.offenseTeamSignatures.has(signature)) return;
@@ -661,7 +666,7 @@ function addDefenderTeam(defenderId, defender, battleId) {
     const machineOfWar = defender.machineOfWar ? defender.machineOfWar.unitId : 'none';
     
     // create signature
-    const signature = units.sort().join('|') + `|MOW:${machineOfWar}`;
+    const signature = [...units].sort().join('|') + `|MOW:${machineOfWar}`;
     
     // check if this is a duplicate
     if (player.defenseTeamSignatures.has(signature)) return;
@@ -860,7 +865,8 @@ function getGuildWarStartTime(activityLogs) {
     return earliestTime;
 }
 
-// calculate time remaining in guild war (30 hour duration)
+// calculate time remaining in guild war (35.5 hour duration)
+// TODO: can be done exactly with the new WAR_SCHEDULE global.
 function getGuildWarTimeStatus(startTime) {
     if (!startTime) return 'Unknown';
     
@@ -873,6 +879,20 @@ function getGuildWarTimeStatus(startTime) {
     } else {
         return 'Battle Finished';
     }
+}
+
+function getMiddleTimestamp(activityLogs) {
+    const timestamps = activityLogs
+        .map(log => log.createdOn)
+        .filter(t => t != null)
+        .sort((a, b) => a - b);
+
+    if (timestamps.length === 0) return null;
+
+    const first = timestamps[0];
+    const last  = timestamps[timestamps.length - 1];
+
+    return Math.round((first + last) / 2);
 }
 
 // convert unitId to image filename
@@ -960,4 +980,12 @@ function getMoWRarity(machineOfWar, rarityCapInfo) {
 
 function calculateStat(baseStat, character_progression, character_rank) {
     return Math.floor(baseStat * Math.pow(1.25205, character_progression) * (1 + 0.1 * character_rank));
+}
+
+function detectSeasonKeyFromTimestamp(timestamp) {
+    const match = WAR_SCHEDULE.find(w =>
+        timestamp >= w.startDate && timestamp <= w.endDate
+    );
+    if (!match) return null;
+    return `${match.season}.${String(match.battle)}`;
 }

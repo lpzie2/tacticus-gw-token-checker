@@ -125,11 +125,14 @@ function createPlayerCard(userId, stats) {
                     <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'defender')"
                         title="Defense details"
                         style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🛡️</button>
+                    <button onclick="event.stopPropagation(); showMapOverlay('${stats.mapAssignedTo}')"
+                        title="Show map"
+                        style="background:#4a6a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🗺️</button>
                 </div>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <div style="font-size:12px; color:#888; font-style:italic;">${stats.mapAssignedTo || 'Unknown'}</div>
+                <div style="font-size:11px; color:#888; font-style:italic;">${getMapDisplayName(stats.mapAssignedTo)}</div>
             </div>
             
             <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
@@ -284,6 +287,9 @@ function createBattleLineHTML(battle, perspective) {
         <div style="background: #45455e; border-radius:8px; padding:10px; margin-bottom:10px; border-left:6px solid ${theme.border}; border-right:3px solid ${theme.border};">
             <div style="display:flex; align-items:center; margin-bottom:8px; font-size:12px;">
                 <div style="display:flex; align-items:center; gap:12px; width:70%;">
+                    ${battle.battleTile ? `<button
+                        onclick="showMapOverlay('${battle.battleTile}', '${battle.battleId}')"
+                        style="background:#3a4a3a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 5px; cursor:pointer;">🗺️</button>` : ''}
                     <span style="color:${theme.textMuted}; font-weight:bold;">${battleLabel}</span>
                     <span>${resultLabel}</span>
                     <span style="color:${theme.textMuted}; text-transform:capitalize; font-weight:bold;">${battle.rarity}</span>
@@ -648,5 +654,88 @@ function computeCombinedRanks(players) {
                              + (scoreInverted * PERFORMANCE_WEIGHTS['weightsScore']);
 
         delete p._rankCache;
+    });
+}
+
+function getMapName(tileType) {
+    if (!currentSeasonKey || !tileType) return null;
+    return SEASON_MAPS[currentSeasonKey]?.[tileType] ?? null;
+}
+
+function getMapDisplayName(tile) {
+    const mapId   = getMapName(tile);
+    const altName = mapId ? (MAP_ALTNAMES[mapId] ?? null) : null;
+    if (!tile)    return 'Unknown';
+    if (!mapId)   return tile;
+    if (!altName) return `${tile} (${mapId})`;
+    return `${tile} (${mapId} / ${altName})`;
+}
+
+// quick fn to get the map overlay working.
+function showMapOverlay(tile, battleId = null) {
+    const mapId = getMapName(tile);
+
+    if (!mapId) { alert('No map data available.'); return; }
+
+    const altName = MAP_ALTNAMES[mapId] ?? null;
+    const caption = getMapDisplayName(tile)
+
+    document.getElementById('mapCaption').textContent = caption;
+    document.getElementById('mapImage').src = `img/maps/${mapId.toLowerCase()}.png`;
+    document.getElementById('mapSpawnIcons').innerHTML = '';
+    document.getElementById('mapCalibrateBtn').style.display = DEV_MODE ? 'inline-block' : 'none';
+
+    if (battleId) {
+        document.getElementById('mapImage').onload = function() {
+            renderBattleSpawnIcons(battleId, mapId);
+        };
+    }
+
+    document.getElementById('mapOverlay').classList.add('active');
+}
+
+function renderBattleSpawnIcons(battleId, mapId) {
+    const container   = document.getElementById('mapSpawnIcons');
+    container.innerHTML = '';
+
+    const spawnPoints = MAP_SPAWN_POINTS?.[mapId];
+    if (!spawnPoints) return;
+
+    // find the battle in all players' details
+    let battle = null;
+    for (const player of Object.values(playerData)) {
+        battle = player.battleDetailsAsAttacker.find(b => b.battleId === battleId)
+              ?? player.battleDetailsAsDefender.find(b => b.battleId === battleId);
+        if (battle) break;
+    }
+    if (!battle) return;
+
+    const placeUnit = (unitId, spawn, borderColor) => {
+        if (!unitId || !spawn) return;
+        const icon = document.createElement('img');
+        icon.src = getUnitIcon(unitId);
+        icon.title = unitId;
+        icon.style.cssText = `
+            position: absolute;
+            left: ${spawn.x}%;
+            top: ${spawn.y}%;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid ${borderColor};
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        `;
+        container.appendChild(icon);
+    };
+
+    // place def units in order
+    (spawnPoints.def || []).forEach((spawn, i) => {
+        placeUnit(battle.defUnits[i], spawn, RARITY_COLORS[battle.defRarity[i]] ?? '#444');
+    });
+
+    (spawnPoints.att || []).forEach((spawn, i) => {
+        placeUnit(battle.attUnits[i], spawn, RARITY_COLORS[battle.defRarity[i]] ?? '#444');
     });
 }
