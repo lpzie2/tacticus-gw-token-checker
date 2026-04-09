@@ -289,7 +289,7 @@ function createBattleLineHTML(battle, perspective) {
                 <div style="display:flex; align-items:center; gap:12px; width:70%;">
                     ${battle.battleTile ? `<button
                         onclick="showMapOverlay('${battle.battleTile}', '${battle.battleId}')"
-                        style="background:#3a4a3a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 5px; cursor:pointer;">🗺️</button>` : ''}
+                        style="background:${theme.border}; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 5px; cursor:pointer;">🗺️</button>` : ''}
                     <span style="color:${theme.textMuted}; font-weight:bold;">${battleLabel}</span>
                     <span>${resultLabel}</span>
                     <span style="color:${theme.textMuted}; text-transform:capitalize; font-weight:bold;">${battle.rarity}</span>
@@ -677,13 +677,15 @@ function showMapOverlay(tile, battleId = null) {
 
     if (!mapId) { alert('No map data available.'); return; }
 
-    const altName = MAP_ALTNAMES[mapId] ?? null;
     const caption = getMapDisplayName(tile)
 
     document.getElementById('mapCaption').textContent = caption;
     document.getElementById('mapImage').src = `img/maps/${mapId.toLowerCase()}.png`;
     document.getElementById('mapSpawnIcons').innerHTML = '';
     document.getElementById('mapCalibrateBtn').style.display = DEV_MODE ? 'inline-block' : 'none';
+
+    document.getElementById('mapSpawnIcons').innerHTML = '';
+    document.getElementById('mapImage').onload = null;
 
     if (battleId) {
         document.getElementById('mapImage').onload = function() {
