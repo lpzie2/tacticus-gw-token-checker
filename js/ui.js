@@ -675,22 +675,42 @@ function getMapDisplayName(tile) {
 function showMapOverlay(tile, battleId = null) {
     const mapId = getMapName(tile);
 
-    if (!mapId) { alert('No map data available.'); return; }
+    if (!mapId) { 
+        alert('No map data available.'); 
+        return; 
+    }
 
-    const caption = getMapDisplayName(tile)
+    const caption = getMapDisplayName(tile);
+    const mapImage = document.getElementById('mapImage');
+    const calibrateBtn = document.getElementById('mapCalibrateBtn');
+    const calibrateOutput = document.getElementById('mapCalibrateOutput');
 
     document.getElementById('mapCaption').textContent = caption;
-    document.getElementById('mapImage').src = `img/maps/${mapId.toLowerCase()}.png`;
+    mapImage.src = `img/maps/${mapId.toLowerCase()}.png`;
     document.getElementById('mapSpawnIcons').innerHTML = '';
-    document.getElementById('mapCalibrateBtn').style.display = DEV_MODE ? 'inline-block' : 'none';
+    calibrateBtn.style.display = DEV_MODE ? 'inline-block' : 'none';
+    
+    if (calibrateOutput) {
+        calibrateOutput.textContent = '';
+    }
 
-    document.getElementById('mapSpawnIcons').innerHTML = '';
-    document.getElementById('mapImage').onload = null;
+    // set up calibration click handler
+    if (DEV_MODE) {
+        // remove any existing listener first
+        mapImage.removeEventListener('click', handleCalibrationClick);
+        mapImage.addEventListener('click', handleCalibrationClick);
+    } else {
+        mapImage.removeEventListener('click', handleCalibrationClick);
+    }
 
-    if (battleId) {
-        document.getElementById('mapImage').onload = function() {
-            renderBattleSpawnIcons(battleId, mapId);
-        };
+    // set up the onload handler for spawn icons
+    mapImage.onload = function() {
+        onMapImageLoad(battleId, mapId);
+    };
+
+    // if image is already loaded (cached), trigger onload manually
+    if (mapImage.complete) {
+        mapImage.onload();
     }
 
     document.getElementById('mapOverlay').classList.add('active');
@@ -740,4 +760,21 @@ function renderBattleSpawnIcons(battleId, mapId) {
     (spawnPoints.att || []).forEach((spawn, i) => {
         placeUnit(battle.attUnits[i], spawn, RARITY_COLORS[battle.defRarity[i]] ?? '#444');
     });
+}
+
+function handleCalibrationClick(e) {
+    if (!calibrateMode) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+    
+    document.getElementById('mapCalibrateOutput').textContent = `{ x: ${x}, y: ${y} }`;
+    console.log(`{ x: ${x}, y: ${y} },`);
+}
+
+function onMapImageLoad(battleId, mapId) {
+    if (battleId) {
+        renderBattleSpawnIcons(battleId, mapId);
+    }
 }

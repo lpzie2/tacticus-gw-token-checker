@@ -1,4 +1,4 @@
-const DEV_MODE = false; // hides a few tools that i used to place icons on maps.
+const DEV_MODE = false; // hides a tool that i used to get x,y coords for icons on maps.
 
 const ZONE_POINTS = {
     'HQ':                   40000,
@@ -669,17 +669,17 @@ const MAP_ALTNAMES = {
 // where to place the unit icons
 const MAP_SPAWN_POINTS = {
     'C1_15': {
-        def: [  { x: 35.0, y: 24.5 }, // unit 01
-                { x: 42.5, y: 29.0 }, // unit 02
-                { x: 50.0, y: 24.5 }, // unit 03
-                { x: 57.5, y: 29.0 }, // unit 04
-                { x: 65.0, y: 24.5 }  // unit 05
+        def: [  { x: 34.8, y: 24.6 }, // unit 01
+                { x: 42.3, y: 28.6 }, // unit 02
+                { x: 50.1, y: 24.6 }, // unit 03
+                { x: 57.4, y: 28.6 }, // unit 04
+                { x: 65.1, y: 24.6 }  // unit 05
         ],
-        att: [  { x: 50.1, y: 85.9 },
-                { x: 57.1, y: 82.5 },
-                { x: 64.8, y: 86.3 },
-                { x: 72.1, y: 81.8 },
-                { x: 72.1, y: 74.1 },
+        att: [  { x: 49.9, y: 84.5 },
+                { x: 57.4, y: 80.5 },
+                { x: 65.1, y: 84.5 },
+                { x: 72.6, y: 80.7 },
+                { x: 72.6, y: 72.9 },
         ]
     },
     'C1_23': {
