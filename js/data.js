@@ -952,11 +952,11 @@ function getBattleRarityFromDefenderInfo(defender, attacker=null) {
         // get max remainingHPAfter from attacker units (default 0 if missing, e.g. dead)
         const maxHP = Math.max(...attacker.units.map(u => u.remainingHPAfter ?? 0));
 
-        // NOTE: used maladus at cap from tacticusdb.com as ref., with a little extra.
+        // NOTE: used tyrant guard at cap with max items from tacticusdb.com as ref., with a little extra.
         let rarityGuess2 = 'uncommon'; // start at lowest, work up
         if (maxHP >= 800)   rarityGuess2 = 'rare';
-        if (maxHP >= 1800)  rarityGuess2 = 'epic';
-        if (maxHP >= 3700)  rarityGuess2 = 'legendary';
+        if (maxHP >= 1900)  rarityGuess2 = 'epic';
+        if (maxHP >= 4200)  rarityGuess2 = 'legendary';
         if (maxHP >= 13000) rarityGuess2 = 'mythic';
 
         // pick whichever guess implies the higher rarity tier
@@ -966,7 +966,7 @@ function getBattleRarityFromDefenderInfo(defender, attacker=null) {
     }
 
     // that should give us some confidence, probably, about the rarity of the line.
-    // NOTE: if someone places all lower rarity unitr, could be bad. so we will also
+    // NOTE: if someone places all lower rarity units, could be bad. so we also
     //       check the hp on attacker, since that is properly capped. but still 
     //       possible to miss something.
     return rarityBestGuess;

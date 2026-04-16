@@ -603,7 +603,7 @@ function buildRankingHTML(guild) {
 
     // plain text for clipboard
     const plainText = [
-        `${guildName} — sorted by ${icon} ${label} ${dirLabel}`,
+        `${guildName} : sorted by ${icon} ${label} ${dirLabel}`,
         '',
         ...players.map(({ stats }, i) => {
             const value = key === 'performanceMetric'
