@@ -431,6 +431,7 @@ function buildLegendHTML() {
         { icon: `<button style="background:#6c757d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">⇄</button>`,  label: 'Swap player to other guild' },
         { icon: `<button style="background:#1d6fa4; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">⚔️</button>`, label: 'Show attack battle details' },
         { icon: `<button style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">🛡️</button>`, label: 'Show defense battle details' },
+        { icon: `<button style="background:#4a6a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">🗺️</button>`, label: 'Show map of the battle' },
         { icon: `<button style="background:#4a7a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">← G1</button>`, label: 'Assign unassigned player to guild 1' },
         { icon: `<button style="background:#4a4a7a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">G2 →</button>`, label: 'Assign unassigned player to guild 2' },
     ];
@@ -515,7 +516,7 @@ function buildLegendHTML() {
             </tbody>
         </table>
         <br><br>
-        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Performance Addons</h3>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Performance Addons (not implemented yet)</h3>
         <table style="border-collapse:collapse; width:100%;">
             <thead>
                 <tr>
@@ -530,8 +531,9 @@ function buildLegendHTML() {
         <br><br>
         <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">🔷 Combined Rank</h3>
         <p style="font-size:11px; color:#888; margin-bottom:10px; line-height:1.6; max-width:400px;">
-            Each player is ranked 1–N within their guild separately for ⭐ Performance and ⚔️ Attack Score. 
-            Those ranks are inverted (so #1 becomes the highest value) and then combined using the weights below.
+            Each player is ranked [1, N] within their N-player guild separately for both ⭐ Performance and ⚔️ Attack Score. 
+            Those ranks are inverted (so 1 becomes N, 2 becomes N-1, ..., N becomes 1) and then combined using the weights below.
+            This gives some sort of statistic/insight into how much each player contributed to the offensive front.
         </p>
         <table style="border-collapse:collapse; width:100%;">
             <thead>

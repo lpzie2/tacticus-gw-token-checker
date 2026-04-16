@@ -141,3 +141,26 @@ document.getElementById('mapCalibrateBtn').addEventListener('click', function() 
     document.getElementById('mapImageContainer').style.cursor = calibrateMode ? 'crosshair' : 'default';
     document.getElementById('mapSpawnIcons').style.pointerEvents = calibrateMode ? 'none' : 'auto';
 });
+
+// runs the demo.
+document.getElementById('demoButton').addEventListener('change', function() {
+    const fileName = 'jkt__gw_21_3__bf_2__won.json';
+
+    playerData      = {};
+    battleData      = {};
+    activityLogs    = [];
+    gameData        = null;
+
+    fetch(fileName)
+        .then(response => response.text())
+        .then(text => {
+            try {
+                gameData = JSON.parse(text);
+                processGameData();
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                alert('Error parsing JSON file: ' + error.message);
+            }
+        })
+        .catch(error => alert('Error loading file: ' + error.message));
+});

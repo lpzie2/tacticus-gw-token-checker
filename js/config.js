@@ -493,12 +493,22 @@ const TEAM_META_DEFINITIONS = {
     },
     "Perfect Orks": {
         metaTeam: "Waarg!",
-        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigmek", "orksKillaKan", "orksNob"],
+        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigMek", "orksKillaKan", "orksNob"],
         requiredMOW: null
     },
     "BT Orks": {
         metaTeam: "Waarg!",
-        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigmek", "templChampion", "templSwordBrother"],
+        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigMek", "templChampion", "templSwordBrother"],
+        requiredMOW: null
+    },
+    "Juiced Up Orks": {
+        metaTeam: "Waarg!",
+        requiredUnits: ["orksWarboss", "orksRuntherd", "templHelbrecht", "orksNob", "orksBigMek"],
+        requiredMOW: null
+    },
+    "T'Ork Spyder": {
+        metaTeam: "Waarg!",
+        requiredUnits: ["orksWarboss", "orksRuntherd", "orksNob", "tauCrisis", "necroSpyder"],
         requiredMOW: null
     },
     "Warped Flames": {
@@ -514,6 +524,16 @@ const TEAM_META_DEFINITIONS = {
     "Mechanical Wingspan": {
         metaTeam: "Overwatch",
         requiredUnits: ["tauCrisis", "ultraCalgar", "eldarMauganRa", "tauFarsight", "eldarAutarch"],
+        requiredMOW: null
+    },
+    "Friendly Fire": {
+        metaTeam: "Astra Mil.",
+        requiredUnits: ["adeptCelestine", "astraYarrick", "adeptHospitaller", "astraDreir", "adeptRetributor"],
+        requiredMOW: null
+    },
+    "Beefy Chaos": {
+        metaTeam: "Chaos",
+        requiredUnits: ["blackTerminator", "blackAbaddon", "deathBlightbringer", "worldKharn", "worldTerminator"],
         requiredMOW: null
     },
 
@@ -580,8 +600,8 @@ const TEAM_META_DEFINITIONS = {
         requiredMOW: null
     },
     "Core Orks": {
-        metaTeam: "Mechanical",
-        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigmek"],
+        metaTeam: "Waarg!",
+        requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigMek"],
         requiredMOW: null
     },
     "Piercing Orks": {
