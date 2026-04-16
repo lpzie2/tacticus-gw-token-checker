@@ -25,41 +25,49 @@ h1 {
 }
 
 .upload-section {
-    background: #2a2a3e;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    margin-bottom: 20px;
-    text-align: center;
+    background:     #2a2a3e;
+    padding:        20px;
+    border-radius:  10px;
+    box-shadow:     0 5px 15px rgba(0,0,0,0.3);
+    margin-bottom:  20px;
+    text-align:     center;
 }
 
 .file-input-wrapper {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-    margin-bottom: 15px;
+    position:   relative;
+    display:    inline-block;
+    cursor:     pointer;
+    margin-bottom:  15px;
+    text-align: center;
 }
 
 .file-input-wrapper input[type=file] {
-    position: absolute;
-    left: -9999px;
+    position:   absolute;
+    left:       -9999px;
 }
 
 .file-input-label {
-    display: inline-block;
-    padding: 12px 24px;
-    background: #425974;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: transform 0.2s;
+    display:        block;
+    padding:        12px 24px;
+    margin-bottom:  10px;
+    background:     #425974;
+    color:          white;
+    border-radius:  6px;
+    cursor:         pointer;
+    font-size:      14px;
+    font-weight:    bold;
+    transition:     transform 0.2s;
 }
 
 .file-input-label:hover {
     background: #3a5a7e;
     transform: scale(1.02);
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .file-name {
@@ -446,6 +454,10 @@ h1 {
     }
 
     .guilds-container {
+        grid-template-columns: 1fr;
+    }
+
+    .unassigned .player-list {
         grid-template-columns: 1fr;
     }
 
