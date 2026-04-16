@@ -143,24 +143,19 @@ document.getElementById('mapCalibrateBtn').addEventListener('click', function() 
 });
 
 // runs the demo.
-document.getElementById('demoButton').addEventListener('change', function() {
-    const fileName = 'jkt__gw_21_3__bf_2__won.json';
-
+document.getElementById('demoButton').addEventListener('click', function() {
     playerData      = {};
     battleData      = {};
     activityLogs    = [];
     gameData        = null;
 
-    fetch(fileName)
-        .then(response => response.text())
-        .then(text => {
-            try {
-                gameData = JSON.parse(text);
-                processGameData();
-                document.getElementById('content').style.display = 'block';
-            } catch (error) {
-                alert('Error parsing JSON file: ' + error.message);
-            }
-        })
-        .catch(error => alert('Error loading file: ' + error.message));
+    document.getElementById('fileName').textContent = 'Demo File';
+
+    try {
+        gameData = demoBattle;
+        processGameData();
+        document.getElementById('content').style.display = 'block';
+    } catch (error) {
+        alert('Error parsing JSON data: ' + error.message);
+    }
 });
