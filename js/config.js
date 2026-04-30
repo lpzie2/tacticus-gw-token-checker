@@ -30,6 +30,29 @@ const BUFF_ICONS = {
     'EnvFortified':             '🏰'
 };
 
+const ZONE_BUFFS = {
+    'MedicaeStation1':      'EnvDefenderHealthBuff2',
+    'MedicaeStation2':      'EnvDefenderHealthBuff2',
+    'ComsStation':          'EnvValkyrieStrike',
+    'Armoury':              'EnvArmourSupplies',
+    'ArtilleryPosition1':   'EnvArtillerySupport',
+    'ArtilleryPosition2':   'EnvArtillerySupport',
+    'AntiAirBattery1':      'EnvFlakFire',
+    'AntiAirBattery2':      'EnvFlakFire',
+    'Bunker1':              'EnvFortified',
+    'Bunker2':              'EnvFortified',
+};
+
+const BUFF_RANGE = {
+    'EnvDefenderHealthBuff2':   'Global',
+    'EnvDefenderHealthBuff1':   'Global',
+    'EnvValkyrieStrike':        'Global',
+    'EnvArmourSupplies':        'Regional',
+    'EnvArtillerySupport':      'Regional',
+    'EnvFlakFire':              'Regional',
+    'EnvFortified':             'Local'
+};
+
 const UNIQUE_TILES = [...new Set(Object.values(ZONE_POINTS))].sort((a, b) => a - b);
 
 const MAX_PLAYER_SCORE = 1601;
@@ -353,6 +376,7 @@ const BASE_HP = {
     'ultraInceptorSgt':     85,
     'ultraTigurius':        65,
     'ultraTitus':           95,
+    'votanBeserk':          90,
     'votanIronmaster':      80,
     'votanMemnyr':          90,
     'votanUthar':           90,
@@ -972,5 +996,22 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "PVP_desert_10",
         "MedicaeStation2":      "LHE_Desert_02",
         "ComsStation":          "LHE_Desert_03"
+    },
+    '23.1': {
+        "Trenches1":            "LHE_Desert_06",
+        "Trenches2":            "CE2_06",
+        "Trenches3":            "MC1_11",
+        "HQ":                   "LHE_Desert_02",
+        "ArtilleryPosition1":   "C1_37",
+        "ArtilleryPosition2":   "LHE_Desert_04",
+        "AntiAirBattery1":      "EMC1_06",
+        "AntiAirBattery2":      "LHE_Desert_03",
+        "Armoury":              "C1_23",
+        "Bunker1":              "MC1_31",
+        "Bunker2":              "C1_70",
+        "SupplyDepot":          "C1_15",
+        "MedicaeStation1":      "LHE_Desert_05",
+        "MedicaeStation2":      "PVP_desert_10",
+        "ComsStation":          "EC1_09"
     }
 };
