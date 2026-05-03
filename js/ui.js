@@ -56,6 +56,17 @@ function renderPlayers() {
         unassignedBox.style.display = 'block';
     }
 
+    // show warning if either guild has no players (assignment may be inaccurate)
+    const existingWarning = unassignedBox.querySelector('.assignment-warning');
+    if (existingWarning) existingWarning.remove();
+
+    if (guild1Players.length === 0 || guild2Players.length === 0) {
+        const warning = document.createElement('div');
+        warning.className = 'assignment-warning';
+        warning.textContent = '⚠️ Map assignment may not be accurate. Manual moves by an officer are not recorded in the log.';
+        unassignedBox.prepend(warning);
+    }
+
     const sb1 = document.getElementById('guild1SortButtons');
     const sb2 = document.getElementById('guild2SortButtons');
 
@@ -132,7 +143,7 @@ function createPlayerCard(userId, stats) {
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <div style="font-size:11px; color:#888; font-style:italic;">${getMapDisplayName(stats.mapAssignedTo)}</div>
+                <div style="font-size:11px; color:#888; font-style:italic;">${getMapDisplayName(stats.mapAssignedToCertainty, stats.mapAssignedTo)}</div>
             </div>
             
             <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
@@ -421,6 +432,7 @@ function buildLegendHTML() {
         { icon: '⭐', label: 'Performance metric (see below)' },
         { icon: '🔷', label: 'Rank of Combined Ranks (see below)' },
         { icon: '🤖', label: 'Fights against NPC lines' },
+        { icon: '⚠️', label: 'Automatic map assignment may not be accurate' },
         { icon: '💊💊', label: '2 medicae buffs active' },
         { icon: '💊💥', label: '1 medicae buff active' },
         { icon: '💥💥', label: '0 medicae buffs active' },
@@ -664,13 +676,19 @@ function getMapName(tileType) {
     return SEASON_MAPS[currentSeasonKey]?.[tileType] ?? null;
 }
 
-function getMapDisplayName(tile) {
+function getMapDisplayName(certainty, tile) {
     const mapId   = getMapName(tile);
     const altName = mapId ? (MAP_ALTNAMES[mapId] ?? null) : null;
-    if (!tile)    return 'Unknown';
-    if (!mapId)   return tile;
-    if (!altName) return `${tile} (${mapId})`;
-    return `${tile} (${mapId} / ${altName})`;
+    //if (!certainty) return 'Uncertain';
+    if (!tile)      return 'Unknown';
+    if (!mapId)     return tile;
+    if (certainty) {
+        if (!altName)   return `${tile} (${mapId})`;
+        return `${tile} (${mapId} / ${altName})`;
+    } else {
+        if (!altName)   return `⚠️ ${tile} (${mapId})`;
+        return `⚠️ ${tile} (${mapId} / ${altName})`;
+    }
 }
 
 // quick fn to get the map overlay working.
@@ -682,7 +700,7 @@ function showMapOverlay(tile, battleId = null) {
         return; 
     }
 
-    const caption = getMapDisplayName(tile);
+    const caption = getMapDisplayName(true, tile);
     const mapImage = document.getElementById('mapImage');
     const calibrateBtn = document.getElementById('mapCalibrateBtn');
     const calibrateOutput = document.getElementById('mapCalibrateOutput');

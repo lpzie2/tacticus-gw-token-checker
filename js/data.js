@@ -49,7 +49,8 @@ function processGameData() {
             offenseTeamSignatures: new Set(),
             battleDetailsAsAttacker: [],
             battleDetailsAsDefender: [],
-            mapAssignedTo: null
+            mapAssignedTo: null,
+            mapAssignedToCertainty: false,
         };
     });
 
@@ -134,6 +135,7 @@ function processGameData() {
                     playerData[defenderId].battleAsDefender.push(log.id);
 
                     playerData[defenderId].mapAssignedTo = log.zone.type;
+                    playerData[defenderId].mapAssignedToCertainty = true;
 
                     addDefenderTeam(defenderId, log.defender, log.id);
                 }
@@ -177,6 +179,7 @@ function processGameData() {
                     playerData[defenderId].battleAsDefender.push(log.id);
 
                     playerData[defenderId].mapAssignedTo = log.zone.type;
+                    playerData[defenderId].mapAssignedToCertainty = true;
 
                     addDefenderTeam(defenderId, log.defender, log.id);
                 }
@@ -283,6 +286,7 @@ function processGameData() {
                 playerData[defenderId].battleAsDefender.push(log.id);
 
                 playerData[defenderId].mapAssignedTo = log.zone.type;
+                playerData[defenderId].mapAssignedToCertainty = true;
 
                 addDefenderTeam(defenderId, log.defender, log.id);
             }

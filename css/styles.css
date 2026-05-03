@@ -205,6 +205,16 @@ h1 {
     background: #5a5a6e;
 }
 
+.assignment-warning {
+    background-color: #3a3a4e;
+    border: 1px solid #ffc107;
+    color: #ffedb5;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
 .player-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
