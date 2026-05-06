@@ -515,6 +515,11 @@ const TEAM_META_DEFINITIONS = {
         requiredUnits: ["admecDominus", "admecMarshall", "admecRuststalker", "necroDestroyer", "tauMarksman"],
         requiredMOW: null
     },
+    "SadMech": {
+        metaTeam: "AdMech",
+        requiredUnits: ["admecDominus", "admecMarshall", "admecManipulus", "necroSpyder", "orksWarboss"],
+        requiredMOW: null
+    },
     "Perfect Orks": {
         metaTeam: "Waarg!",
         requiredUnits: ["orksWarboss", "orksRuntherd", "orksBigMek", "orksKillaKan", "orksNob"],
@@ -1030,5 +1035,22 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "EC1_09",
         "MedicaeStation2":      "EMC1_06",
         "ComsStation":          "LHE_Desert_06"
+    },
+    '23.3': {
+        "Trenches1":            "LHE_Desert_02",
+        "Trenches2":            "C1_23",
+        "Trenches3":            "LHE_Desert_05",
+        "HQ":                   "C1_37",
+        "ArtilleryPosition1":   "LHE_Desert_06",
+        "ArtilleryPosition2":   "EC1_09",
+        "AntiAirBattery1":      "LHE_Desert_04",
+        "AntiAirBattery2":      "C1_15",
+        "Armoury":              "CE2_06",
+        "Bunker1":              "C1_70",
+        "Bunker2":              "MC1_31",
+        "SupplyDepot":          "EMC1_06",
+        "MedicaeStation1":      "LHE_Desert_03",
+        "MedicaeStation2":      "PVP_desert_10",
+        "ComsStation":          "MC1_11"
     }
 };
