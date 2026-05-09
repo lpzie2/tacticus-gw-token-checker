@@ -528,7 +528,7 @@ function buildLegendHTML() {
             </tbody>
         </table>
         <br><br>
-        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Performance Addons (not implemented yet)</h3>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Performance Addons</h3>
         <table style="border-collapse:collapse; width:100%;">
             <thead>
                 <tr>
@@ -599,7 +599,7 @@ function buildRankingHTML(guild) {
         const chunk = players.slice(col * chunkSize, (col + 1) * chunkSize);
         const colRows = chunk.map(({ stats }, i) => {
             const rank = col * chunkSize + i + 1;
-            const value = key === 'performanceMetric'
+            const value = (key === 'performanceMetric' || key === 'combinedRank')
                 ? stats[key].toFixed(2)
                 : stats[key].toLocaleString();
             return `

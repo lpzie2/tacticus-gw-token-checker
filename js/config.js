@@ -396,27 +396,27 @@ const PERFORMANCE_METRIC = {
     'npc1Win':      1.25,
     'npcLoss':      0.50,
     '2medWin5':     3.00,
-    '2medWin4':     3.00,
-    '2medWin3':     3.00,
-    '2medWin2':     3.00,
-    '2medWin1':     3.00,
-    '2medWin0':     3.00,
+    '2medWin4':     2.95,
+    '2medWin3':     2.90,
+    '2medWin2':     2.85,
+    '2medWin1':     2.80,
+    '2medWin0':     2.78,
     '2medCleanup':  2.00,
     '2medLoss':     1.00,
     '1medWin5':     2.75,
-    '1medWin4':     2.75,
-    '1medWin3':     2.75,
-    '1medWin2':     2.75,
-    '1medWin1':     2.75,
-    '1medWin0':     2.75,
+    '1medWin4':     2.70,
+    '1medWin3':     2.65,
+    '1medWin2':     2.60,
+    '1medWin1':     2.55,
+    '1medWin0':     2.53,
     '1medCleanup':  1.75,
     '1medLoss':     1.00,
     '0medWin5':     2.50,
-    '0medWin4':     2.50,
-    '0medWin3':     2.50,
-    '0medWin2':     2.50,
-    '0medWin1':     2.50,
-    '0medWin0':     2.50,
+    '0medWin4':     2.45,
+    '0medWin3':     2.40,
+    '0medWin2':     2.35,
+    '0medWin1':     2.30,
+    '0medWin0':     2.28,
     '0medCleanup':  1.50,
     '0medLoss':     1.00
 };
@@ -430,18 +430,23 @@ const PERFORMANCE_ADDONS = {
     '0medToughTeam':        0.10
 };
 
+const PERFORMANCE_BUFF_SCALING = [
+    0.00, 0.01, 0.02, 0.03, 0.05, 0.06 , 0.07, 0.09, 0.10, 0.11, 0.13, 0.14, 0.15
+];
+
 const PERFORMANCE_WEIGHTS = {
     'weightsPerformance':   0.67,
     'weightsScore':         0.33
 };
 
 const PERFORMANCE_TOUGH_MAPS = [
-    'MC1_31', 'EC1_09', 'LHE_Desert_03', 'C1_70', 'MC1_11'
+    'MC1_31', 'EC1_09', 'LHE_Desert_02', 'C1_70', 'MC1_11'
 ];
 
 const PERFORMANCE_TOUGH_LINES = {
-    'GSC_01':   ['genesPrimus', 'genesKelermorph'],
-    'DG_01':    ['deathRotbone']
+    'GSC_01':   ['genesPrimus',     'genesKelermorph'],
+    'DG_01':    ['deathRotbone',    'deathBlightlord'],
+    'DG_02':    ['deathRotbone',    'deathTyphus']
 };
 
 // TODO: add more to this as it becomes important.
@@ -1052,5 +1057,22 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "LHE_Desert_03",
         "MedicaeStation2":      "PVP_desert_10",
         "ComsStation":          "MC1_11"
+    },
+    '23.4': {
+        "Trenches1":            "C1_23",
+        "Trenches2":            "PVP_desert_10",
+        "Trenches3":            "EC1_09",
+        "HQ":                   "C1_70",
+        "ArtilleryPosition1":   "MC1_11",
+        "ArtilleryPosition2":   "LHE_Desert_02",
+        "AntiAirBattery1":      "C1_15",
+        "AntiAirBattery2":      "CE2_06",
+        "Armoury":              "MC1_31",
+        "Bunker1":              "LHE_Desert_06",
+        "Bunker2":              "LHE_Desert_05",
+        "SupplyDepot":          "LHE_Desert_03",
+        "MedicaeStation1":      "EMC1_06",
+        "MedicaeStation2":      "LHE_Desert_04",
+        "ComsStation":          "C1_37"
     }
 };

@@ -266,7 +266,6 @@ function processGameData() {
             // final performance should also take into account the tough
             //  maps and lineups. so it needs to be tallied after the
             //  addDefenderTeam() call.
-            // NOTE: json has no info on map type. needs an external call.
                 
             // record the battle stats to both players.         v-- deals with SP returning tokens, kinda.
             playerData[attackerId].tokensRemaining  = Math.max(0, Math.min(10, playerData[attackerId].tokensRemaining - 1));
@@ -290,10 +289,11 @@ function processGameData() {
 
                 addDefenderTeam(defenderId, log.defender, log.id);
             }
-
-            const mapPerformanceBonus   = getMapPerformancemModifier()
-            const defPerformanceBonus   = getDefPerformancemModifier()
-            const finalPerformanceValue = basePerformanceValue + mapPerformanceBonus + defPerformanceBonus
+            
+            const mapPerformanceBonus   = npcLine ? 0.0 : getMapPerformanceModifier(attResultType,  log.zone.type, log.createdOn, medCount)
+            const defPerformanceBonus   = npcLine ? 0.0 : getDefPerformanceModifier(attResultType,  log.defender, medCount)
+            const buffPerformanceBonus  = npcLine ? 0.0 : getBuffPerformanceModifier(attResultType, buffs, medCount)
+            const finalPerformanceValue = basePerformanceValue + mapPerformanceBonus + defPerformanceBonus + buffPerformanceBonus
             
             playerData[attackerId].performancePerBattle.push(finalPerformanceValue);
             playerData[attackerId].performanceMetric += finalPerformanceValue;
@@ -319,12 +319,50 @@ function processGameData() {
     renderStats();
 }
 
-function getMapPerformancemModifier() {
-    return 0.0;
+function getMapPerformanceModifier(result, map, time, medNumber) {
+    if (result === 'Win' || result === 'Cleanup') {
+        const seasonKey = detectSeasonKeyFromTimestamp(time);
+        if (!seasonKey) return 0.0;
+
+        const seasonMaps = SEASON_MAPS[seasonKey];
+        if (!seasonMaps) return 0.0;
+
+        const mapId = seasonMaps[map];
+        if (!mapId) return 0.0;
+
+        if (PERFORMANCE_TOUGH_MAPS.includes(mapId)) {
+            return PERFORMANCE_ADDONS[`${medNumber}medToughMap`] ?? 0.0;
+        }
+
+        return 0.0;
+    } else {
+        return 0.0;
+    }
 }
 
-function getDefPerformancemModifier() {
-    return 0.0;
+function getDefPerformanceModifier(result, defender, medNumber) {
+    if (result === 'Win' || result === 'Cleanup') {
+        const defUnits = Array.from({ length: 5 }, (_, i) => {
+            return defender?.units?.[i]?.unitId ?? null; 
+        });
+
+        const hasToughLine = Object.values(PERFORMANCE_TOUGH_LINES).some(line =>
+            line.every(unit => defUnits.includes(unit))
+        );
+
+        return hasToughLine ? (PERFORMANCE_ADDONS[`${medNumber}medToughTeam`] ?? 0.0) : 0.0;
+    } else {
+        return 0.0;
+    }
+}
+
+function getBuffPerformanceModifier(result, buffs, medNumber) {
+    if (result === 'Win' || result === 'Cleanup') {
+        const buffsSansMed = (buffs?.length ?? 0) - medNumber;
+        return PERFORMANCE_BUFF_SCALING[Math.max(0, buffsSansMed)] ?? 0.0;
+    } else {
+        return 0.0;
+    }
 }
 
 function addFullFightDetails(battleId, attackerId, attacker, defenderId, defender, buffs, score=0, abandoned=false, performance=0.0, zone=null) {
