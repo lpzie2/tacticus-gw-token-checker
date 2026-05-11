@@ -431,7 +431,7 @@ const PERFORMANCE_ADDONS = {
 };
 
 const PERFORMANCE_BUFF_SCALING = [
-    0.00, 0.01, 0.02, 0.03, 0.05, 0.06 , 0.07, 0.09, 0.10, 0.11, 0.13, 0.14, 0.15
+    0.00, 0.01, 0.02, 0.03, 0.04, 0.06 , 0.08, 0.10
 ];
 
 const PERFORMANCE_WEIGHTS = {
@@ -439,8 +439,11 @@ const PERFORMANCE_WEIGHTS = {
     'weightsScore':         0.33
 };
 
+// only considering split, 3 bridges, bridge, and gulch as hard maps for now.
+//   a case can be made that they are not equally hard and 3 bridge and split
+//   should be worth more.  maybe.  a future TODO.
 const PERFORMANCE_TOUGH_MAPS = [
-    'MC1_31', 'EC1_09', 'LHE_Desert_02', 'C1_70', 'MC1_11'
+    'C1_37', 'MC1_31', 'LHE_Desert_02', 'MC1_11'
 ];
 
 const PERFORMANCE_TOUGH_LINES = {
@@ -1074,5 +1077,22 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "EMC1_06",
         "MedicaeStation2":      "LHE_Desert_04",
         "ComsStation":          "C1_37"
-    }
+    },
+    '23.5': {
+        "Trenches1":            "LHE_Desert_05",
+        "Trenches2":            "LHE_Desert_03",
+        "Trenches3":            "C1_15",
+        "HQ":                   "C1_23",
+        "ArtilleryPosition1":   "LHE_Desert_02",
+        "ArtilleryPosition2":   "EC1_09",
+        "AntiAirBattery1":      "LHE_Desert_04",
+        "AntiAirBattery2":      "MC1_11",
+        "Armoury":              "CE2_06",
+        "Bunker1":              "C1_70",
+        "Bunker2":              "LHE_Desert_06",
+        "SupplyDepot":          "MC1_31",
+        "MedicaeStation1":      "EMC1_06",
+        "MedicaeStation2":      "C1_37",
+        "ComsStation":          "PVP_desert_10"
+        }
 };

@@ -552,7 +552,7 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
         return 'remainingHPBefore' in unit && 'remainingHPAfter' in unit;
     });
 
-    // defender: unit endet up dead.
+    // defender: unit ended up dead.
     const defUnitsEndedDead = Array.from({ length: 5 }, (_, i) => {
         const unit = defender?.units?.[i];
         if (!unit) return null;
@@ -620,7 +620,9 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
         abandoned:      abandoned,
         performance:    performance,
         battleId:       battleId,
-        battleTile:     zone?.type ?? null
+        battleTile:     zone?.type ?? null,
+        attackerName:   attPlayer.displayName,
+        defenderName:   defPlayer?.displayName ?? '?'
     });
 
     if (defPlayer !== null) {
@@ -660,7 +662,9 @@ function addFullFightDetails(battleId, attackerId, attacker, defenderId, defende
             abandoned:      abandoned,
             performance:    performance,
             battleId:       battleId,
-            battleTile:     zone?.type ?? null
+            battleTile:     zone?.type ?? null,
+            attackerName:   attPlayer.displayName,
+            defenderName:   defPlayer.displayName
         });
     };
 }

@@ -163,7 +163,7 @@ function createPlayerCard(userId, stats) {
     return card;
 }
 
-function createBattleLineHTML(battle, perspective) {
+function createBattleLineHTML(battle, perspective, overrideLabel = null) {
 
     const theme = RARITY_THEMES[battle.rarity] ?? RARITY_THEMES.common;
 
@@ -290,9 +290,11 @@ function createBattleLineHTML(battle, perspective) {
     const attCols = attUnits.map((u, i) => unitColumn(u, true,  i)).join('') + mowColumn(battle.attMoW, battle.attMoWRarity, attLost);
     const defCols = defUnits.map((u, i) => unitColumn(u, false, i)).join('') + mowColumn(battle.defMoW, battle.defMoWRarity, defLost);
 
-    const battleLabel = isAttPerspective
-        ? `Token #${battle.battleNumber}`
-        : `Defense #${battle.battleNumber}`;
+    const battleLabel = overrideLabel !== null
+        ? overrideLabel
+        : isAttPerspective
+            ? `Token #${battle.battleNumber}`
+            : `Defense #${battle.battleNumber}`;
 
     return `
         <div style="background: #45455e; border-radius:8px; padding:10px; margin-bottom:10px; border-left:6px solid ${theme.border}; border-right:3px solid ${theme.border};">
@@ -306,7 +308,7 @@ function createBattleLineHTML(battle, perspective) {
                     <span style="color:${theme.textMuted}; text-transform:capitalize; font-weight:bold;">${battle.rarity}</span>
                     <span style="color:${theme.token}; font-weight:bold;" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '—'}</span>
                 </div>
-                <div style="width:30%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '—'}</div>
+                <div style="width:30%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '-'}</div>
             </div>
             <div style="display:flex; align-items:flex-start; gap:10px;">
                 <div style="flex:1; min-width:0;">
@@ -420,7 +422,15 @@ function sortButtonsHTML(guild) {
     }).join('') + `<button
         onclick="event.stopPropagation(); openRankingOverlay(${guild})"
         style="background:#3a3a4e; border:1px solid #555; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer; margin-left:4px;"
-        title="Show ranking">🏆</button>`;
+        title="Show ranking">🏆</button>
+    <button
+        onclick="event.stopPropagation(); openFailedHitsOverlay(${guild})"
+        style="background:#6a2a2a; border:1px solid #a44; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
+        title="Show failed hits">🚫</button>
+    <button
+        onclick="event.stopPropagation(); openTopBattlesOverlay(${guild})"
+        style="background:#2a4a2a; border:1px solid #4a8; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
+        title="Show top 10 battles">🌟</button>`;
 }
 
 // the legends page html code
@@ -440,6 +450,8 @@ function buildLegendHTML() {
         { icon: '🧹', label: 'Cleanup (all defenders dead, score < 1100)' },
         { icon: '🚫', label: 'Loss (defenders survived)' },
         { icon: '🏆', label: 'Ranking of the guild based on sort method.' },
+        { icon: `<button style="background:#6a2a2a; border:1px solid #a44; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">🚫</button>`, label: 'Show all failed hits' },
+        { icon: `<button style="background:#2a4a2a; border:1px solid #4a8; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">🌟</button>`, label: 'Show top 10 best performances' },
         { icon: `<button style="background:#6c757d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">⇄</button>`,  label: 'Swap player to other guild' },
         { icon: `<button style="background:#1d6fa4; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">⚔️</button>`, label: 'Show attack battle details' },
         { icon: `<button style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px;">🛡️</button>`, label: 'Show defense battle details' },
@@ -500,6 +512,29 @@ function buildLegendHTML() {
         </tr>
     `).join('');
 
+    const toughMapsHTML = PERFORMANCE_TOUGH_MAPS.map(mapId => {
+        const altName = MAP_ALTNAMES[mapId] ?? '';
+        const display = altName ? `${mapId} (${altName})` : mapId;
+        return `<tr><td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${display}</td></tr>`;
+    }).join('');
+
+    const toughLinesHTML = Object.entries(PERFORMANCE_TOUGH_LINES).map(([key, units]) => {
+        const icons = units.map(u =>
+            `<img src="${getUnitIcon(u)}" title="${u}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid #555;" onerror="this.style.display='none'">`
+        ).join('');
+        return `<tr>
+            <td style="padding:4px 12px 4px 0; font-size:12px; color:#888;">${key}</td>
+            <td style="padding:4px 0;"><div style="display:flex; gap:4px;">${icons}</div></td>
+        </tr>`;
+    }).join('');
+
+    const buffScalingHTML = PERFORMANCE_BUFF_SCALING.map((val, i) => `
+        <tr>
+            <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${i} non-medicae buff${i !== 1 ? 's' : ''}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${val.toFixed(2)}</td>
+        </tr>
+    `).join('');
+
     const combinedRankRowsHTML = combinedRankRows.map(({ label, key }) => `
         <tr>
             <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
@@ -528,7 +563,7 @@ function buildLegendHTML() {
             </tbody>
         </table>
         <br><br>
-        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">Performance Addons</h3>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">⭐ Performance Addons</h3>
         <table style="border-collapse:collapse; width:100%;">
             <thead>
                 <tr>
@@ -539,6 +574,32 @@ function buildLegendHTML() {
                 </tr>
             </thead>
             <tbody>${addonRowsHTML}</tbody>
+        </table>
+        <br><br>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">⭐ Performance Tough Maps</h3>
+        <table style="border-collapse:collapse; width:100%; margin-bottom:8px;">
+            <tbody>${toughMapsHTML}</tbody>
+        </table>
+
+        <br>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">⭐ Performance Tough Teams</h3>
+        <table style="border-collapse:collapse; width:100%;">
+            <tbody>${toughLinesHTML}</tbody>
+        </table>
+
+        <br><br>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">⭐ Performance Non-Med Buff Scaling</h3>
+        <p style="font-size:11px; color:#888; margin-bottom:10px; line-height:1.6; max-width:400px;">
+            Additional bonus based on the number of active buffs excluding medicae (🏥). Stacks with tough map/team bonuses.
+        </p>
+        <table style="border-collapse:collapse; width:100%;">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding:4px 12px 8px 0; font-size:12px; color:#aaa;">Buff Count (sans 🏥)</th>
+                    <th style="padding:4px 8px 8px; font-size:12px; color:#aaa;">Bonus</th>
+                </tr>
+            </thead>
+            <tbody>${buffScalingHTML}</tbody>
         </table>
         <br><br>
         <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">🔷 Combined Rank</h3>
@@ -566,6 +627,85 @@ function openRankingOverlay(guild) {
     document.getElementById('rankingCopyBtn').addEventListener('click', () => {
         navigator.clipboard.writeText(plainText);
     });
+}
+
+function openFailedHitsOverlay(guild) {
+    const guildName = document.getElementById(`guild${guild}Name`).textContent;
+
+    // collect all attacker battles for this guild that are losses
+    const failedBattles = [];
+    Object.entries(playerData).forEach(([userId, stats]) => {
+        if (stats.guild !== guild) return;
+        stats.battleDetailsAsAttacker.forEach(battle => {
+            if (battle.abandoned) return;
+            if (battle.battleScore >= 1100) return;
+            const defUnits  = battle.defUnits  || [];
+            const defHPEnd  = battle.defHPEnd  || [];
+            const anyDefSurvived = defHPEnd.some((hp, i) => defUnits[i] && hp > 0);
+            if (!anyDefSurvived) return; // cleanup, not a loss
+            failedBattles.push({ battle, attackerName: stats.displayName });
+        });
+    });
+
+    // sort by battleScore descending (closest losses first)
+    failedBattles.sort((a, b) => b.battle.battleScore - a.battle.battleScore);
+
+    const linesHTML = failedBattles.length === 0
+        ? '<div style="color:#888; text-align:center; padding:20px;">No failed hits recorded.</div>'
+        : failedBattles.map(({ battle, attackerName }, i) => {
+            const defName = battle.defenderName || '?';
+            const label = `#${i + 1} ${attackerName} vs ${defName}`;
+            return createBattleLineHTML(battle, 'attacker', label);
+        }).join('');
+
+    document.getElementById('failedHitsContent').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
+            <div>
+                <div style="font-size:1.1em; font-weight:bold;">${guildName} - Failed Hits</div>
+                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted closest to win first</div>
+            </div>
+        </div>
+        ${linesHTML}
+    `;
+    document.getElementById('failedHitsOverlay').classList.add('active');
+}
+
+function openTopBattlesOverlay(guild) {
+    const guildName = document.getElementById(`guild${guild}Name`).textContent;
+
+    // collect all attacker battles for this guild with a performance score
+    const allBattles = [];
+    Object.entries(playerData).forEach(([userId, stats]) => {
+        if (stats.guild !== guild) return;
+        stats.battleDetailsAsAttacker.forEach(battle => {
+            if (battle.abandoned) return;
+            if (battle.performance == null) return;
+            allBattles.push({ battle, attackerName: stats.displayName });
+        });
+    });
+
+    // sort by performance descending, take top 10
+    allBattles.sort((a, b) => b.battle.performance - a.battle.performance);
+    const top10 = allBattles.slice(0, 10);
+
+    const linesHTML = top10.length === 0
+        ? '<div style="color:#888; text-align:center; padding:20px;">No battles recorded.</div>'
+        : top10.map(({ battle, attackerName }, i) => {
+            const defName = battle.defenderName || '?';
+            const label = `#${i + 1} ${attackerName} vs ${defName}`;
+            return createBattleLineHTML(battle, 'attacker', label);
+        }).join('');
+
+    document.getElementById('topBattlesContent').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
+            <div>
+                <div style="font-size:1.1em; font-weight:bold;">${guildName} - Top 10 Battles</div>
+                <div style="font-size:12px; color:#aaa; margin-top:2px;">Best ⭐ performance across all tokens</div>
+            </div>
+        </div>
+        ${linesHTML}
+    `;
+    document.getElementById('topBattlesOverlay').classList.add('active');
 }
 
 // ranking overlay html code.

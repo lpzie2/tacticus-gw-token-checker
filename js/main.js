@@ -123,6 +123,22 @@ document.getElementById('rankingOverlay').addEventListener('click', function(e) 
     if (e.target === this) this.classList.remove('active');
 });
 
+// failed hits overlay listeners
+document.getElementById('closeFailedHits').addEventListener('click', function() {
+    document.getElementById('failedHitsOverlay').classList.remove('active');
+});
+document.getElementById('failedHitsOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
+// top battles overlay listeners
+document.getElementById('closeTopBattles').addEventListener('click', function() {
+    document.getElementById('topBattlesOverlay').classList.remove('active');
+});
+document.getElementById('topBattlesOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
 // map overlay listeners
 document.getElementById('closeMap').addEventListener('click', function() {
     document.getElementById('mapOverlay').classList.remove('active');
