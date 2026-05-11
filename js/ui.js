@@ -648,7 +648,8 @@ function openFailedHitsOverlay(guild) {
     });
 
     // sort by battleScore descending (closest losses first)
-    failedBattles.sort((a, b) => b.battle.battleScore - a.battle.battleScore);
+    const totalDefHP = battle => battle.defHPEnd.reduce((sum, hp) => sum + (hp ?? 0), 0);
+    failedBattles.sort((a, b) => totalDefHP(a.battle) - totalDefHP(b.battle));
 
     const linesHTML = failedBattles.length === 0
         ? '<div style="color:#888; text-align:center; padding:20px;">No failed hits recorded.</div>'
