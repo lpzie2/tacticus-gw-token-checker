@@ -1094,5 +1094,23 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "EMC1_06",
         "MedicaeStation2":      "C1_37",
         "ComsStation":          "PVP_desert_10"
-        }
+    },
+    '23.6': {
+        "Trenches1":            "LHE_Desert_04",
+        "Trenches2":            "MC1_11",
+        "Trenches3":            "LHE_Desert_03",
+        "HQ":                   "C1_37",
+        "ArtilleryPosition1":   "C1_23",
+        "ArtilleryPosition2":   "MC1_31",
+        "AntiAirBattery1":      "LHE_Desert_05",
+        "AntiAirBattery2":      "C1_15",
+        "Armoury":              "EC1_09",
+        "Bunker1":              "EMC1_06",
+        "Bunker2":              "LHE_Desert_06",
+        "SupplyDepot":          "CE2_06",
+        "MedicaeStation1":      "PVP_desert_10",
+        "MedicaeStation2":      "LHE_Desert_02",
+        "ComsStation":          "C1_70"
+    }
+
 };
