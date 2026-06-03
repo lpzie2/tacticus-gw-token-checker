@@ -91,6 +91,67 @@
             </div>
         </div>
 
+        <!-- war map panel -->
+        <div id="warMapPanel" class="war-map-panel">
+            <div class="war-map-header" id="warMapToggle">
+                <span id="warMapTitle" style="font-size:1.5rem; font-weight:700; color:#f0f6fc; flex:1; text-align:center;">🏛️ War Map Overview</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span id="warMapCollapseArrow" style="font-size:14px; color:#aaa; transition:transform 0.2s;">▶</span>
+                </div>
+            </div>
+            <div id="warMapBody" style="display:none;">
+                <div id="warMapContextLabel" style="text-align:center; font-size:12px; color:#aaa; margin-bottom:12px;"></div>
+
+                <!-- action buttons row -->
+                <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:14px;">
+                    <button id="wmNameBtn"      class="wm-btn">🏷️ In-Game Names</button>
+                    <button id="wmSwapBtn"      class="wm-btn wm-btn-swap">↔️ Swap Tiles</button>
+                    <button id="wmExportBtn"    class="wm-btn">📤 Export Layout</button>
+                    <button id="wmImportBtn"    class="wm-btn">📥 Import Layout</button>
+                </div>
+
+                <!-- imge view selector -->
+                <div style="display:flex; gap:6px; justify-content:center; margin-bottom:16px;">
+                    <span style="font-size:12px; color:#aaa; align-self:center;">View:</span>
+                    <button class="wm-view-btn active"  data-view="tile">Tiles (no images yet)</button>
+                    <button class="wm-view-btn"         data-view="original">Maps</button>
+                    <button class="wm-view-btn"         data-view="spawns">Maps w/ Grid + Spawns</button>
+                </div>
+
+                <!-- battlefield selector -->
+                <div style="display:flex; gap:6px; justify-content:center; margin-bottom:16px;" id="wmBattlefieldBtns">
+                    <span style="font-size:12px; color:#aaa; align-self:center;">Battlefield:</span>
+                    <button class="wm-bf-btn active"    data-bf="1">1</button>
+                    <button class="wm-bf-btn"           data-bf="2">2</button>
+                    <button class="wm-bf-btn"           data-bf="3">3</button>
+                    <button class="wm-bf-btn"           data-bf="4">4</button>
+                    <button class="wm-bf-btn"           data-bf="5">5</button>
+                </div>
+
+                <!-- 3x5 tile grid -->
+                <div id="wmGrid" class="wm-grid"></div>
+
+                <!-- swap instruction banner (hidden until swap mode) -->
+                <div id="wmSwapBanner" style="display:none; text-align:center; color:#fbbf24; font-size:13px; margin-top:10px;">
+                    Tap two tiles to swap them. Tap ↔️ again to cancel.
+                </div>
+
+                <!-- import input (hidden) -->
+                <div id="wmImportRow" style="display:none; text-align:center; margin-top:12px;">
+                    <input id="wmImportInput" type="text" placeholder="Paste layout code here…"
+                        style="background:#2a2a3e; border:1px solid #555; border-radius:4px; color:white; padding:6px 10px; font-size:13px; width:320px; max-width:90vw;">
+                    <button id="wmImportConfirm" class="wm-btn" style="margin-left:8px;">✅ Load</button>
+                </div>
+
+                <!-- export output (hidden) -->
+                <div id="wmExportRow" style="display:none; text-align:center; margin-top:12px;">
+                    <input id="wmExportOutput" type="text" readonly
+                        style="background:#2a2a3e; border:1px solid #555; border-radius:4px; color:#4cec86; padding:6px 10px; font-size:13px; width:320px; max-width:90vw;">
+                    <button id="wmExportCopy" class="wm-btn" style="margin-left:8px;">📋 Copy</button>
+                </div>
+            </div>
+        </div>
+
         <div class="stats-section" id="statsSection" style="display: none;">
             <h2 style="margin-bottom: 20px; color: #e0e0e0; text-align: center;">📊 Statistics</h2>
             <div class="stats-grid" id="statsGrid"></div>
@@ -123,7 +184,7 @@
     </div>
 
     <div style="text-align:center; padding:20px; margin-top:20px; border-top:1px solid #3a3a4e; color:#555; font-size:12px; font-family:'Segoe UI', sans-serif;">
-        <span>Version 1.4.1 (More Detailed Performance Stats)</span>
+        <span>Version 1.5.0 (War Grid)</span>
         <span style="margin:0 10px;">·</span>
         <a href="https://discord.gg/7p6RFafeD8" target="_blank" style="color:#5a8ab8; text-decoration:none;">Discord</a>
         <span style="margin:0 10px;">·</span>
@@ -135,6 +196,7 @@
     <script src="js/data.js"></script>
     <script src="js/stats.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/warmap.js"></script>
     <script src="js/main.js"></script>
 
 </body>

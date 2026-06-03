@@ -38,6 +38,13 @@ document.getElementById('jsonFile').addEventListener('change', function(e) {
             try {
                 gameData = JSON.parse(event.target.result);
                 processGameData();
+                // re-sync war map now that currentSeasonKey is known
+                if (typeof wmResolveSeason === 'function') {
+                    wmResolveSeason();
+                    wmLayout = [...WM_TILE_ORDER];
+                    wmUpdateContextLabel();
+                    wmRender();
+                }
                 document.getElementById('content').style.display = 'block';
             } catch (error) {
                 alert('Error parsing JSON file: ' + error.message);
@@ -170,6 +177,12 @@ document.getElementById('demoButton').addEventListener('click', function() {
     try {
         gameData = demoBattle;
         processGameData();
+        if (typeof wmResolveSeason === 'function') {
+            wmResolveSeason();
+            wmLayout = [...WM_TILE_ORDER];
+            wmUpdateContextLabel();
+            wmRender();
+        }
         document.getElementById('content').style.display = 'block';
     } catch (error) {
         alert('Error parsing JSON data: ' + error.message);

@@ -14,12 +14,15 @@ const ZONE_POINTS = {
     'MedicaeStation2':      16000,
     'ArtilleryPosition1':   16000,
     'ArtilleryPosition2':   16000,
-    'AntiAir':              16000,
     'AntiAirBattery1':      16000,
     'AntiAirBattery2':      16000,
-    'WarpRift':             16000
+    'WarpRift':             16000,
+    'LandingPad':           16000,
+    'Garrison1':            16000,
+    'Garrison2':            16000,
 };
 
+// matching the Tacticus Tracker icons.
 const BUFF_ICONS = {
     'EnvDefenderHealthBuff2':   '🏥',
     'EnvDefenderHealthBuff1':   '🏥',
@@ -27,7 +30,10 @@ const BUFF_ICONS = {
     'EnvArmourSupplies':        '🛡️',
     'EnvArtillerySupport':      '🔥',
     'EnvFlakFire':              '🎯',
-    'EnvFortified':             '🏰'
+    'EnvFortified':             '🏰',
+    'EnvThinVeil':              '☀️',
+    'EnvGarrison':              '🪖',
+    'EnvAngelsOfDeath':         '👼',
 };
 
 const ZONE_BUFFS = {
@@ -41,15 +47,22 @@ const ZONE_BUFFS = {
     'AntiAirBattery2':      'EnvFlakFire',
     'Bunker1':              'EnvFortified',
     'Bunker2':              'EnvFortified',
+    'WarpRift':             'EnvThinVeil',
+    'LandingPad':           'EnvAngelsOfDeath',
+    'Garrison1':            'EnvGarrison',
+    'Garrison2':            'EnvGarrison',
 };
 
 const BUFF_RANGE = {
     'EnvDefenderHealthBuff2':   'Global',
     'EnvDefenderHealthBuff1':   'Global',
     'EnvValkyrieStrike':        'Global',
+    'EnvThinVeil':              'Global',
     'EnvArmourSupplies':        'Regional',
     'EnvArtillerySupport':      'Regional',
     'EnvFlakFire':              'Regional',
+    'EnvGarrison':              'Regional',
+    'EnvAngelsOfDeath':         'Regional',
     'EnvFortified':             'Local'
 };
 
@@ -82,7 +95,8 @@ const FACTION_PREFIXES = {
     'adept' : 'Adepta Sororitas',
     'blood' : 'Blood Angels',
     'darka' : 'Dark Angels',
-    'votan' : 'League of Votann'
+    'votan' : 'League of Votann',
+    'astar' : 'Adeptus Astartes'
 };
 
 const CHARACTER_PROGRESSION = {
@@ -287,6 +301,7 @@ const BASE_HP = {
     'admecManipulus':       95,
     'admecMarshall':        85,
     'admecRuststalker':     80,
+    'astarCyrus':           80,
     'astraBullgryn':        95,
     'astraCreed':           90,
     'astraDreir':           100,
@@ -333,6 +348,7 @@ const BASE_HP = {
     'genesMagus':           55,
     'genesPatriarch':       100,
     'genesPrimus':          70,
+    'necroChronomancer':    75,
     'necroDestroyer':       72,
     'necroOverlord':        85,
     'necroPlasmancer':      75,
@@ -723,6 +739,139 @@ const MAP_ALTNAMES = {
     'PVP_desert_10':    'AFUITM',
 };
 
+const TILE_INGAME_NAMES = {
+    'HQ':                   'Headquarters',
+    'Bunker1':              'Fortified Position 1',
+    'Bunker2':              'Fortified Position 2',
+    'AntiAirBattery1':      'Anti-Air Battery 1',
+    'AntiAirBattery2':      'Anti-Air Battery 2',
+    'Armoury':              'Armoury',
+    'Garrison1':            'Troop Garrison 1',
+    'Garrison2':            'Troop Garrison 2',
+    'LandingPad':           'Landing Pad',
+    'WarpRift':             'Warp Rift',
+    'SupplyDepot':          'Supply Depot',
+    'MedicaeStation1':      'Medicae Station 1',
+    'MedicaeStation2':      'Medicae Station 2',
+    'ComsStation':          'Vox-Station',
+    'ArtilleryPosition1':   'Artillery Position 1',
+    'ArtilleryPosition2':   'Artillery Position 2',
+    'Trenches1':            'Frontline 1',
+    'Trenches2':            'Frontline 2',
+    'Trenches3':            'Frontline 3',
+}
+
+// this works for now, but once they make a change, we will have to add
+//   checks for version numbers. and define cut offs. i'll deal with that
+//   as it arises.
+const TILE_RARITY = {
+    '1': {
+        'HQ':                   'RRUUU',
+        'Bunker1':              'RRUUU',
+        'Bunker2':              'RRUUU',
+        'AntiAirBattery1':      'RRUUU',
+        'AntiAirBattery2':      'RRUUU',
+        'Armoury':              'RRUUU',
+        'Garrison1':            'RRUUU',
+        'Garrison2':            'RRUUU',
+        'LandingPad':           'RRUUU',
+        'WarpRift':             'RRUUU',
+        'SupplyDepot':          'RRUUU',
+        'MedicaeStation1':      'RRUUU',
+        'MedicaeStation2':      'RRUUU',
+        'ComsStation':          'RRUUU',
+        'ArtilleryPosition1':   'RRUUU',
+        'ArtilleryPosition2':   'RRUUU',
+        'Trenches1':            'RRUUU',
+        'Trenches2':            'RRUUU',
+        'Trenches3':            'RRUUU',
+    },
+    '2': {
+        'HQ':                   'EERRR',
+        'Bunker1':              'EERRR',
+        'Bunker2':              'EERRR',
+        'AntiAirBattery1':      'EERRR',
+        'AntiAirBattery2':      'EERRR',
+        'Armoury':              'EERRR',
+        'Garrison1':            'EERRR', // from wiki.
+        'Garrison2':            'EERRR', // from wiki.
+        'LandingPad':           'EERRR', // from wiki.
+        'WarpRift':             'EERRR',
+        'SupplyDepot':          'RRUUU',
+        'MedicaeStation1':      'RRUUU',
+        'MedicaeStation2':      'RRUUU',
+        'ComsStation':          'RRUUU', // wiki says EERRR, 23.6 data says RRUUU.
+        'ArtilleryPosition1':   'RRUUU',
+        'ArtilleryPosition2':   'RRUUU',
+        'Trenches1':            'RRUUU',
+        'Trenches2':            'RRUUU',
+        'Trenches3':            'RRUUU',
+    },
+    '3': {
+        'HQ':                   'LLEEE',
+        'Bunker1':              'LLEEE',
+        'Bunker2':              'LLEEE',
+        'AntiAirBattery1':      'EERRR',
+        'AntiAirBattery2':      'EERRR',
+        'Armoury':              'EERRR',
+        'Garrison1':            'EERRR', // from wiki.
+        'Garrison2':            'EERRR', // from wiki.
+        'LandingPad':           'EERRR', // from wiki.
+        'WarpRift':             'EERRR', // from wiki.
+        'SupplyDepot':          'EERRR',
+        'MedicaeStation1':      'EERRR',
+        'MedicaeStation2':      'EERRR',
+        'ComsStation':          'RRUUU',
+        'ArtilleryPosition1':   'RRUUU',
+        'ArtilleryPosition2':   'RRUUU',
+        'Trenches1':            'RRUUU',
+        'Trenches2':            'RRUUU',
+        'Trenches3':            'RRUUU',
+    },
+    '4': {
+        'HQ':                   'LLEEE',
+        'Bunker1':              'LLEEE',
+        'Bunker2':              'LLEEE',
+        'AntiAirBattery1':      'LLEEE',
+        'AntiAirBattery2':      'LLEEE',
+        'Armoury':              'LLEEE',
+        'Garrison1':            'LLEEE', // from wiki.
+        'Garrison2':            'LLEEE', // from wiki.
+        'LandingPad':           'LLEEE', // from wiki.
+        'WarpRift':             'EERRR', // from wiki.
+        'SupplyDepot':          'EERRR',
+        'MedicaeStation1':      'EERRR',
+        'MedicaeStation2':      'EERRR',
+        'ComsStation':          'EERRR',
+        'ArtilleryPosition1':   'EERRR',
+        'ArtilleryPosition2':   'EERRR',
+        'Trenches1':            'EERRR',
+        'Trenches2':            'EERRR',
+        'Trenches3':            'EERRR',
+    },
+    '5': {
+        'HQ':                   'MMLLL',
+        'Bunker1':              'MMLLL',
+        'Bunker2':              'MMLLL',
+        'AntiAirBattery1':      'LLEEE',
+        'AntiAirBattery2':      'LLEEE',
+        'Armoury':              'LLEEE',
+        'Garrison1':            'LLEEE', // from wiki.
+        'Garrison2':            'LLEEE', // from wiki.
+        'LandingPad':           'LLEEE', // from wiki.
+        'WarpRift':             'LLEEE', // from wiki.
+        'SupplyDepot':          'LLEEE',
+        'MedicaeStation1':      'LLEEE',
+        'MedicaeStation2':      'LLEEE',
+        'ComsStation':          'EERRR',
+        'ArtilleryPosition1':   'EERRR',
+        'ArtilleryPosition2':   'EERRR',
+        'Trenches1':            'EERRR',
+        'Trenches2':            'EERRR',
+        'Trenches3':            'EERRR',
+    },
+};
+
 // where to place the unit icons
 const MAP_SPAWN_POINTS = {
     'C1_15': { // grasslands, done.
@@ -953,6 +1102,18 @@ const WAR_SCHEDULE = [
     { startDate: 1778275800000, endDate: 1778490000000, season: 23, battle: 4 },
     { startDate: 1778491800000, endDate: 1778706000000, season: 23, battle: 5 },
     { startDate: 1778707800000, endDate: 1778922000000, season: 23, battle: 6 },
+    { startDate: 1780479000000, fightStart: 1780738200000, endDate: 1780866000000, season: 24, battle: 1 },
+    { startDate: 1780867800000, fightStart: 1780954200000, endDate: 1781082000000, season: 24, battle: 2 },
+    { startDate: 1781083800000, fightStart: 1781170200000, endDate: 1781298000000, season: 24, battle: 3 },
+    { startDate: 1781299800000, fightStart: 1781386200000, endDate: 1781514000000, season: 24, battle: 4 },
+    { startDate: 1781515800000, fightStart: 1781602200000, endDate: 1781730000000, season: 24, battle: 5 },
+    { startDate: 1781731800000, fightStart: 1781818200000, endDate: 1781946000000, season: 24, battle: 6 },
+    { startDate: 1783503000000, fightStart: 1783762200000, endDate: 1783890000000, season: 25, battle: 1 },
+    { startDate: 1783891800000, fightStart: 1783978200000, endDate: 1784106000000, season: 25, battle: 2 },
+    { startDate: 1784107800000, fightStart: 1784194200000, endDate: 1784322000000, season: 25, battle: 3 },
+    { startDate: 1784323800000, fightStart: 1784410200000, endDate: 1784538000000, season: 25, battle: 4 },
+    { startDate: 1784539800000, fightStart: 1784626200000, endDate: 1784754000000, season: 25, battle: 5 },
+    { startDate: 1784755800000, fightStart: 1784842200000, endDate: 1784970000000, season: 25, battle: 6 },
 ];
 
 
@@ -1111,6 +1272,23 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "PVP_desert_10",
         "MedicaeStation2":      "LHE_Desert_02",
         "ComsStation":          "C1_70"
-    }
+    },
+    '24.1': {
+        "Trenches1":            "C1_70",
+        "Trenches2":            "EMC1_06",
+        "Trenches3":            "EC1_09",
+        "HQ":                   "LHE_Desert_02",
+        "ArtilleryPosition1":   "LHE_Desert_05",
+        "ArtilleryPosition2":   "C1_23",
+        "AntiAirBattery1":      "CE2_06",
+        "AntiAirBattery2":      "LHE_Desert_03",
+        "Armoury":              "LHE_Desert_04",
+        "Bunker1":              "MC1_31",
+        "Bunker2":              "MC1_11",
+        "SupplyDepot":          "C1_15",
+        "MedicaeStation1":      "LHE_Desert_06",
+        "MedicaeStation2":      "PVP_desert_10",
+        "ComsStation":          "C1_37"
+    },
 
 };

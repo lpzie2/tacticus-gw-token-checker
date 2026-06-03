@@ -663,7 +663,7 @@ function openFailedHitsOverlay(guild) {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
             <div>
                 <div style="font-size:1.1em; font-weight:bold;">${guildName} - Failed Hits</div>
-                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted closest to win first</div>
+                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted most to least depressing.</div>
             </div>
         </div>
         ${linesHTML}
@@ -847,7 +847,7 @@ function showMapOverlay(tile, battleId = null) {
     const calibrateOutput = document.getElementById('mapCalibrateOutput');
 
     document.getElementById('mapCaption').textContent = caption;
-    mapImage.src = `img/maps/${mapId.toLowerCase()}.png`;
+    mapImage.src = `img/maps/with_spawns/${mapId.toLowerCase()}.png`;
     document.getElementById('mapSpawnIcons').innerHTML = '';
     calibrateBtn.style.display = DEV_MODE ? 'inline-block' : 'none';
     
