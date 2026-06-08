@@ -106,11 +106,33 @@
                 <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:14px;">
                     <button id="wmNameBtn"      class="wm-btn">🏷️ In-Game Names</button>
                     <button id="wmSwapBtn"      class="wm-btn wm-btn-swap">↔️ Swap Tiles</button>
-                    <button id="wmExportBtn"    class="wm-btn">📤 Export Layout</button>
-                    <button id="wmImportBtn"    class="wm-btn">📥 Import Layout</button>
+                    <button id="wmCaptureBtn"   class="wm-btn">📸 Capture Grid</button>
                 </div>
 
-                <!-- imge view selector -->
+                <!-- swap instruction banner (hidden until swap mode) -->
+                <div id="wmSwapBanner" style="display:none; text-align:center; color:#fbbf24; font-size:13px; margin-top:10px;">
+                    Tap two tiles to swap them. Tap ↔️ again to cancel.
+                </div>
+
+                <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:8px;">
+                    <button id="wmExportBtn" class="wm-btn">📤 Export Layout</button>
+                    <div id="wmExportRow" style="display:none; align-items:center; gap:6px;">
+                        <input id="wmExportOutput" type="text" readonly
+                            style="background:#2a2a3e; border:1px solid #555; border-radius:4px; color:#4cec86; padding:6px 10px; font-size:13px; width:260px; max-width:60vw;">
+                        <button id="wmExportCopy" class="wm-btn">📋 Copy</button>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:14px;">
+                    <button id="wmImportBtn" class="wm-btn">📥 Import Layout</button>
+                    <div id="wmImportRow" style="display:none; align-items:center; gap:6px;">
+                        <input id="wmImportInput" type="text" placeholder="Paste layout code…"
+                            style="background:#2a2a3e; border:1px solid #555; border-radius:4px; color:white; padding:6px 10px; font-size:13px; width:260px; max-width:60vw;">
+                        <button id="wmImportConfirm" class="wm-btn">✅ Load</button>
+                    </div>
+                </div>
+
+                <!-- image view selector -->
                 <div style="display:flex; gap:6px; justify-content:center; margin-bottom:16px;">
                     <span style="font-size:12px; color:#aaa; align-self:center;">View:</span>
                     <button class="wm-view-btn active"  data-view="tile">Tiles (no images yet)</button>
@@ -130,25 +152,6 @@
 
                 <!-- 3x5 tile grid -->
                 <div id="wmGrid" class="wm-grid"></div>
-
-                <!-- swap instruction banner (hidden until swap mode) -->
-                <div id="wmSwapBanner" style="display:none; text-align:center; color:#fbbf24; font-size:13px; margin-top:10px;">
-                    Tap two tiles to swap them. Tap ↔️ again to cancel.
-                </div>
-
-                <!-- import input (hidden) -->
-                <div id="wmImportRow" style="display:none; text-align:center; margin-top:12px;">
-                    <input id="wmImportInput" type="text" placeholder="Paste layout code here…"
-                        style="background:#2a2a3e; border:1px solid #555; border-radius:4px; color:white; padding:6px 10px; font-size:13px; width:320px; max-width:90vw;">
-                    <button id="wmImportConfirm" class="wm-btn" style="margin-left:8px;">✅ Load</button>
-                </div>
-
-                <!-- export output (hidden) -->
-                <div id="wmExportRow" style="display:none; text-align:center; margin-top:12px;">
-                    <input id="wmExportOutput" type="text" readonly
-                        style="background:#2a2a3e; border:1px solid #555; border-radius:4px; color:#4cec86; padding:6px 10px; font-size:13px; width:320px; max-width:90vw;">
-                    <button id="wmExportCopy" class="wm-btn" style="margin-left:8px;">📋 Copy</button>
-                </div>
             </div>
         </div>
 
@@ -196,6 +199,7 @@
     <script src="js/data.js"></script>
     <script src="js/stats.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/html2canvas.min.js"></script>
     <script src="js/warmap.js"></script>
     <script src="js/main.js"></script>
 

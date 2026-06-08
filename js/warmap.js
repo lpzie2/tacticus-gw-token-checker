@@ -1,5 +1,27 @@
 const RARITY_CODE_MAP = { 'U': 'uncommon', 'R': 'rare', 'E': 'epic', 'L': 'legendary', 'M': 'mythic' };
 
+const WM_TILE_CODES = {
+    'HQ':                   'hq',
+    'SupplyDepot':          'sd',
+    'ComsStation':          'cs',
+    'Armoury':              'am',
+    'ArtilleryPosition1':   'ap1',
+    'ArtilleryPosition2':   'ap2',
+    'AntiAirBattery1':      'aa1',
+    'AntiAirBattery2':      'aa2',
+    'Bunker1':              'bk1',
+    'Bunker2':              'bk2',
+    'MedicaeStation1':      'ms1',
+    'MedicaeStation2':      'ms2',
+    'Trenches1':            'fl1',
+    'Trenches2':            'fl2',
+    'Trenches3':            'fl3',
+    'WarpRift':             'wr',
+    'Garrison1':            'gr1',
+    'Garrison2':            'gr2',
+    'LandingPad':           'lp',
+};
+
 // a standard default map layout.
 const WM_TILE_ORDER_DEFAULT = [
     'HQ', 'SupplyDepot', 'ComsStation',
@@ -19,6 +41,11 @@ const WM_PINNED_SLOTS = {
     'Trenches2':            13,
     'Trenches3':            14,
 };
+
+// reverse lookup for the tile codes.
+const WM_CODE_TO_TILE = Object.fromEntries(
+    Object.entries(WM_TILE_CODES).map(([tile, code]) => [code, tile])
+);
 
 // mutable state
 let wmLayout            = [];
@@ -149,15 +176,15 @@ function wmRender() {
             : tileId;
 
         card.innerHTML = `
-            <div class="wm-tile-top" title="${tileId}">${displayName}</div>
+            <div class="wm-tile-top">
+                <span class="wm-tile-badge-inline" style="min-width:20px; text-align:left;">${rarityStr ?? ''}</span>
+                <span style="flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${tileId}">${displayName}</span>
+                <span style="min-width:20px; text-align:right;">${isTough ? '⚠️' : ''}</span>
+            </div>
             <div class="wm-tile-img-wrap">
                 <img src="${imgSrc}" alt="${tileId}" onerror="this.style.opacity='0.15'">
             </div>
             <div class="wm-tile-bottom">
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 4px;">
-                    <span class="wm-tile-badge-inline">${rarityStr ?? '-'}</span>
-                    ${isTough ? `<span title="Tough Map">⚠️</span>` : '<span></span>'}
-                </div>
                 ${mapId
                     ? `<div class="wm-map-id">${mapId}</div>${altName ? `<div class="wm-map-alt">${altName}</div>` : ''}`
                     : `<div class="wm-map-alt" style="color:#555;">no map data</div>`
@@ -197,22 +224,24 @@ function wmHandleCardClick(idx, card) {
 // ── export / import ───────────────────────────────────────────────────────────
 
 function wmExportCode() {
-    // format: bf:tileIndex,tileIndex,...
-    // tileIndex = position in WM_TILE_ORDER
-    const indices = wmLayout.map(tileId => WM_TILE_ORDER.indexOf(tileId));
-    return `${wmBattlefield}:${indices.join(',')}`;
+    const codes = wmLayout.map(tile => WM_TILE_CODES[tile] ?? tile);
+    return `${wmBattlefield}:${codes.join(',')}`;
 }
 
 function wmImportCode(code) {
     try {
         const [bf, rest] = code.trim().split(':');
         if (!rest) throw new Error('bad format');
-        const indices = rest.split(',').map(Number);
-        if (indices.length !== 15) throw new Error('need 15 tiles');
-        if (indices.some(i => i < 0 || i >= WM_TILE_ORDER.length)) throw new Error('bad index');
-        if (new Set(indices).size !== 15) throw new Error('duplicate tiles');
+        const codes = rest.split(',');
+        if (codes.length !== 15) throw new Error('need 15 tiles');
+        const tiles = codes.map(c => {
+            const tile = WM_CODE_TO_TILE[c.toLowerCase()];
+            if (!tile) throw new Error(`unknown code: ${c}`);
+            return tile;
+        });
+        if (new Set(tiles).size !== 15) throw new Error('duplicate tiles');
         wmBattlefield = String(Number(bf)) || '1';
-        wmLayout = indices.map(i => WM_TILE_ORDER[i]);
+        wmLayout = tiles;
         wmSyncBattlefieldUI();
         wmRender();
         return true;
@@ -226,6 +255,34 @@ function wmSyncBattlefieldUI() {
     document.querySelectorAll('.wm-bf-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.bf === wmBattlefield);
     });
+}
+
+// ── capture ───────────────────────────────────────────────────────────────────
+
+async function wmCaptureGrid() {
+    const btn = document.getElementById('wmCaptureBtn');
+    btn.textContent = '⏳ Capturing...';
+    btn.disabled = true;
+
+    try {
+        const canvas = await html2canvas(document.getElementById('wmGrid'), {
+            backgroundColor: '#1a1a2e',
+            scale: 2,
+            logging: false,
+        });
+
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = 'war-map.png';
+        a.click();
+        btn.textContent = '📸 Capture Grid';
+        btn.disabled = false;
+
+    } catch (e) {
+        alert('Capture failed: ' + e.message);
+        btn.textContent = '📸 Capture Grid';
+        btn.disabled = false;
+    }
 }
 
 // ── context label ─────────────────────────────────────────────────────────────
@@ -254,12 +311,12 @@ function wmUpdateContextLabel() {
         const endMs  = entry.endDate - now;
         const endHrs = Math.floor(endMs / 3600000);
         const endMin = Math.floor((endMs % 3600000) / 60000);
-        label.textContent = `⚔️ Season ${entry.season} · Battle ${entry.battle} — active, ends in ${endHrs}h ${endMin}m`;
+        label.textContent = `⚔️ Season ${entry.season}.${entry.battle} : active, ends in ${endHrs}h ${endMin}m`;
     } else {
         const startMs  = entry.startDate - now;
         const startHrs = Math.floor(startMs / 3600000);
         const startMin = Math.floor((startMs % 3600000) / 60000);
-        label.textContent = `🕐 Next: Season ${entry.season} · Battle ${entry.battle} — starts in ${startHrs}h ${startMin}m`;
+        label.textContent = `🕐 Next: Season ${entry.season}.${entry.battle} : starts in ${startHrs}h ${startMin}m`;
     }
 }
 
@@ -329,10 +386,10 @@ function initWarMapPanel() {
     const exportRow = document.getElementById('wmExportRow');
     const exportOut = document.getElementById('wmExportOutput');
     exportBtn.addEventListener('click', () => {
-        const code = wmExportCode();
-        exportOut.value = code;
-        exportRow.style.display = exportRow.style.display === 'none' ? 'block' : 'none';
-        document.getElementById('wmImportRow').style.display = 'none';
+        const showing = exportRow.style.display !== 'none';
+        exportRow.style.display = showing ? 'none' : 'flex';
+        importRow.style.display = 'none';
+        if (!showing) exportOut.value = wmExportCode();
     });
     document.getElementById('wmExportCopy').addEventListener('click', () => {
         navigator.clipboard.writeText(exportOut.value);
@@ -344,7 +401,8 @@ function initWarMapPanel() {
     const importBtn = document.getElementById('wmImportBtn');
     const importRow = document.getElementById('wmImportRow');
     importBtn.addEventListener('click', () => {
-        importRow.style.display = importRow.style.display === 'none' ? 'block' : 'none';
+        const showing = importRow.style.display !== 'none';
+        importRow.style.display = showing ? 'none' : 'flex';
         exportRow.style.display = 'none';
     });
     document.getElementById('wmImportConfirm').addEventListener('click', () => {
@@ -355,8 +413,11 @@ function initWarMapPanel() {
         }
     });
 
+    // grid capture
+    document.getElementById('wmCaptureBtn').addEventListener('click', wmCaptureGrid);
+
     wmRender();
 }
 
-// call once DOM is ready — main.js can call this, or we self-init via DOMContentLoaded
+// call once DOM is ready. main.js can call this, or we self-init via DOMContentLoaded
 document.addEventListener('DOMContentLoaded', initWarMapPanel);

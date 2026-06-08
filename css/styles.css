@@ -224,15 +224,14 @@ h1 {
 }
 
 .wm-tile-top {
-    font-size:          10px;
-    font-weight:        bold;
+    display:            flex;
+    align-items:        center;
+    justify-content:    space-between;
+    font-size:          11px;
+    padding:            2px 4px 2px;
     color:              #e0e0e0;
-    text-align:         center;
-    padding:            4px 4px 2px;
     background:         rgba(0,0,0,0.3);
-    white-space:        nowrap;
-    overflow:           hidden;
-    text-overflow:      ellipsis;
+    gap:                3px;
 }
 
 .wm-tile-img-wrap {
@@ -250,7 +249,7 @@ h1 {
 }
 
 .wm-tile-badge-inline {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: bold;
     color: #fff;
     letter-spacing: 1px;
@@ -272,8 +271,8 @@ h1 {
 }
 
 .wm-tile-bottom .wm-map-alt {
-    color: #888;
-    font-size: 9px;
+    color: #999;
+    font-size: 10px;
 }
 
 .wm-view-btn {
