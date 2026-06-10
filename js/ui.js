@@ -306,7 +306,7 @@ function createBattleLineHTML(battle, perspective, overrideLabel = null) {
                     <span style="color:${theme.textMuted}; font-weight:bold;">${battleLabel}</span>
                     <span>${resultLabel}</span>
                     <span style="color:${theme.textMuted}; text-transform:capitalize; font-weight:bold;">${battle.rarity}</span>
-                    <span style="color:${theme.token}; font-weight:bold;" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '—'}</span>
+                    <span style="color:${theme.token}; font-weight:bold;" title="Performance">⭐ ${battle.performance?.toFixed(2) ?? '-'}</span>
                 </div>
                 <div style="width:30%; text-align:right; font-size:14px;" title="Buffs">${buffsHTML || '-'}</div>
             </div>
@@ -497,18 +497,18 @@ function buildLegendHTML() {
     const perfRowsHTML = perfRows.map(({ label, keys }) => `
         <tr>
             <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[0]] ?? '—'}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[1]] ?? '—'}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[2]] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[0]] ?? '-'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[1]] ?? '-'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#fbbf24;">${PERFORMANCE_METRIC[keys[2]] ?? '-'}</td>
         </tr>
     `).join('');
 
     const addonRowsHTML = addonRows.map(({ label, keys }) => `
         <tr>
             <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[0]] ?? '—'}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[1]] ?? '—'}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[2]] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[0]] ?? '-'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[1]] ?? '-'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">+${PERFORMANCE_ADDONS[keys[2]] ?? '-'}</td>
         </tr>
     `).join('');
 
@@ -538,7 +538,7 @@ function buildLegendHTML() {
     const combinedRankRowsHTML = combinedRankRows.map(({ label, key }) => `
         <tr>
             <td style="padding:3px 12px 3px 0; font-size:12px; color:#ccc;">${label}</td>
-            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">${PERFORMANCE_WEIGHTS[key] ?? '—'}</td>
+            <td style="padding:3px 8px; text-align:center; font-size:12px; color:#4cec86;">${PERFORMANCE_WEIGHTS[key] ?? '-'}</td>
         </tr>
     `).join('');
 
@@ -764,7 +764,7 @@ function buildRankingHTML(guild) {
             const value = key === 'performanceMetric'
                 ? stats[key].toFixed(2)
                 : stats[key].toLocaleString();
-            return `${String(i + 1).padStart(2, ' ')}. ${stats.displayName} — ${icon} ${value}`;
+            return `${String(i + 1).padStart(2, ' ')}. ${stats.displayName} - ${icon} ${value}`;
         })
     ].join('\n');
 

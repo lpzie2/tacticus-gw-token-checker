@@ -271,12 +271,13 @@ async function wmCaptureGrid() {
             logging: false,
         });
 
-        const a = document.createElement('a');
-        a.href = canvas.toDataURL('image/png');
-        a.download = 'war-map.png';
+        const season    = wmSeasonKey ? wmSeasonKey.replace('.', '_') : 'unknown';
+        const a         = document.createElement('a');
+        a.href          = canvas.toDataURL('image/png');
+        a.download      = `warmap_${season}.png`;
         a.click();
         btn.textContent = '📸 Capture Grid';
-        btn.disabled = false;
+        btn.disabled    = false;
 
     } catch (e) {
         alert('Capture failed: ' + e.message);
@@ -291,7 +292,7 @@ function wmUpdateContextLabel() {
     const label = document.getElementById('warMapContextLabel');
     if (!label) return;
 
-    // if a file has been loaded, season is known — no need for the schedule label
+    // if a file has been loaded, season is known. no need for the schedule label
     if (typeof currentSeasonKey === 'string' && currentSeasonKey) {
         label.style.display = 'none';
         return;
