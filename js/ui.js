@@ -847,7 +847,7 @@ function showMapOverlay(tile, battleId = null) {
     const calibrateOutput = document.getElementById('mapCalibrateOutput');
 
     document.getElementById('mapCaption').textContent = caption;
-    mapImage.src = `img/maps/with_spawns/${mapId.toLowerCase()}.png`;
+    mapImage.src = `img/maps/grid_n_spawns/${mapId.toLowerCase()}.png`;
     document.getElementById('mapSpawnIcons').innerHTML = '';
     calibrateBtn.style.display = DEV_MODE ? 'inline-block' : 'none';
     

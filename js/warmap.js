@@ -127,8 +127,9 @@ function wmTileImageSrc(tileId) {
 }
 
 function wmMapImageSrc(mapId, view) {
-    if (view === 'spawns')   return `img/maps/with_spawns/${mapId.toLowerCase()}.png`;
-    if (view === 'original') return `img/maps/original/${mapId.toLowerCase()}.png`;
+    if (view === 'grid_n_spawns')   return `img/maps/grid_n_spawns/${mapId.toLowerCase()}.png`;
+    if (view === 'only_spawns')     return `img/maps/only_spawns/${mapId.toLowerCase()}.png`;
+    if (view === 'original')        return `img/maps/original/${mapId.toLowerCase()}.png`;
     return `img/tiles/${tileId.toLowerCase()}.png`;
 }
 
