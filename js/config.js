@@ -504,6 +504,26 @@ const TEAM_META_DEFINITIONS = {
         requiredUnits: ["genesPrimus", "genesBiophagus", "genesKelermorph", "tauCrisis", "tauMarksman"],
         requiredMOW: null
     },
+    "CRIMJ": {
+        metaTeam: "GSC",
+        requiredUnits: ["genesPrimus", "genesKelermorph", "tauCrisis", "adeptCelestine", "bloodMephiston"],
+        requiredMOW: null
+    },
+    "CRImJ": {
+        metaTeam: "GSC",
+        requiredUnits: ["genesPrimus", "genesKelermorph", "tauCrisis", "adeptCelestine", "bloodIntercessor"],
+        requiredMOW: null
+    },
+    "RIMmJ": {
+        metaTeam: "GSC",
+        requiredUnits: ["genesPrimus", "genesKelermorph", "tauCrisis", "bloodMephiston", "bloodIntercessor"],
+        requiredMOW: null
+    },
+    "CRILJ": {
+        metaTeam: "GSC",
+        requiredUnits: ["genesPrimus", "genesKelermorph", "tauCrisis", "adeptCelestine", "emperLucius"],
+        requiredMOW: null
+    },
     "Summoning Nids": {
         metaTeam: "Tyranids",
         requiredUnits: ["genesPatriarch", "tyranWingedPrime", "genesPrimus", "genesBiophagus", "tyranParasite"],
@@ -579,14 +599,39 @@ const TEAM_META_DEFINITIONS = {
         requiredUnits: ["tauCrisis", "ultraCalgar", "eldarMauganRa", "tauFarsight", "eldarAutarch"],
         requiredMOW: null
     },
+    "Overwatch Hell [JkT]": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["ultraCalgar", "templChampion", "eldarMauganRa", "eldarRanger", "astraOrdnance"],
+        requiredMOW: null
+    },
+    "Overwatch Hell Alt 1 [JkT]": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["ultraCalgar", "templChampion", "admecDestroyer", "eldarRanger", "astraOrdnance"],
+        requiredMOW: null
+    },
+    "Overwatch Hell Alt 2 [JkT]": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["ultraCalgar", "darkaCompanion", "eldarMauganRa", "eldarRanger", "astraOrdnance"],
+        requiredMOW: null
+    },
+    "Overwatch Hell Alt 3 [JkT]": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["ultraCalgar", "darkaCompanion", "admecDestroyer", "eldarRanger", "astraOrdnance"],
+        requiredMOW: null
+    },
     "Friendly Fire": {
         metaTeam: "Astra Mil.",
         requiredUnits: ["adeptCelestine", "astraYarrick", "adeptHospitaller", "astraDreir", "adeptRetributor"],
         requiredMOW: null
     },
-    "Beefy Chaos": {
-        metaTeam: "Chaos",
+    "Beefy Chaos w/ Spice": {
+        metaTeam: "Terminator",
         requiredUnits: ["blackTerminator", "blackAbaddon", "deathBlightbringer", "worldKharn", "worldTerminator"],
+        requiredMOW: null
+    },
+    "S-Tier Death Guard": {
+        metaTeam: "Death Guard",
+        requiredUnits: ["deathBlightlord", "deathRotbone", "blackAbaddon", "emperLucius", "blackObliterator"],
         requiredMOW: null
     },
 
@@ -630,6 +675,11 @@ const TEAM_META_DEFINITIONS = {
     "Basic Boosted Overwatch": {
         metaTeam: "Overwatch",
         requiredUnits: ["tauCrisis", "ultraCalgar", "eldarMauganRa"],
+        requiredMOW: null
+    },
+    "Basic Overwatch Hell [JkT]": {
+        metaTeam: "Overwatch",
+        requiredUnits: ["ultraCalgar", "eldarMauganRa", "eldarRanger"],
         requiredMOW: null
     },
     "Windy Death Guard": {
@@ -677,9 +727,14 @@ const TEAM_META_DEFINITIONS = {
         requiredUnits: ["thousInfernalMaster", "thousTzaangor", "thousAhriman"],
         requiredMOW: null
     },
-    "Standard Double Howl": {
+    "Babby's First Double Howl": {
         metaTeam: "Howl",
         requiredUnits: ["spaceBlackmane", "tauAunShi", "worldKharn"],
+        requiredMOW: null
+    },
+    "Standard Double Howl": {
+        metaTeam: "Howl",
+        requiredUnits: ["spaceBlackmane", "tauAunShi", "custoBladeChampion"],
         requiredMOW: null
     },
     "Basic Admech": {
@@ -713,6 +768,7 @@ const TEAM_META_DEFINITIONS = {
     //}
 
     // 1 man teams (very risky to put units here, will mask a lot of different teams.)
+
     //"Sad Single Howl": {
     //    metaTeam: "Howl",
     //    requiredUnits: ["spaceBlackmane"],
@@ -1391,6 +1447,6 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "LHE_Desert_06",
         "MedicaeStation2":      "CE2_06",
         "ComsStation":          "LHE_Desert_03"
-    }
+    },
 
 };
