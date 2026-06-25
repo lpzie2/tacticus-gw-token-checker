@@ -134,7 +134,9 @@ function wmMapImageSrc(mapId, view) {
 }
 
 function wmRarityString(tileId) {
-    return TILE_RARITY?.[wmBattlefield]?.[tileId] ?? null;
+    const season = wmSeasonNumber();
+    if (!season) return null;
+    return TILE_RARITY?.[season]?.[wmBattlefield]?.[tileId] ?? null;
 }
 
 // dominant rarity = first char of the rarity string (highest rarity listed first)
@@ -146,6 +148,10 @@ function wmDominantRarity(tileId) {
 
 function wmIsToughMap(mapId) {
     return mapId && PERFORMANCE_TOUGH_MAPS.includes(mapId);
+}
+
+function wmSeasonNumber() {
+    return wmSeasonKey ? wmSeasonKey.split('.')[0] : null;
 }
 
 // ── render ────────────────────────────────────────────────────────────────────
