@@ -7,6 +7,7 @@ const WM_TILE_CODES = {
     'Armoury':              'am',
     'ArtilleryPosition1':   'ap1',
     'ArtilleryPosition2':   'ap2',
+    'AntiAirBattery':       'aa',
     'AntiAirBattery1':      'aa1',
     'AntiAirBattery2':      'aa2',
     'Bunker1':              'bk1',
@@ -20,6 +21,8 @@ const WM_TILE_CODES = {
     'Garrison1':            'gr1',
     'Garrison2':            'gr2',
     'LandingPad':           'lp',
+    'LandingPad1':          'lp1',
+    'LandingPad2':          'lp2',
 };
 
 // a standard default map layout.
