@@ -14,10 +14,13 @@ const ZONE_POINTS = {
     'MedicaeStation2':      16000,
     'ArtilleryPosition1':   16000,
     'ArtilleryPosition2':   16000,
+    'AntiAirBattery':       16000,
     'AntiAirBattery1':      16000,
     'AntiAirBattery2':      16000,
     'WarpRift':             16000,
     'LandingPad':           16000,
+    'LandingPad1':          16000,
+    'LandingPad2':          16000,
     'Garrison1':            16000,
     'Garrison2':            16000,
 };
