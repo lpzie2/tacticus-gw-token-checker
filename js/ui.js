@@ -663,7 +663,7 @@ function openFailedHitsOverlay(guild) {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
             <div>
                 <div style="font-size:1.1em; font-weight:bold;">${guildName} - Failed Hits</div>
-                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted most to least depressing.</div>
+                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted most to least to most depressing.</div>
             </div>
         </div>
         ${linesHTML}
