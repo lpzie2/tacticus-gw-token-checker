@@ -442,6 +442,7 @@ function buildLegendHTML() {
         { icon: '⭐', label: 'Performance metric (see below)' },
         { icon: '🔷', label: 'Rank of Combined Ranks (see below)' },
         { icon: '🤖', label: 'Fights against NPC lines' },
+        { icon: '🔴', label: 'Difficult map (see below)' },
         { icon: '⚠️', label: 'Automatic map assignment may not be accurate' },
         { icon: '💊💊', label: '2 medicae buffs active' },
         { icon: '💊💥', label: '1 medicae buff active' },

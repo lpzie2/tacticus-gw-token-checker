@@ -189,7 +189,7 @@ function wmRender() {
             <div class="wm-tile-top">
                 <span class="wm-tile-badge-inline" style="min-width:20px; text-align:left;">${rarityStr ?? ''}</span>
                 <span style="flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${tileId}">${displayName}</span>
-                <span style="min-width:20px; text-align:right;">${isTough ? '⚠️' : ''}</span>
+                <span style="min-width:20px; text-align:right;">${isTough ? '🔴' : ''}</span>
             </div>
             <div class="wm-tile-img-wrap">
                 <img src="${imgSrc}" alt="${tileId}" onerror="this.style.opacity='0.15'">

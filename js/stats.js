@@ -179,7 +179,8 @@ function renderStats() {
     const globalBattles = {
         '0med': { hit: 0, cleanup: 0, failed: 0 },
         '1med': { hit: 0, cleanup: 0, failed: 0 },
-        '2med': { hit: 0, cleanup: 0, failed: 0 }
+        '2med': { hit: 0, cleanup: 0, failed: 0 },
+        'npc':  0
     };
 
     Object.values(playerData).forEach(player => {
@@ -188,26 +189,30 @@ function renderStats() {
             globalBattles[med].cleanup  += player.battles[med].cleanup;
             globalBattles[med].failed   += player.battles[med].failed;
         });
+        globalBattles['npc'] += player.defaultLines;
     });
 
     // add totals
     globalBattles.total = {
         hit:        globalBattles['0med'].hit       + globalBattles['1med'].hit     + globalBattles['2med'].hit,
         cleanup:    globalBattles['0med'].cleanup   + globalBattles['1med'].cleanup + globalBattles['2med'].cleanup,
-        failed:     globalBattles['0med'].failed    + globalBattles['1med'].failed  + globalBattles['2med'].failed
+        failed:     globalBattles['0med'].failed    + globalBattles['1med'].failed  + globalBattles['2med'].failed,
+        npc:        globalBattles['npc']
     };
 
     // calculate guild-specific battle stats
     const guild1Battles = {
         '0med': { hit: 0, cleanup: 0, failed: 0 },
         '1med': { hit: 0, cleanup: 0, failed: 0 },
-        '2med': { hit: 0, cleanup: 0, failed: 0 }
+        '2med': { hit: 0, cleanup: 0, failed: 0 },
+        'npc':  0,
     };
 
     const guild2Battles = {
         '0med': { hit: 0, cleanup: 0, failed: 0 },
         '1med': { hit: 0, cleanup: 0, failed: 0 },
-        '2med': { hit: 0, cleanup: 0, failed: 0 }
+        '2med': { hit: 0, cleanup: 0, failed: 0 },
+        'npc':  0,
     };
     
     guild1Players.forEach(player => {
@@ -216,6 +221,7 @@ function renderStats() {
             guild1Battles[med].cleanup  += player.battles[med].cleanup;
             guild1Battles[med].failed   += player.battles[med].failed;
         });
+        guild1Battles['npc'] += player.defaultLines;
     });
 
     guild2Players.forEach(player => {
@@ -224,18 +230,21 @@ function renderStats() {
             guild2Battles[med].cleanup  += player.battles[med].cleanup;
             guild2Battles[med].failed   += player.battles[med].failed;
         });
+        guild2Battles['npc'] += player.defaultLines;
     });
 
     guild1Battles.total = {
         hit:        guild1Battles['0med'].hit       + guild1Battles['1med'].hit     + guild1Battles['2med'].hit,
         cleanup:    guild1Battles['0med'].cleanup   + guild1Battles['1med'].cleanup + guild1Battles['2med'].cleanup,
-        failed:     guild1Battles['0med'].failed    + guild1Battles['1med'].failed  + guild1Battles['2med'].failed
+        failed:     guild1Battles['0med'].failed    + guild1Battles['1med'].failed  + guild1Battles['2med'].failed,
+        npc:        guild1Battles['npc']
     };
 
     guild2Battles.total = {
         hit:        guild2Battles['0med'].hit       + guild2Battles['1med'].hit     + guild2Battles['2med'].hit,
         cleanup:    guild2Battles['0med'].cleanup   + guild2Battles['1med'].cleanup + guild2Battles['2med'].cleanup,
-        failed:     guild2Battles['0med'].failed    + guild2Battles['1med'].failed  + guild2Battles['2med'].failed
+        failed:     guild2Battles['0med'].failed    + guild2Battles['1med'].failed  + guild2Battles['2med'].failed,
+        npc:        guild2Battles['npc']
     };
 
     // calculate the guild scores.
@@ -287,9 +296,10 @@ function renderStats() {
         if (count === 0) return `<span style="color: #b0b0b0;"></span>`;
         
         let color;
-        if (type === 'hit') color = '#4cec86'; // green, colorblind safe
-        else if (type === 'cleanup') color = '#fbbf24'; // yellow, colorblind safe
-        else color = '#e45858'; // red, colorblind safe
+        if (type === 'hit')             color = '#4cec86'; // green, colorblind safe
+        else if (type === 'cleanup')    color = '#fbbf24'; // yellow, colorblind safe
+        else if (type === 'failed')     color = '#e45858'; // red, colorblind safe
+        else                            color = '#23f8ff'; // blue, for npc lines
 
         if (count === 0) {
             return `<span style="color: #b0b0b0;">${count}</span>`;
@@ -301,7 +311,7 @@ function renderStats() {
     // calculate efficiency and projections for Guild 1
     const guild1TokensUsed          = guild1Players.reduce((sum, p) => sum + p.tokensUsed, 0);
     const guild1SuccessfulAttacks   = guild1Battles.total.hit + guild1Battles.total.cleanup;
-    const guild1Efficiency          = guild1TokensUsed > 0 ? ((guild1SuccessfulAttacks / guild1TokensUsed) * 100).toFixed(1) : 0;
+    const guild1Efficiency          = guild1TokensUsed > 0 ? ((guild1SuccessfulAttacks / (guild1TokensUsed - guild1Battles.total.npc)) * 100).toFixed(1) : 0;
 
     const guild1ScaleFactor         = guild1TokensUsed > 0 ? guild1TotalTokens / guild1TokensUsed : 0;
     const guild1ProjectedHits       = Math.round(guild1Battles.total.hit        * guild1ScaleFactor);
@@ -311,33 +321,39 @@ function renderStats() {
     // calculate efficiency and projections for Guild 2
     const guild2TokensUsed          = guild2Players.reduce((sum, p) => sum + p.tokensUsed, 0);
     const guild2SuccessfulAttacks   = guild2Battles.total.hit + guild2Battles.total.cleanup;
-    const guild2Efficiency          = guild2TokensUsed > 0 ? ((guild2SuccessfulAttacks / guild2TokensUsed) * 100).toFixed(1) : 0;
+    const guild2Efficiency          = guild2TokensUsed > 0 ? ((guild2SuccessfulAttacks / (guild2TokensUsed - guild2Battles.total.npc)) * 100).toFixed(1) : 0;
 
     const guild2ScaleFactor         = guild2TokensUsed > 0 ? guild2TotalTokens / guild2TokensUsed : 0;
     const guild2ProjectedHits       = Math.round(guild2Battles.total.hit        * guild2ScaleFactor);
     const guild2ProjectedCleanup    = Math.round(guild2Battles.total.cleanup    * guild2ScaleFactor);
     const guild2ProjectedFailed     = Math.round(guild2Battles.total.failed     * guild2ScaleFactor);
 
-    const createTokenStatsTable = (title, tokensRemaining, totalTokens, tokenEfficiency, projectedHits, projectedCleanups, projectedFails, guildScore, span = 2) => `
+    const createTokenStatsTable = (title, tokensRemaining, totalTokens, tokenEfficiency, guildScore, span = 2) => `
         <div class="stat-card span-${span}" style="text-align: left; padding: 15px;">
             <div style="font-size: 0.9em; margin-bottom: 8px; font-weight: bold; text-align: center;">${title}</div>
-            <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.8;">
-                <div>Remaining #: <span style="font-weight: bold;">${tokensRemaining}</span> (out of <span style="font-weight: bold;">${totalTokens})</span></div>
-                <div>~Efficiency: <span style="font-weight: bold;">${tokenEfficiency}%</span></div>
-                <div>Total Score: <span style="font-weight: bold;">${guildScore.totalScore.toLocaleString()}</span></div>
-                <div>Estm. Final: ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(projectedHits, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(projectedCleanups, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(projectedFails, 'failed')}</span></div>
+            <div style="display: flex; justify-content: center;">
+                <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.8; display: grid; grid-template-columns: max-content 1fr; column-gap: 8px;">
+                    <span>🪙 Remaining:</span>  <span style="font-weight: bold;">${tokensRemaining}  (out of ${totalTokens})</span>
+                    <span>🪙 Efficiency:</span> <span style="font-weight: bold;">${tokenEfficiency}%</span>
+                    <span>Player Score:</span>  <span style="font-weight: bold;">${guildScore.playerScore.toLocaleString()}</span>
+                    <span>Total Score:</span>   <span style="font-weight: bold;">${guildScore.totalScore.toLocaleString()}</span>
+                </div>
             </div>
         </div>
     `;
 
-    const createBattleTable = (title, battles, span = 2) => `
+    const createBattleTable = (title, battles, projectedHits, projectedCleanups, projectedFails, span = 2) => `
         <div class="stat-card span-${span}">
             <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em;">${title}</div>
-            <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.6;">
-                <div>2med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['2med'].failed, 'failed')}</span></div>
-                <div>1med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['1med'].failed, 'failed')}</span></div>
-                <div>0med:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles['0med'].failed, 'failed')}</span></div>
-                <div>totl:  ✅ <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles.total.hit, 'hit')}</span> | 🧹 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles.total.cleanup, 'cleanup')}</span> | 🚫 <span style="display: inline-block; width: 20px; text-align: right;">${formatStat(battles.total.failed, 'failed')}</span></div>
+            <div style="display: flex; justify-content: center;">
+                <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.6; display: grid; grid-template-columns: max-content repeat(3, max-content); column-gap: 12px;">
+                    <span>2med:</span>  <span style="text-align:left;">✅ ${formatStat(battles['2med'].hit, 'hit')}</span>    <span style="text-align:left;">🧹 ${formatStat(battles['2med'].cleanup, 'cleanup')}</span>    <span style="text-align:left;">🚫 ${formatStat(battles['2med'].failed, 'failed')}</span>
+                    <span>1med:</span>  <span style="text-align:left;">✅ ${formatStat(battles['1med'].hit, 'hit')}</span>    <span style="text-align:left;">🧹 ${formatStat(battles['1med'].cleanup, 'cleanup')}</span>    <span style="text-align:left;">🚫 ${formatStat(battles['1med'].failed, 'failed')}</span>
+                    <span>0med:</span>  <span style="text-align:left;">✅ ${formatStat(battles['0med'].hit, 'hit')}</span>    <span style="text-align:left;">🧹 ${formatStat(battles['0med'].cleanup, 'cleanup')}</span>    <span style="text-align:left;">🚫 ${formatStat(battles['0med'].failed, 'failed')}</span>
+                    <span>totl:</span>  <span style="text-align:left;">✅ ${formatStat(battles.total.hit, 'hit')}</span>      <span style="text-align:left;">🧹 ${formatStat(battles.total.cleanup, 'cleanup')}</span>      <span style="text-align:left;">🚫 ${formatStat(battles.total.failed, 'failed')}</span>
+                    <span></span> <span></span> <span></span> <span style="text-align:left;">🤖 ${formatStat(battles.total.npc, 'npc')}</span>
+                    <span>estm:</span>  <span style="text-align:left;">✅ ${formatStat(projectedHits, 'hit')}</span>          <span style="text-align:left;">🧹 ${formatStat(projectedCleanups, 'cleanup')}</span>          <span style="text-align:left;">🚫 ${formatStat(projectedFails, 'failed')}</span>
+                </div>
             </div>
         </div>
     `;
@@ -369,10 +385,10 @@ function renderStats() {
             </div>
         </div>
 
-        ${createTokenStatsTable(document.getElementById('guild1Name').textContent + ' Tokens',  guild1TokensRemaining, guild1TotalTokens,   guild1Efficiency, guild1ProjectedHits, guild1ProjectedCleanup, guild1ProjectedFailed, guild1Score)}
-        ${createBattleTable(document.getElementById('guild1Name').textContent + ' Battles',     guild1Battles)}
-        ${createBattleTable(document.getElementById('guild2Name').textContent + ' Battles',     guild2Battles)}
-        ${createTokenStatsTable(document.getElementById('guild2Name').textContent + ' Tokens',  guild2TokensRemaining, guild2TotalTokens,   guild2Efficiency, guild2ProjectedHits, guild2ProjectedCleanup, guild2ProjectedFailed, guild2Score)}
+        ${createTokenStatsTable(document.getElementById('guild1Name').textContent + ' Tokens',  guild1TokensRemaining, guild1TotalTokens,   guild1Efficiency, guild1Score)}
+        ${createBattleTable(document.getElementById('guild1Name').textContent + ' Battles',     guild1Battles,         guild1ProjectedHits, guild1ProjectedCleanup, guild1ProjectedFailed)}
+        ${createBattleTable(document.getElementById('guild2Name').textContent + ' Battles',     guild2Battles,         guild2ProjectedHits, guild2ProjectedCleanup, guild2ProjectedFailed)}
+        ${createTokenStatsTable(document.getElementById('guild2Name').textContent + ' Tokens',  guild2TokensRemaining, guild2TotalTokens,   guild2Efficiency, guild2Score)}
 
         <div class="stat-card span-4" style="text-align: left; padding: 12px;">
             <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild1Name').textContent} Team Composition</div>
