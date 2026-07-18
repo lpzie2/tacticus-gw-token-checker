@@ -443,12 +443,12 @@ const PERFORMANCE_METRIC = {
 };
 
 const PERFORMANCE_ADDONS = {
-    '2medToughMap':         0.20,
-    '1medToughMap':         0.15,
-    '0medToughMap':         0.10,
-    '2medToughTeam':        0.20,
-    '1medToughTeam':        0.15,
-    '0medToughTeam':        0.10
+    '2medToughMap':         0.15,
+    '1medToughMap':         0.10,
+    '0medToughMap':         0.05,
+    '2medToughTeam':        0.15,
+    '1medToughTeam':        0.10,
+    '0medToughTeam':        0.05
 };
 
 const PERFORMANCE_BUFF_SCALING = [
@@ -588,7 +588,7 @@ const MAP_SPAWN_POINTS = {
                 { x: 72.7, y: 82.2 }
         ]
     },
-    'EC1_09': { //  right ridge, done.
+    'EC1_09': { // right ridge, done.
         def: [  { x: 25.4, y: 21.7 },
                 { x: 37.8, y: 25.4 },
                 { x: 50.0, y: 20.6 },
@@ -632,9 +632,9 @@ const MAP_SPAWN_POINTS = {
         ]
     },
     'LHE_Desert_03': { // oasis, done.
-        def: [  { x: 74.7, y: 27.7 },
+        def: [  { x: 74.7, y: 18.7 },
                 { x: 87.4, y: 21.7 },
-                { x: 74.7, y: 18.7 },
+                { x: 74.7, y: 27.7 },
                 { x: 25.0, y: 30.8 },
                 { x: 12.7, y: 35.2 }
         ],
