@@ -54,10 +54,10 @@ const WM_CODE_TO_TILE = Object.fromEntries(
 let wmLayout            = [];
 let WM_TILE_ORDER       = [...WM_TILE_ORDER_DEFAULT];
 let wmBattlefield       = '1';
-let wmView              = 'tile';               // 'tile' | 'spawns' | 'original'
+let wmView              = 'only_spawns';    // 'tile', 'original', 'only_spawns', 'grid_n_spawns' 
 let wmSwapMode          = false;
-let wmSwapFirst         = null;                 // index of first-selected card in swap mode
-let wmSeasonKey         = null;                 // resolved season key e.g. '23.2'
+let wmSwapFirst         = null;             // index of first-selected card in swap mode
+let wmSeasonKey         = null;             // resolved season key e.g. '23.2'
 let wmShowIngameName    = false;
 
 // ── helpers ───────────────────────────────────────────────────────────────────

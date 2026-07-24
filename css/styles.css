@@ -19,8 +19,25 @@ body {
 h1 {
     text-align: center;
     color: #fcfcfc;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
     font-size: 1.8em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+h3 {
+    text-align: center;
+    color: #dddddd;
+    margin-bottom: 2px;
+    font-size: 1.2em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+
+h5 {
+    text-align: center;
+    color: #b6b6b6;
+    margin-bottom: 20px;
+    font-size: 0.8em;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
