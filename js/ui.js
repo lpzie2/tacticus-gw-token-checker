@@ -111,7 +111,7 @@ function createPlayerCard(userId, stats) {
     `;
 
     card.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
             ${stats.guild === null ? `
                 <div style="display:flex; gap:4px; margin-bottom:6px;">
                     <button onclick="event.stopPropagation(); setPlayerGuild('${userId}', 1)"
@@ -122,23 +122,29 @@ function createPlayerCard(userId, stats) {
                         style="flex:1; background:#4a4a7a; border:none; border-radius:4px; color:white; font-size:11px; padding:4px 6px; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${document.getElementById('guild2Name').textContent} →</button>
                 </div>
             ` : ''}
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
                 <div class="player-name">${stats.displayName}</div>
                 <div style="display:flex; gap:4px;">
                     ${stats.guild !== null ? `
                         <button onclick="event.stopPropagation(); swapPlayerGuild('${userId}')"
                             title="Swap guild"
-                            style="background:#6c757d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">⇄</button>
+                            style="background:#6c757d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">⇄ Swap</button>
                     ` : ''}
-                    <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'attacker')"
-                        title="Attack details"
-                        style="background:#1d6fa4; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">⚔️</button>
-                    <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'defender')"
-                        title="Defense details"
-                        style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🛡️</button>
                     <button onclick="event.stopPropagation(); showMapOverlay('${stats.mapAssignedTo}')"
                         title="Show map"
-                        style="background:#4a6a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🗺️</button>
+                        style="background:#4a6a4a; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🗺️ Map</button>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
+                <div style="font-size:12px; color:#888; font-weight:bold">${stats.mapAssignedTo ?? ''}</div>
+                <div style="display:flex; gap:4px;">
+                    <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'attacker')"
+                        title="Attack details"
+                        style="background:#1d6fa4; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">⚔️ Atks</button>
+                    <button onclick="event.stopPropagation(); toggleBattleDetails('${userId}', 'defender')"
+                        title="Defense details"
+                        style="background:#a43a1d; border:none; border-radius:4px; color:white; font-size:11px; padding:2px 6px; cursor:pointer;">🛡️ Defs</button>
                 </div>
             </div>
 
@@ -826,10 +832,10 @@ function getMapDisplayName(certainty, tile) {
     if (!mapId)     return tile;
     if (certainty) {
         if (!altName)   return `${tile} (${mapId})`;
-        return `${tile} (${mapId} / ${altName})`;
+        return `${mapId} (${altName})`;
     } else {
         if (!altName)   return `⚠️ ${tile} (${mapId})`;
-        return `⚠️ ${tile} (${mapId} / ${altName})`;
+        return `⚠️ ${mapId} (${altName})`;
     }
 }
 
