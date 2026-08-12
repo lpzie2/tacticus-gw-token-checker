@@ -333,11 +333,11 @@ function wmUpdateContextLabel() {
 
         if (now < fightStart) {
             phase = 'Planning';
-            phaseColor = '#e8a83c'; // amber
+            phaseColor = '#e8a83c';
             timeLeftMs = fightStart - now;
         } else {
             phase = 'War';
-            phaseColor = '#e0483c'; // red
+            phaseColor = '#e0483c';
             timeLeftMs = entry.endDate - now;
         }
 
