@@ -275,10 +275,24 @@ async function wmCaptureGrid() {
     btn.disabled = true;
 
     try {
-        const canvas = await html2canvas(document.getElementById('wmGrid'), {
+        const grid = document.getElementById('wmGrid');
+
+        // make sure every image in the grid has actually finished loading
+        const imgs = Array.from(grid.querySelectorAll('img'));
+        await Promise.all(imgs.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.addEventListener('load', resolve, { once: true });
+                img.addEventListener('error', resolve, { once: true }); // don't hang on broken images
+            });
+        }));
+
+        const canvas = await html2canvas(grid, {
             backgroundColor: '#1a1a2e',
             scale: 2,
-            logging: true,
+            logging: false,
+            useCORS: true,
+            allowTaint: false,
         });
 
         const season    = wmSeasonKey ? wmSeasonKey.replace('.', '_') : 'unknown';
