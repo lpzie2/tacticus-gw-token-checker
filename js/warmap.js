@@ -278,7 +278,7 @@ async function wmCaptureGrid() {
         const canvas = await html2canvas(document.getElementById('wmGrid'), {
             backgroundColor: '#1a1a2e',
             scale: 2,
-            logging: false,
+            logging: true,
         });
 
         const season    = wmSeasonKey ? wmSeasonKey.replace('.', '_') : 'unknown';
