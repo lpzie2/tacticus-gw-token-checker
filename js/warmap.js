@@ -318,16 +318,40 @@ function wmUpdateContextLabel() {
     const entry = WAR_SCHEDULE.find(e => `${e.season}.${e.battle}` === wmSeasonKey);
     if (!entry) { label.textContent = `Season ${wmSeasonKey}`; return; }
 
+    // fall back to startDate when fightStart is missing, so the whole
+    // active window is treated as the "War" phase
+    const fightStart = entry.fightStart ?? entry.startDate;
+
+    const fmt = (ms) => {
+        const hrs = Math.floor(ms / 3600000);
+        const min = Math.floor((ms % 3600000) / 60000);
+        return `${hrs} hrs ${min} mins`;
+    };
+
     if (now >= entry.startDate && now <= entry.endDate) {
-        const endMs  = entry.endDate - now;
-        const endHrs = Math.floor(endMs / 3600000);
-        const endMin = Math.floor((endMs % 3600000) / 60000);
-        label.textContent = `⚔️ Season ${entry.season}.${entry.battle} : active, ends in ${endHrs}h ${endMin}m`;
+        let phase, phaseColor, timeLeftMs;
+
+        if (now < fightStart) {
+            phase = 'Planning';
+            phaseColor = '#e8a83c'; // amber
+            timeLeftMs = fightStart - now;
+        } else {
+            phase = 'War';
+            phaseColor = '#e0483c'; // red
+            timeLeftMs = entry.endDate - now;
+        }
+
+        label.innerHTML =
+            `<span style="color:#7ec8ff; font-weight:bold;">SEASON ${entry.season}.${entry.battle}</span><br>` +
+            `<span style="font-weight:bold;">Current Phase:</span> ` +
+            `<span style="color:${phaseColor}; font-weight:bold;">${phase}</span><br>` +
+            `<span style="font-weight:bold;">Time Left:</span> ${fmt(timeLeftMs)}`;
     } else {
-        const startMs  = entry.startDate - now;
-        const startHrs = Math.floor(startMs / 3600000);
-        const startMin = Math.floor((startMs % 3600000) / 60000);
-        label.textContent = `🕐 Next: Season ${entry.season}.${entry.battle} : starts in ${startHrs}h ${startMin}m`;
+        const startMs = entry.startDate - now;
+        label.innerHTML =
+            `🕐 <span style="font-weight:bold;">Next:</span> ` +
+            `<span style="color:#7ec8ff; font-weight:bold;">Season ${entry.season}.${entry.battle}</span> : ` +
+            `starts in ${fmt(startMs)}`;
     }
 }
 
