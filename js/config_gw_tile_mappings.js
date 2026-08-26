@@ -1,6 +1,41 @@
 // guild war tile-to-map mapping.
 // get from https://lpzie2.github.io/tacticus-gw-tile-mapping/
 const SEASON_MAPS = {
+    '22.1': {
+        "HQ": "MC1_31",
+        "Armoury":              "LHE_Desert_06",
+        "Bunker1":              "LHE_Desert_05",
+        "Bunker2":              "C1_23",
+        "Trenches1":            "EC1_09",
+        "Trenches2":            "MC1_11",
+        "Trenches3":            "EMC1_06",
+        "ComsStation":          "C1_70",
+        "SupplyDepot":          "CE2_06",
+        "AntiAirBattery1":      "PVP_desert_10",
+        "AntiAirBattery2":      "LHE_Desert_03",
+        "MedicaeStation1":      "LHE_Desert_02",
+        "MedicaeStation2":      "C1_37",
+        "ArtilleryPosition1":   "C1_15",
+        "ArtilleryPosition2":   "LHE_Desert_04"
+    },
+    '22.2': {
+        "HQ":                   "LHE_Desert_04",
+        "Armoury":              "LHE_Desert_05",
+        "Bunker1":              "LHE_Desert_06",
+        "Bunker2":              "MC1_11",
+        "Trenches1":            "LHE_Desert_02",
+        "Trenches2":            "CE2_06",
+        "Trenches3":            "LHE_Desert_03",
+        "ComsStation":          "C1_70",
+        "SupplyDepot":          "MC1_31",
+        "AntiAirBattery1":      "PVP_desert_10",
+        "AntiAirBattery2":      "C1_37",
+        "MedicaeStation1":      "EMC1_06",
+        "MedicaeStation2":      "C1_23",
+        "ArtilleryPosition1":   "EC1_09",
+        "ArtilleryPosition2":   "C1_15"
+    },
+    // from here on up, i'm pulling from the historical data on xyz.
     '22.3': {
         'Trenches1':            'CE2_06',
         'Trenches2':            'C1_37',
@@ -459,6 +494,23 @@ const SEASON_MAPS = {
         "MedicaeStation1":      "LHE_Desert_04",
         "MedicaeStation2":      "C1_37",
         "AntiAirBattery":       "C1_70"
-    }
+    },
+    '26.6': {
+        "Trenches1":            "MC1_11",
+        "Trenches2":            "LHE_Desert_02",
+        "Trenches3":            "CE2_06",
+        "HQ":                   "LHE_Desert_04",
+        "ArtilleryPosition1":   "C1_70",
+        "ArtilleryPosition2":   "C1_15",
+        "LandingPad1":          "PVP_desert_10",
+        "LandingPad2":          "C1_23",
+        "Armoury":              "LHE_Desert_06",
+        "Bunker1":              "EC1_09",
+        "Bunker2":              "C1_37",
+        "SupplyDepot":          "LHE_Desert_05",
+        "MedicaeStation1":      "EMC1_06",
+        "MedicaeStation2":      "MC1_31",
+        "AntiAirBattery":       "LHE_Desert_03"
+    },
 
 };
