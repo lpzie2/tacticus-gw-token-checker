@@ -38,13 +38,14 @@ function processGameData() {
                 '1med': { hit: 0, cleanup: 0, failed: 0 },
                 '2med': { hit: 0, cleanup: 0, failed: 0 }
             },
-            performanceMetric: 0.0,
+            performanceMetric: 0.0,         // the final performance value.
             defaultLines: 0,
-            battleAsAttacker: [], // these are just
-            battleAsDefender: [], // the log.id's.
-            performancePerBattle: [],
-            defenseTeams: [], // these are the actual teams,
-            offenseTeams: [], // but not the actual fight.
+            battleAsAttacker: [],           // these are just
+            battleAsDefender: [],           // the log.id's.
+            performancePerBattle: [],       // the performance per battle.
+            rawPerformancePerBattle: [],    // the raw performance per battle, no addons
+            defenseTeams: [],               // these are the actual teams,
+            offenseTeams: [],               // but not the actual fight.
             defenseTeamSignatures: new Set(),
             offenseTeamSignatures: new Set(),
             battleDetailsAsAttacker: [],
@@ -128,6 +129,7 @@ function processGameData() {
                 playerData[attackerId].attacks++;
                 playerData[attackerId].battleAsAttacker.push(log.id);
                 playerData[attackerId].performancePerBattle.push(0.0);
+                playerData[attackerId].rawPerformancePerBattle.push(0.0);
 
                 // if-statement because defender might be an npc
                 if (defenderId && playerData[defenderId]) {
@@ -170,6 +172,7 @@ function processGameData() {
                 playerData[attackerId].attacks++;
                 playerData[attackerId].battleAsAttacker.push(log.id);
                 playerData[attackerId].performancePerBattle.push(0.0);
+                playerData[attackerId].rawPerformancePerBattle.push(0.0);
 
                 addAttackerTeam(attackerId, log.attacker, log.id);
 
@@ -262,10 +265,6 @@ function processGameData() {
 
             //console.log(`key: |${attKey}| found: ${attKey in PERFORMANCE_METRIC} value: ${PERFORMANCE_METRIC[attKey]}`);
             const basePerformanceValue = PERFORMANCE_METRIC[attKey] ?? 100.0; // makes errors obvious.
-
-            // final performance should also take into account the tough
-            //  maps and lineups. so it needs to be tallied after the
-            //  addDefenderTeam() call.
                 
             // record the battle stats to both players.         v-- deals with SP returning tokens, kinda.
             playerData[attackerId].tokensRemaining  = Math.max(0, Math.min(10, playerData[attackerId].tokensRemaining - 1));
@@ -295,6 +294,8 @@ function processGameData() {
             const buffPerformanceBonus  = npcLine ? 0.0 : getBuffPerformanceModifier(attResultType, buffs, medCount)
             const finalPerformanceValue = basePerformanceValue + mapPerformanceBonus + defPerformanceBonus + buffPerformanceBonus
             
+            
+            playerData[attackerId].rawPerformancePerBattle.push(basePerformanceValue);
             playerData[attackerId].performancePerBattle.push(finalPerformanceValue);
             playerData[attackerId].performanceMetric += finalPerformanceValue;
 

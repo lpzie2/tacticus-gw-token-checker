@@ -768,4 +768,10 @@ const WAR_SCHEDULE = [
     { startDate: 1787347800000, fightStart: 1787434200000, endDate: 1787562000000, season: 26, battle: 4 },
     { startDate: 1787563800000, fightStart: 1787650200000, endDate: 1787778000000, season: 26, battle: 5 },
     { startDate: 1787779800000, fightStart: 1787866200000, endDate: 1787994000000, season: 26, battle: 6 },
+    { startDate: 1789551000000, fightStart: 1789810200000, endDate: 1789938000000, season: 27, battle: 1 },
+    { startDate: 1789939800000, fightStart: 1790026200000, endDate: 1790154000000, season: 27, battle: 2 },
+    { startDate: 1790155800000, fightStart: 1790242200000, endDate: 1790370000000, season: 27, battle: 3 },
+    { startDate: 1790371800000, fightStart: 1790458200000, endDate: 1790586000000, season: 27, battle: 4 },
+    { startDate: 1790587800000, fightStart: 1790674200000, endDate: 1790802000000, season: 27, battle: 5 },
+    { startDate: 1790803800000, fightStart: 1790890200000, endDate: 1791018000000, season: 27, battle: 6 },
 ];

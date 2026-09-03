@@ -359,6 +359,8 @@ h5 {
 .wm-rarity-legendary { border-color: #3be8ff; }
 .wm-rarity-mythic    { border-color: #ff4800; }
 
+
+/* ── Overall Look ─────────────────────────── */
 .guild-column {
     background: #2a2a3e;
     border-radius: 10px;
@@ -414,15 +416,17 @@ h5 {
     margin-bottom: 8px;
     border-radius: 6px;
     cursor: default;
-    transition: all 0.3s;
+    /* transition: all 0.3s; */
     border: 2px solid transparent;
 }
 
+/*
 .player-card:hover {
     transform: translateY(0px);
     box-shadow: 0 3px 10px rgba(74, 158, 255, 0.3);
     border-color: #4a9eff;
 }
+*/
 
 .player-card.dragging {
     opacity: 0.5;
@@ -524,6 +528,56 @@ h5 {
     color: #fcfcfc;
 }
 
+
+/* ── Token Pips ─────────────────────────── */
+.perf-pips {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.perf-pip {
+    width: 10px;
+    height: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.pip-unused       { background: #5a5a5a; }
+.pip-bright-green { background: #26ff5c; }
+.pip-green        { background: #4cec86; }
+.pip-dull-green   { background: #89daa2; }
+.pip-yellow       { background: #fff242; }
+.pip-red          { background: #fc5151; }
+.pip-light-blue   { background: #56c4f7; }
+.pip-purple       { background: #ca70f7; }
+
+.pip-tooltip {
+    position: fixed;
+    background: #111;
+    color: #fff;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    pointer-events: none;
+    z-index: 10000;
+    display: none;
+    white-space: nowrap;
+}
+
+.all-pips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(10, auto);
+    grid-auto-flow: column;
+    column-gap: 12px;
+    row-gap: 3px;
+}
+
+/* ── Team Cards ─────────────────────────── */
 .empty-state {
     text-align: center;
     color: #999;
@@ -677,4 +731,8 @@ h5 {
     }
 
     .span-2, .span-3, .span-4 { grid-column: span 1; }
+
+    .all-pips-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }

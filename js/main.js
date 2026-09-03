@@ -146,6 +146,14 @@ document.getElementById('topBattlesOverlay').addEventListener('click', function(
     if (e.target === this) this.classList.remove('active');
 });
 
+// all pips overlay listeners
+document.getElementById('closeAllPips').addEventListener('click', function() {
+    document.getElementById('allPipsOverlay').classList.remove('active');
+});
+document.getElementById('allPipsOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
 // map overlay listeners
 document.getElementById('closeMap').addEventListener('click', function() {
     document.getElementById('mapOverlay').classList.remove('active');
@@ -187,4 +195,39 @@ document.getElementById('demoButton').addEventListener('click', function() {
     } catch (error) {
         alert('Error parsing JSON data: ' + error.message);
     }
+});
+
+// pip hover gives performance info
+document.addEventListener('DOMContentLoaded', () => {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'pip-tooltip';
+    document.body.appendChild(tooltip);
+
+    function positionTooltip(e) {
+        tooltip.style.left = `${e.clientX + 10}px`;
+        tooltip.style.top  = `${e.clientY - 30}px`;
+    }
+
+    function showTooltip(e, pip) {
+        tooltip.textContent = pip.dataset.value === 'unused' ? 'Unused token' : pip.dataset.value;
+        tooltip.style.display = 'block';
+        positionTooltip(e);
+    }
+
+    function hideTooltip() {
+        tooltip.style.display = 'none';
+    }
+
+    document.addEventListener('mouseover', (e) => {
+        const pip = e.target.closest('.perf-pip');
+        if (pip) showTooltip(e, pip);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (tooltip.style.display === 'block') positionTooltip(e);
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest('.perf-pip')) hideTooltip();
+    });
 });

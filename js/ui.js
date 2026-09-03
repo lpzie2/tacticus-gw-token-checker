@@ -80,6 +80,32 @@ function buffsToIcons(buffs) {
     return buffs.map(b => BUFF_ICONS[b] || '❓').join('');
 }
 
+function getPipColorClass(value) {
+    if (value >= PERFORMANCE_METRIC['2medWin5'])    return 'pip-bright-green';
+    //if (value >= PERFORMANCE_METRIC['1medWin0'])    return 'pip-green';
+    //if (value >= PERFORMANCE_METRIC['0medWin0'])    return 'pip-dull-green';
+    if (value >= PERFORMANCE_METRIC['0medWin0'])    return 'pip-dull-green';
+    if (value >= PERFORMANCE_METRIC['0medCleanup']) return 'pip-yellow';
+    if (value >= PERFORMANCE_METRIC['npc1Win'])     return 'pip-light-blue';
+    if (value >= PERFORMANCE_METRIC['0medLoss'])    return 'pip-red';
+    return 'pip-purple';
+}
+
+function renderPerformancePips(rawPerformancePerBattle, performancePerBattle) {
+    let html = '<div class="perf-pips">';
+    for (let i = 0; i < 10; i++) {
+        if (i < rawPerformancePerBattle.length) {
+            const rawValue  = rawPerformancePerBattle[i];
+            const value     = performancePerBattle[i];
+            html += `<div class="perf-pip ${getPipColorClass(rawValue)}" data-value="${value.toFixed(2)}"></div>`;
+        } else {
+            html += `<div class="perf-pip pip-unused" data-value="unused"></div>`;
+        }
+    }
+    html += '</div>';
+    return html;
+}
+
 function createPlayerCard(userId, stats) {
     const card      = document.createElement('div');
     card.className  = 'player-card';
@@ -149,7 +175,10 @@ function createPlayerCard(userId, stats) {
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <div style="font-size:11px; color:#888; font-style:italic;">${getMapDisplayName(stats.mapAssignedToCertainty, stats.mapAssignedTo)}</div>
+                <div style="font-size:11px; color:#888; font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;">${getMapDisplayName(stats.mapAssignedToCertainty, stats.mapAssignedTo)}</div>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
+                    ${renderPerformancePips(stats.rawPerformancePerBattle, stats.performancePerBattle)}
+                </div>
             </div>
             
             <div style="display: flex; justify-content: space-between; gap: 20px; align-items: flex-start;">
@@ -411,7 +440,7 @@ function sortButtonsHTML(guild) {
     const buttons = [
         { key: 'tokensRemaining',   icon: '🪙', label: 'Tokens Remaining' },
         { key: 'scoreAtt',          icon: '⚔️', label: 'Attack Score' },
-        { key: 'avgDefScore',       icon: '🛡️', label: 'Token Avg Def Score' },
+        { key: 'avgDefScore',       icon: '🛡️', label: "Token Avg'd Def Score" },
         { key: 'performanceMetric', icon: '⭐', label: 'Performance Metric' },
         { key: 'combinedRank',      icon: '🔷', label: 'Rank of Ranks (⭐, ⚔️)' },
         { key: 'defaultLines',      icon: '🤖', label: 'NPC Lines' },
@@ -427,16 +456,21 @@ function sortButtonsHTML(guild) {
             title="Sort by ${label}">${icon}${arrow}</button>`
     }).join('') + `<button
         onclick="event.stopPropagation(); openRankingOverlay(${guild})"
-        style="background:#3a3a4e; border:1px solid #555; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer; margin-left:4px;"
-        title="Show ranking">🏆</button>
+        style="background:#3a3a4e; border:1px solid #555; border-radius:4px; color:white; font-size:12px; padding:3px 7px; cursor:pointer; margin-left:4px;"
+        title="Show ranking">🏆 Rank by Sort Method</button>
+    <div style="flex-basis:100%; height:0;"></div>
     <button
         onclick="event.stopPropagation(); openFailedHitsOverlay(${guild})"
-        style="background:#6a2a2a; border:1px solid #a44; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
-        title="Show failed hits">🚫</button>
+        style="background:#6a2a2a; border:1px solid #a44; border-radius:4px; color:white; font-size:12px; padding:3px 7px; cursor:pointer;"
+        title="Show failed hits">🚫 All Failed Atks</button>
     <button
         onclick="event.stopPropagation(); openTopBattlesOverlay(${guild})"
-        style="background:#2a4a2a; border:1px solid #4a8; border-radius:4px; color:white; font-size:13px; padding:3px 7px; cursor:pointer;"
-        title="Show top 10 battles">🌟</button>`;
+        style="background:#2a4a2a; border:1px solid #4a8; border-radius:4px; color:white; font-size:12px; padding:3px 7px; cursor:pointer;"
+        title="Show top 10 battles">🌟 Top 10 Best Atks</button>
+    <button
+        onclick="event.stopPropagation(); openAllPipsOverlay(${guild})"
+        style="background:#2a2a4a; border:1px solid #66a; border-radius:4px; color:white; font-size:12px; padding:3px 7px; cursor:pointer;"
+        title="Show all token pips">🧮 Token Performance</button>`;
 }
 
 // the legends page html code
@@ -670,7 +704,7 @@ function openFailedHitsOverlay(guild) {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
             <div>
                 <div style="font-size:1.1em; font-weight:bold;">${guildName} - Failed Hits</div>
-                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted most to least to most depressing.</div>
+                <div style="font-size:12px; color:#aaa; margin-top:2px;">${failedBattles.length} loss${failedBattles.length !== 1 ? 'es' : ''}, sorted by most to least to most depressing.</div>
             </div>
         </div>
         ${linesHTML}
@@ -714,6 +748,63 @@ function openTopBattlesOverlay(guild) {
         ${linesHTML}
     `;
     document.getElementById('topBattlesOverlay').classList.add('active');
+}
+
+function buildPipLegendHTML() {
+    const legendRows = [
+        { cls: 'pip-bright-green', label: `Perfect` },
+        //{ cls: 'pip-green',        label: `≥ ${PERFORMANCE_METRIC['1medWin0']}` },
+        { cls: 'pip-dull-green',   label: `Win` },
+        { cls: 'pip-yellow',       label: `Cleanup` },
+        { cls: 'pip-light-blue',   label: `Defaults` },
+        { cls: 'pip-red',          label: `Loss` },
+        { cls: 'pip-purple',       label: `Something Else` },
+        { cls: 'pip-unused',       label: 'Unused token' },
+    ];
+
+    const rowsHTML = legendRows.map(({ cls, label }) => `
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div class="perf-pip ${cls}"></div>
+            <span style="font-size:11px; color:#ccc;">${label}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div style="margin-top:20px; padding-top:12px; border-top:1px solid #444;">
+            <div style="font-size:12px; color:#aaa; margin-bottom:8px; font-weight:bold;">Pip Legend</div>
+            <div style="display:flex; flex-wrap:wrap; gap:12px 20px;">${rowsHTML}</div>
+        </div>
+    `;
+}
+
+function openAllPipsOverlay(guild) {
+    const guildName = document.getElementById(`guild${guild}Name`).textContent;
+
+    const players = Object.entries(playerData)
+        .filter(([_, stats]) => stats.guild === guild)
+        .map(([_, stats]) => stats)
+        .sort((a, b) => b.performanceMetric - a.performanceMetric);
+
+    const rowsHTML = players.length === 0
+        ? '<div style="color:#888; text-align:center; padding:20px;">No players in this guild.</div>'
+        : players.map((stats, i) => `
+            <div style="display:flex; align-items:center; gap:10px; padding:6px 8px; background:${i % 2 === 0 ? '#2a2a3e' : '#3a3a4e'}; border-radius:6px;">
+                <span style="flex:1; font-size:12px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;">${stats.displayName}</span>
+                ${renderPerformancePips(stats.rawPerformancePerBattle, stats.performancePerBattle)}
+            </div>
+        `).join('');
+
+    document.getElementById('allPipsContent').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
+            <div>
+                <div style="font-size:1.1em; font-weight:bold;">${guildName} - All Tokens with Performance</div>
+                <div style="font-size:12px; color:#aaa; margin-top:2px;">Sorted by ⭐ Performance, high to low</div>
+            </div>
+        </div>
+        <div class="all-pips-grid">${rowsHTML}</div>
+        ${buildPipLegendHTML()}
+    `;
+    document.getElementById('allPipsOverlay').classList.add('active');
 }
 
 // ranking overlay html code.
