@@ -1,8 +1,25 @@
 // guild war tile-to-map mapping.
 // get from https://lpzie2.github.io/tacticus-gw-tile-mapping/
 const SEASON_MAPS = {
+    '21.6': {
+        "HQ":                   "MC1_31",
+        "Armoury":              "LHE_Desert_06",
+        "Bunker1":              "EMC1_06",
+        "Bunker2":              "LHE_Desert_05",
+        "Trenches1":            "CE2_06",
+        "Trenches2":            "EC1_09",
+        "Trenches3":            "PVP_desert_10",
+        "ComsStation":          "LHE_Desert_04",
+        "SupplyDepot":          "C1_23",
+        "AntiAirBattery1":      "C1_37",
+        "AntiAirBattery2":      "C1_15",
+        "MedicaeStation1":      "C1_70",
+        "MedicaeStation2":      "MC1_11",
+        "ArtilleryPosition1":   "LHE_Desert_02",
+        "ArtilleryPosition2":   "LHE_Desert_03"
+    },
     '22.1': {
-        "HQ": "MC1_31",
+        "HQ":                   "MC1_31",
         "Armoury":              "LHE_Desert_06",
         "Bunker1":              "LHE_Desert_05",
         "Bunker2":              "C1_23",
@@ -512,5 +529,22 @@ const SEASON_MAPS = {
         "MedicaeStation2":      "MC1_31",
         "AntiAirBattery":       "LHE_Desert_03"
     },
+    '27.1': {
+        "Trenches1":            "LHE_Desert_02",
+        "Trenches2":            "LHE_Desert_03",
+        "Trenches3":            "LHE_Desert_06",
+        "HQ":                   "C1_23",
+        "ArtilleryPosition1":   "C1_70",
+        "ArtilleryPosition2":   "LHE_Desert_05",
+        "LandingPad1":          "EC1_09",
+        "LandingPad2":          "EMC1_06",
+        "Armoury":              "MC1_31",
+        "Bunker1":              "C1_15",
+        "Bunker2":              "C1_37",
+        "SupplyDepot":          "MC1_11",
+        "MedicaeStation1":      "LHE_Desert_04",
+        "MedicaeStation2":      "PVP_desert_10",
+        "AntiAirBattery":       "CE2_06"
+    }
 
 };
