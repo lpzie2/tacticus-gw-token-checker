@@ -752,7 +752,7 @@ function openTopBattlesOverlay(guild) {
 
 function buildPipLegendHTML() {
     const legendRows = [
-        { cls: 'pip-bright-green', label: `Perfect` },
+        { cls: 'pip-bright-green', label: `Perfect (1600, 2med)` },
         //{ cls: 'pip-green',        label: `≥ ${PERFORMANCE_METRIC['1medWin0']}` },
         { cls: 'pip-dull-green',   label: `Win` },
         { cls: 'pip-yellow',       label: `Cleanup` },
@@ -777,17 +777,33 @@ function buildPipLegendHTML() {
     `;
 }
 
+function getGuildTokenStats(guild) {
+    const players = Object.values(playerData).filter(p => p.guild === guild);
+
+    const totalTokens     = getGuildTotalTokens(players);
+    const tokensRemaining = players.reduce((sum, p) => sum + p.tokensRemaining, 0);
+    const tokensUsed      = players.reduce((sum, p) => sum + p.tokensUsed, 0);
+    const npcCount        = players.reduce((sum, p) => sum + p.defaultLines, 0);
+
+    const successfulAttacks = players.reduce((sum, p) =>
+        sum + Object.values(p.battles).reduce((s, tier) => s + tier.hit + tier.cleanup, 0)
+    , 0);
+
+    const denominator = tokensUsed - npcCount;
+    const efficiency = tokensUsed > 0 && denominator > 0 ? ((successfulAttacks / denominator) * 100).toFixed(1) : 0;
+
+    return { players, totalTokens, tokensRemaining, efficiency };
+}
+
 function openAllPipsOverlay(guild) {
     const guildName = document.getElementById(`guild${guild}Name`).textContent;
+    const { players, totalTokens, tokensRemaining, efficiency } = getGuildTokenStats(guild);
 
-    const players = Object.entries(playerData)
-        .filter(([_, stats]) => stats.guild === guild)
-        .map(([_, stats]) => stats)
-        .sort((a, b) => b.performanceMetric - a.performanceMetric);
+    const sortedPlayers = [...players].sort((a, b) => b.performanceMetric - a.performanceMetric);
 
-    const rowsHTML = players.length === 0
+    const rowsHTML = sortedPlayers.length === 0
         ? '<div style="color:#888; text-align:center; padding:20px;">No players in this guild.</div>'
-        : players.map((stats, i) => `
+        : sortedPlayers.map((stats, i) => `
             <div style="display:flex; align-items:center; gap:10px; padding:6px 8px; background:${i % 2 === 0 ? '#2a2a3e' : '#3a3a4e'}; border-radius:6px;">
                 <span style="flex:1; font-size:12px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;">${stats.displayName}</span>
                 ${renderPerformancePips(stats.rawPerformancePerBattle, stats.performancePerBattle)}
@@ -795,10 +811,14 @@ function openAllPipsOverlay(guild) {
         `).join('');
 
     document.getElementById('allPipsContent').innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-right:40px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; padding-right:40px;">
             <div>
-                <div style="font-size:1.1em; font-weight:bold;">${guildName} - All Tokens with Performance</div>
+                <div style="font-size:1.1em; font-weight:bold;">${guildName} - All Tokens</div>
                 <div style="font-size:12px; color:#aaa; margin-top:2px;">Sorted by ⭐ Performance, high to low</div>
+            </div>
+            <div style="text-align:right; font-size:12px; line-height:1.6;">
+                <div><span>🪙 Remaining:</span> <span style="font-weight:bold;">${tokensRemaining} (out of ${totalTokens})</span></div>
+                <div><span>🪙 Efficiency:</span> <span style="font-weight:bold;">${efficiency}%</span></div>
             </div>
         </div>
         <div class="all-pips-grid">${rowsHTML}</div>

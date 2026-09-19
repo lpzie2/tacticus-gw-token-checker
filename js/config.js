@@ -305,7 +305,7 @@ const BASE_HP = {
     'admecMarshall':        85,
     'admecRuststalker':     80,
     'astarCyrus':           80,
-    'astarLysanders':       110,
+    'astarLysander':        110,
     'astarEradicator':      90,
     'astraBullgryn':        95,
     'astraCreed':           90,
