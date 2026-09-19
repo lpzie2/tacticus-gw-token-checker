@@ -546,13 +546,13 @@ h5 {
 }
 
 .pip-unused       { background: #5a5a5a; }
-.pip-bright-green { background: #26ff5c; }
-.pip-green        { background: #4cec86; }
-.pip-dull-green   { background: #89daa2; }
-.pip-yellow       { background: #fff242; }
-.pip-red          { background: #fc5151; }
-.pip-light-blue   { background: #56c4f7; }
-.pip-purple       { background: #ca70f7; }
+.pip-elite        { background: #9f29ff; }
+.pip-green        { background: #1cff55; }
+.pip-dull-green   { background: #a4fabf; }
+.pip-yellow       { background: #ece578; }
+.pip-red          { background: #cf4a4a; }
+.pip-light-blue   { background: #71c8f0; }
+.pip-misc         { background: #000000; }
 
 .pip-tooltip {
     position: fixed;

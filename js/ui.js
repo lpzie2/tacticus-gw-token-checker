@@ -81,14 +81,14 @@ function buffsToIcons(buffs) {
 }
 
 function getPipColorClass(value) {
-    if (value >= PERFORMANCE_METRIC['2medWin5'])    return 'pip-bright-green';
-    //if (value >= PERFORMANCE_METRIC['1medWin0'])    return 'pip-green';
-    //if (value >= PERFORMANCE_METRIC['0medWin0'])    return 'pip-dull-green';
+    if (value >= PERFORMANCE_METRIC['2medWin5'])    return 'pip-elite';
+    if (value == PERFORMANCE_METRIC['1medWin5'])    return 'pip-green';
+    if (value == PERFORMANCE_METRIC['0medWin5'])    return 'pip-green';
     if (value >= PERFORMANCE_METRIC['0medWin0'])    return 'pip-dull-green';
     if (value >= PERFORMANCE_METRIC['0medCleanup']) return 'pip-yellow';
     if (value >= PERFORMANCE_METRIC['npc1Win'])     return 'pip-light-blue';
     if (value >= PERFORMANCE_METRIC['0medLoss'])    return 'pip-red';
-    return 'pip-purple';
+    return 'pip-misc';
 }
 
 function renderPerformancePips(rawPerformancePerBattle, performancePerBattle) {
@@ -752,14 +752,14 @@ function openTopBattlesOverlay(guild) {
 
 function buildPipLegendHTML() {
     const legendRows = [
-        { cls: 'pip-bright-green', label: `Perfect (1600, 2med)` },
-        //{ cls: 'pip-green',        label: `≥ ${PERFORMANCE_METRIC['1medWin0']}` },
-        { cls: 'pip-dull-green',   label: `Win` },
-        { cls: 'pip-yellow',       label: `Cleanup` },
-        { cls: 'pip-light-blue',   label: `Defaults` },
-        { cls: 'pip-red',          label: `Loss` },
-        { cls: 'pip-purple',       label: `Something Else` },
-        { cls: 'pip-unused',       label: 'Unused token' },
+        { cls: 'pip-elite',         label: `Divine (1600, 2med)` },
+        { cls: 'pip-green',         label: `Perfect (1600)` },
+        { cls: 'pip-dull-green',    label: `Win` },
+        { cls: 'pip-yellow',        label: `Cleanup` },
+        { cls: 'pip-light-blue',    label: `Defaults` },
+        { cls: 'pip-red',           label: `Loss` },
+        { cls: 'pip-misc',          label: `Something Else` },
+        { cls: 'pip-unused',        label: 'Unused token' },
     ];
 
     const rowsHTML = legendRows.map(({ cls, label }) => `
