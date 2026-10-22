@@ -99,7 +99,8 @@ const FACTION_PREFIXES = {
     'blood' : 'Blood Angels',
     'darka' : 'Dark Angels',
     'votan' : 'League of Votann',
-    'astar' : 'Adeptus Astartes'
+    'astar' : 'Adeptus Astartes',
+    'losta' : 'The Lost and the Damned'
 };
 
 const CHARACTER_PROGRESSION = {
@@ -356,6 +357,7 @@ const BASE_HP = {
     'genesMagus':           55,
     'genesPatriarch':       100,
     'genesPrimus':          70,
+    'lostaBile':            90,
     'necroChronomancer':    75,
     'necroDestroyer':       72,
     'necroOverlord':        85,
@@ -367,6 +369,7 @@ const BASE_HP = {
     'orksNob':              100,
     'orksRuntherd':         120,
     'orksWarboss':          100,
+    'orksWeirdboy':         100,
     'spaceBlackmane':       100,
     'spaceHound':           85,
     'spaceRockfist':        110,
@@ -480,12 +483,15 @@ const PERFORMANCE_TOUGH_LINES = {
 
 const MAP_ALTNAMES = {
     'C1_15':            'Grasslands',
+    'C1_18':            'Red Ruins',
     'C1_23':            'Sniper\'s Nest',
     'C1_37':            'Three Bridges',
     'C1_70':            'Five Pillars',
     'CE2_06':           'Deathleaper\'s Cove',
     'EC1_09':           'Right Ridge',
     'EMC1_06':          'Left Ridge',
+    'LE1_15':           'Da Pit',
+    'LE1_21':           'Krumpyard',
     'LHE_Desert_02':    'Gulch',
     'LHE_Desert_03':    'Oasis',
     'LHE_Desert_04':    'Canyon',
@@ -521,9 +527,23 @@ const TILE_INGAME_NAMES = {
     'Trenches3':            'Frontline 3',
 }
 
-// where to place the unit icons
+// where to place the unit icons, as percentages of the map image.
 const MAP_SPAWN_POINTS = {
     'C1_15': { // grasslands, done.
+        def: [  { x: 25.1, y: 20.8 }, // unit 01
+                { x: 38.6, y: 25.4 }, // unit 02
+                { x: 49.8, y: 20.8 }, // unit 03
+                { x: 62.0, y: 25.4 }, // unit 04
+                { x: 75.0, y: 20.8 }  // unit 05
+        ],
+        att: [  { x: 50.0, y: 92.0 },
+                { x: 62.0, y: 87.6 },
+                { x: 75.0, y: 92.0 },
+                { x: 87.2, y: 87.6 },
+                { x: 87.4, y: 78.5 }
+        ]
+    },
+    'C1_18': { // red ruins, todo
         def: [  { x: 25.1, y: 20.8 }, // unit 01
                 { x: 38.6, y: 25.4 }, // unit 02
                 { x: 49.8, y: 20.8 }, // unit 03
@@ -607,8 +627,35 @@ const MAP_SPAWN_POINTS = {
                 { x: 74.7, y: 83.1 }
         ]
     },
-    
     'EMC1_06': { // left ridge, done.
+        def: [  { x: 25.9, y: 17.6 },
+                { x: 38.1, y: 13.1 },
+                { x: 62.8, y: 13.7 },
+                { x: 74.5, y: 18.5 },
+                { x: 50.3, y: 18.3 }
+        ],
+        att: [  { x: 12.9, y: 77.1 },
+                { x: 25.4, y: 72.4 },
+                { x: 50.0, y: 81.7 },
+                { x: 62.5, y: 86.1 },
+                { x: 87.2, y: 86.1 }
+        ]
+    },
+    'LE1_15': { // da pit
+        def: [  { x: 25.9, y: 17.6 },
+                { x: 38.1, y: 13.1 },
+                { x: 62.8, y: 13.7 },
+                { x: 74.5, y: 18.5 },
+                { x: 50.3, y: 18.3 }
+        ],
+        att: [  { x: 12.9, y: 77.1 },
+                { x: 25.4, y: 72.4 },
+                { x: 50.0, y: 81.7 },
+                { x: 62.5, y: 86.1 },
+                { x: 87.2, y: 86.1 }
+        ]
+    },
+    'LE1_21': { // krumpyard
         def: [  { x: 25.9, y: 17.6 },
                 { x: 38.1, y: 13.1 },
                 { x: 62.8, y: 13.7 },
@@ -851,4 +898,10 @@ const WAR_SCHEDULE = [
     { startDate: 1793395800000, fightStart: 1793482200000, endDate: 1793610000000, season: 28, battle: 4 },
     { startDate: 1793611800000, fightStart: 1793698200000, endDate: 1793826000000, season: 28, battle: 5 },
     { startDate: 1793827800000, fightStart: 1793914200000, endDate: 1794042000000, season: 28, battle: 6 },
+    { startDate: 1795599000000, fightStart: 1795858200000, endDate: 1795986000000, season: 29, battle: 1 },
+    { startDate: 1795987800000, fightStart: 1796074200000, endDate: 1796202000000, season: 29, battle: 2 },
+    { startDate: 1796203800000, fightStart: 1796290200000, endDate: 1796418000000, season: 29, battle: 3 },
+    { startDate: 1796419800000, fightStart: 1796506200000, endDate: 1796634000000, season: 29, battle: 4 },
+    { startDate: 1796635800000, fightStart: 1796722200000, endDate: 1796850000000, season: 29, battle: 5 },
+    { startDate: 1796851800000, fightStart: 1796938200000, endDate: 1797066000000, season: 29, battle: 6 },
 ];
