@@ -308,6 +308,36 @@ function renderStats() {
         return `<span style="color: ${color}; font-weight: bold;">${count}</span>`;
     };
 
+    // pre/post flip efficiency per guild. null if that guild hasn't flipped yet.
+    const getPhaseEfficiency = (teamIndex) => {
+        const flipTime = getFlipTime(activityLogs, teamIndex);
+        if (flipTime === null) return null;
+
+        const pre  = { success: 0, tokens: 0, npc: 0 };
+        const post = { success: 0, tokens: 0, npc: 0 };
+
+        Object.values(battleData).forEach(b => {
+            if (b.teamIndex !== teamIndex) return;
+
+            const phase = b.createdOn < flipTime ? pre : post;
+            phase.tokens++;
+            if (b.npcLine) {
+                phase.npc++;
+            } else if (b.result === 'hit' || b.result === 'cleanup') {
+                phase.success++;
+            }
+        });
+
+        const eff = p => (p.tokens - p.npc) > 0
+            ? ((p.success / (p.tokens - p.npc)) * 100).toFixed(1)
+            : 0;
+
+        return { pre: eff(pre), post: eff(post) };
+    };
+
+    const guild1PhaseEfficiency = getPhaseEfficiency(1);
+    const guild2PhaseEfficiency = getPhaseEfficiency(2);
+
     // calculate efficiency and projections for Guild 1
     const guild1TokensUsed          = guild1Players.reduce((sum, p) => sum + p.tokensUsed, 0);
     const guild1SuccessfulAttacks   = guild1Battles.total.hit + guild1Battles.total.cleanup;
@@ -328,13 +358,13 @@ function renderStats() {
     const guild2ProjectedCleanup    = Math.round(guild2Battles.total.cleanup    * guild2ScaleFactor);
     const guild2ProjectedFailed     = Math.round(guild2Battles.total.failed     * guild2ScaleFactor);
 
-    const createTokenStatsTable = (title, tokensRemaining, totalTokens, tokenEfficiency, guildScore, span = 2) => `
+    const createTokenStatsTable = (title, tokensRemaining, totalTokens, tokenEfficiency, guildScore, phaseEfficiency = null, span = 2) => `
         <div class="stat-card span-${span}" style="text-align: left; padding: 15px;">
             <div style="font-size: 0.9em; margin-bottom: 8px; font-weight: bold; text-align: center;">${title}</div>
             <div style="display: flex; justify-content: center;">
                 <div style="font-size: 12px; font-family: 'Courier New', monospace; line-height: 1.8; display: grid; grid-template-columns: max-content 1fr; column-gap: 8px;">
                     <span>🪙 Remaining:</span>  <span style="font-weight: bold;">${tokensRemaining}  (out of ${totalTokens})</span>
-                    <span>🪙 Efficiency:</span> <span style="font-weight: bold;">${tokenEfficiency}%</span>
+                    <span>🪙 Efficiency:</span> <span style="font-weight: bold;">${tokenEfficiency}%${phaseEfficiency ? ` (${phaseEfficiency.pre}% / ${phaseEfficiency.post}%)` : ''}</span>
                     <span>Player Score:</span>  <span style="font-weight: bold;">${guildScore.playerScore.toLocaleString()}</span>
                     <span>Total Score:</span>   <span style="font-weight: bold;">${guildScore.totalScore.toLocaleString()}</span>
                 </div>
@@ -385,10 +415,10 @@ function renderStats() {
             </div>
         </div>
 
-        ${createTokenStatsTable(document.getElementById('guild1Name').textContent + ' Tokens',  guild1TokensRemaining, guild1TotalTokens,   guild1Efficiency, guild1Score)}
+        ${createTokenStatsTable(document.getElementById('guild1Name').textContent + ' Tokens',  guild1TokensRemaining, guild1TotalTokens,   guild1Efficiency, guild1Score, guild1PhaseEfficiency)}
         ${createBattleTable(document.getElementById('guild1Name').textContent + ' Battles',     guild1Battles,         guild1ProjectedHits, guild1ProjectedCleanup, guild1ProjectedFailed)}
         ${createBattleTable(document.getElementById('guild2Name').textContent + ' Battles',     guild2Battles,         guild2ProjectedHits, guild2ProjectedCleanup, guild2ProjectedFailed)}
-        ${createTokenStatsTable(document.getElementById('guild2Name').textContent + ' Tokens',  guild2TokensRemaining, guild2TotalTokens,   guild2Efficiency, guild2Score)}
+        ${createTokenStatsTable(document.getElementById('guild2Name').textContent + ' Tokens',  guild2TokensRemaining, guild2TotalTokens,   guild2Efficiency, guild2Score, guild2PhaseEfficiency)}
 
         <div class="stat-card span-4" style="text-align: left; padding: 12px;">
             <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild1Name').textContent} Team Composition</div>

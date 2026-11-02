@@ -118,7 +118,9 @@ function processGameData() {
                     defender:       log.defender,
                     buffs:          log.buffs || [],
                     abandoned:      abandoned,
-                    createdOn:      log.createdOn
+                    createdOn:      log.createdOn,
+                    result:         null,
+                    npcLine:        false
                 };
 
                 // process just the buff names
@@ -162,7 +164,9 @@ function processGameData() {
                     defender:       log.defender,
                     buffs:          log.buffs || [],
                     abandoned:      abandoned,
-                    createdOn:      log.createdOn
+                    createdOn:      log.createdOn,
+                    result:         null,
+                    npcLine:        false
                 };
 
                 const buffs = (log.buffs || []).map(buff => buff.abilityId);
@@ -238,6 +242,9 @@ function processGameData() {
             // was the fight against default units? templNpc1Initiate
             const foughtNPCs = (log.defender.units || []).some(unit => unit.unitId === 'templNpc1Initiate');
             npcLine = foughtNPCs ? true : false;
+
+            battleData[log.id].result  = result;
+            battleData[log.id].npcLine = npcLine;
 
             // let's do some performance metric things. need to generate the keys.
             let attResultType;
@@ -897,6 +904,21 @@ function getZoneProgression(activityLogs, teamIndex) {
     return progression;
 }
 
+// timestamp of this guild's wipeout (board reset), or null if it hasn't happened yet.
+function getFlipTime(activityLogs, teamIndex) {
+    let flipTime = null;
+
+    activityLogs.forEach(log => {
+        if (log.type === 'wipeout' && log.teamIndex === teamIndex && log.createdOn) {
+            if (flipTime === null || log.createdOn < flipTime) {
+                flipTime = log.createdOn;
+            }
+        }
+    });
+
+    return flipTime;
+}
+
 // get the earliest start of the guild war (assumes someone attacked within the first hour)
 function getGuildWarStartTime(activityLogs) {
     let earliestTime = null;
@@ -1036,3 +1058,4 @@ function detectSeasonKeyFromTimestamp(timestamp) {
     if (!match) return null;
     return `${match.season}.${String(match.battle)}`;
 }
+

@@ -198,6 +198,17 @@ function createPlayerCard(userId, stats) {
     return card;
 }
 
+// thin "WIPE" separator shown between pre-flip and post-flip battles.
+function createWipeDividerHTML() {
+    return `
+        <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
+            <div style="flex:1; height:2px; background:#fbbf24; opacity:0.6;"></div>
+            <span style="font-size:10px; font-weight:bold; color:#fbbf24; letter-spacing:1px;">WIPE</span>
+            <div style="flex:1; height:2px; background:#fbbf24; opacity:0.6;"></div>
+        </div>
+    `;
+}
+
 function createBattleLineHTML(battle, perspective, overrideLabel = null) {
 
     const theme = RARITY_THEMES[battle.rarity] ?? RARITY_THEMES.common;
@@ -393,9 +404,28 @@ function toggleBattleDetails(userId, perspective) {
 
     const title   = perspective === 'attacker' ? '⚔️ Attacks' : '🛡️ Defenses';
 
+    //const linesHTML = battles.length === 0
+    //    ? '<div style="color:#888; text-align:center; padding:10px; font-size:11px;">No battles recorded.</div>'
+    //    : battles.map(b => createBattleLineHTML(b, perspective)).join('');
+
+    const attackingGuild = perspective === 'attacker' ? stats.guild : 3 - stats.guild;
+    const flipTime       = getFlipTime(activityLogs, attackingGuild);
+    let wipeDrawn        = false;
+
     const linesHTML = battles.length === 0
         ? '<div style="color:#888; text-align:center; padding:10px; font-size:11px;">No battles recorded.</div>'
-        : battles.map(b => createBattleLineHTML(b, perspective)).join('');
+        : battles.map(b => {
+            let divider = '';
+            const t = battleData[b.battleId]?.createdOn;
+
+            // first battle after the flip gets the divider placed before it
+            if (!wipeDrawn && flipTime !== null && t != null && t >= flipTime) {
+                divider   = createWipeDividerHTML();
+                wipeDrawn = true;
+            }
+
+            return divider + createBattleLineHTML(b, perspective);
+        }).join('');
 
     // span across both columns
     card.style.gridColumn = '1 / -1';
