@@ -577,6 +577,29 @@ h5 {
     row-gap: 3px;
 }
 
+/* ── Synergy header (compact icons) ───────── */
+.synergy-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+}
+
+.team-icons-sm {
+    display: flex;
+    gap: 2px;
+    flex-wrap: nowrap;
+}
+
+.unit-icon-sm {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #444;
+    flex-shrink: 0;
+}
+
 /* ── Team Cards ─────────────────────────── */
 .empty-state {
     text-align: center;

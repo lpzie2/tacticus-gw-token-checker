@@ -175,6 +175,118 @@ function renderStats() {
         return card;
     }
 
+    function formatSynergyComp(guildPlayers, teamType, limit = 10) {
+        const synergyCounts = {};   // synergy -> number of teams
+        const synergyFights = {};   // synergy -> battles fought with that lineup
+
+        guildPlayers.forEach(player => {
+            // teams
+            const teams = teamType === 'defense' ? player.defenseTeams : player.offenseTeams;
+            teams.forEach(team => {
+                if (team.isPlaceholder || !team.synergies) return;
+                team.synergies.forEach(name => {
+                    synergyCounts[name] = (synergyCounts[name] || 0) + 1;
+                });
+            });
+
+            // fights
+            const battles = teamType === 'defense' ? player.battleDetailsAsDefender : player.battleDetailsAsAttacker;
+            battles.forEach(b => {
+                const lineup = teamType === 'defense'
+                    ? { units: b.defUnits, machineOfWar: b.defMoW }
+                    : { units: b.attUnits, machineOfWar: b.attMoW };
+
+                getTeamSynergies(lineup).forEach(name => {
+                    (synergyFights[name] = synergyFights[name] || []).push(b);
+                });
+            });
+        });
+
+        const sortedSynergies = Object.entries(synergyCounts)
+            .sort((a, b) => b[1] - a[1]);
+
+        if (sortedSynergies.length === 0) return '<div class="team-no-teams">No synergies found</div>';
+
+        const visible = sortedSynergies.slice(0, limit);
+        const hidden  = sortedSynergies.slice(limit);
+
+        const card = ([name, count]) =>
+            createSynergyCard(name, count, teamType, synergyFights[name] || []);
+
+        let html = visible.map(card).join('');
+
+        if (hidden.length > 0) {
+            const hiddenId = `hidden-syn-${teamType}-${Math.random().toString(36).substr(2, 9)}`;
+            const buttonId = `btn-${hiddenId}`;
+
+            html += `
+                <div id="${hiddenId}" style="display: none;">
+                    ${hidden.map(card).join('')}
+                </div>
+                <button id="${buttonId}" class="team-show-more-btn"
+                        onclick="
+                            const hidden = document.getElementById('${hiddenId}');
+                            const btn = document.getElementById('${buttonId}');
+                            if (hidden.style.display === 'none') {
+                                hidden.style.display = 'block';
+                                btn.textContent = 'Show less';
+                            } else {
+                                hidden.style.display = 'none';
+                                btn.textContent = 'Show ${hidden.length} more...';
+                            }
+                        ">
+                    Show ${hidden.length} more...
+                </button>
+            `;
+        }
+
+        return html;
+    }
+
+    function createSynergyCard(synergyName, count, teamType, fights) {
+        const definition = GW_SYNERGIES[synergyName];
+        const expandId   = `expand-syn-${teamType}-${synergyName.replace(/\W/g, '-')}-${Math.random().toString(36).substr(2, 9)}`;
+        const perspective = teamType === 'defense' ? 'defender' : 'attacker';
+
+        // icons for every required unit, plus the mow if the synergy requires one
+        const requiredIds = [...(definition?.requiredUnits || [])];
+        if (definition?.requiredMOW) requiredIds.push(definition.requiredMOW);
+
+        const iconsHtml = requiredIds
+            .map(id => `<img src="${getUnitIcon(id)}" alt="${id}" class="unit-icon-sm" title="${id}">`)
+            .join('');
+
+        const fightsHtml = fights.length === 0
+            ? '<div style="color:#888; text-align:center; padding:8px; font-size:11px;">No fights recorded.</div>'
+            : fights.map(b => createCompactBattleLineHTML(b, perspective)).join('');
+
+        return `
+            <div class="team-card clickable" onclick="
+                const details = document.getElementById('${expandId}');
+                const arrow = this.querySelector('.team-expand-arrow');
+                if (details.style.display === 'none' || details.style.display === '') {
+                    details.style.display = 'block';
+                    arrow.textContent = '▼';
+                } else {
+                    details.style.display = 'none';
+                    arrow.textContent = '▶';
+                }
+            ">
+                <span class="team-name">
+                    <span class="team-expand-arrow">▶</span> ${synergyName}
+                    ${iconsHtml ? `<span class="team-icons-sm">${iconsHtml}</span>` : ''}
+                </span>
+                <span class="team-count">${count}</span>
+            </div>
+            <div id="${expandId}" class="team-variant-container">
+                <div style="font-size:10px; color:#888; margin:4px 0;">${fights.length} fight${fights.length === 1 ? '' : 's'}</div>
+                <div style="max-height:320px; overflow-y:auto;">
+                    ${fightsHtml}
+                </div>
+            </div>
+        `;
+    }
+
     // calculate global battle stats
     const globalBattles = {
         '0med': { hit: 0, cleanup: 0, failed: 0 },
@@ -420,6 +532,7 @@ function renderStats() {
         ${createBattleTable(document.getElementById('guild2Name').textContent + ' Battles',     guild2Battles,         guild2ProjectedHits, guild2ProjectedCleanup, guild2ProjectedFailed)}
         ${createTokenStatsTable(document.getElementById('guild2Name').textContent + ' Tokens',  guild2TokensRemaining, guild2TotalTokens,   guild2Efficiency, guild2Score, guild2PhaseEfficiency)}
 
+        <!--
         <div class="stat-card span-4" style="text-align: left; padding: 12px;">
             <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild1Name').textContent} Team Composition</div>
             <div class="team-comp-grid" style="font-size: 11px;">
@@ -444,6 +557,35 @@ function renderStats() {
                 <div>
                     <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px; text-align: center;">Offense</div>
                     ${formatTeamComp(guild2Players, 'offense')}
+                </div>
+            </div>
+        </div>
+        -->
+
+        <div class="stat-card span-4" style="text-align: left; padding: 12px;">
+            <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild1Name').textContent} Synergies</div>
+            <div class="team-comp-grid" style="font-size: 11px;">
+                <div>
+                    <div style="color: #4cec86; font-weight: bold; margin-bottom: 8px; text-align: center;">Defense</div>
+                    ${formatSynergyComp(guild1Players, 'defense')}
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px; text-align: center;">Offense</div>
+                    ${formatSynergyComp(guild1Players, 'offense')}
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card span-4" style="text-align: left; padding: 12px;">
+            <div class="stat-label" style="margin-bottom: 10px; font-weight: bold; font-size: 0.9em; text-align: center;">${document.getElementById('guild2Name').textContent} Synergies</div>
+            <div class="team-comp-grid" style="font-size: 11px;">
+                <div>
+                    <div style="color: #4cec86; font-weight: bold; margin-bottom: 8px; text-align: center;">Defense</div>
+                    ${formatSynergyComp(guild2Players, 'defense')}
+                </div>
+                <div>
+                    <div style="color: #fbbf24; font-weight: bold; margin-bottom: 8px; text-align: center;">Offense</div>
+                    ${formatSynergyComp(guild2Players, 'offense')}
                 </div>
             </div>
         </div>

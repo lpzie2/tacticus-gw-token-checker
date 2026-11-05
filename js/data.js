@@ -699,6 +699,7 @@ function addAttackerTeam(attackerId, attacker, battleId) {
     player.offenseTeams.push({
         teamNumber: player.offenseTeams.length + 1,
         teamMetaName: null,
+        synergies: [],
         units: units,
         machineOfWar: machineOfWar,
         lineupPower: attacker.lineupPower || 0,
@@ -730,6 +731,7 @@ function addDefenderTeam(defenderId, defender, battleId) {
     player.defenseTeams.push({
         teamNumber: player.defenseTeams.length + 1,
         teamMetaName: null,
+        synergies: [],
         units: units,
         machineOfWar: machineOfWar,
         lineupPower: defender.lineupPower || 0,
@@ -747,6 +749,7 @@ function fillMissingTeams() {
             player.defenseTeams.push({
                 teamNumber: player.defenseTeams.length + 1,
                 teamMetaName: 'default',
+                synergies: ['none'],
                 units: ['placeholder1', 'placeholder2', 'placeholder3', 'placeholder4', 'placeholder5'],
                 machineOfWar: 'placeholderMOW',
                 lineupPower: 0,
@@ -802,6 +805,26 @@ function classifyTeam(team) {
 
 }
 
+// returns every synergy tag whose required units (and mow, if any) are all on the team.
+function getTeamSynergies(team) {
+    const synergies = [];
+
+    for (const [synergyName, definition] of Object.entries(GW_SYNERGIES)) {
+        const hasAllRequiredUnits = definition.requiredUnits.every(requiredUnit =>
+            team.units.includes(requiredUnit)
+        );
+
+        const meetsMOWRequirement = definition.requiredMOW == null
+            || team.machineOfWar === definition.requiredMOW;
+
+        if (hasAllRequiredUnits && meetsMOWRequirement) {
+            synergies.push(synergyName);
+        }
+    }
+
+    return synergies;
+}
+
 function detectUnitIdName(units, machineOfWar) {
     // join all unitIds with "/"
     let allUnits = [...units];
@@ -854,8 +877,10 @@ function classifyAllTeams() {
         player.defenseTeams.forEach(team => {
             if (!team.isPlaceholder) {
                 team.teamMetaName = classifyTeam(team);
+                team.synergies    = getTeamSynergies(team);
             } else {
                 team.teamMetaName = 'Empty Slot';
+                team.synergies    = [];
             }
         });
         
@@ -863,8 +888,10 @@ function classifyAllTeams() {
         player.offenseTeams.forEach(team => {
             if (!team.isPlaceholder) {
                 team.teamMetaName = classifyTeam(team);
+                team.synergies    = getTeamSynergies(team);
             } else {
                 team.teamMetaName = 'Empty Slot';
+                team.synergies    = [];
             }
         });
     });

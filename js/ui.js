@@ -92,11 +92,28 @@ function getPipColorClass(value) {
 }
 
 function renderPerformancePips(rawPerformancePerBattle, performancePerBattle) {
+    // start with every battle index, in order
+    let indices = rawPerformancePerBattle.map((_, i) => i);
+
+    // more than 10 fights means a token was refunded (usually a d/c),
+    // so drop abandoned fights (raw 0.00), but only as many as the excess.
+    let excess = indices.length - 10;
+    if (excess > 0) {
+        indices = indices.filter(i => {
+            if (excess > 0 && rawPerformancePerBattle[i] === 0) {
+                excess--;
+                return false;
+            }
+            return true;
+        });
+    }
+
     let html = '<div class="perf-pips">';
-    for (let i = 0; i < 10; i++) {
-        if (i < rawPerformancePerBattle.length) {
-            const rawValue  = rawPerformancePerBattle[i];
-            const value     = performancePerBattle[i];
+    for (let slot = 0; slot < 10; slot++) {
+        if (slot < indices.length) {
+            const i        = indices[slot];
+            const rawValue = rawPerformancePerBattle[i];
+            const value    = performancePerBattle[i];
             html += `<div class="perf-pip ${getPipColorClass(rawValue)}" data-value="${value.toFixed(2)}"></div>`;
         } else {
             html += `<div class="perf-pip pip-unused" data-value="unused"></div>`;
@@ -367,6 +384,157 @@ function createBattleLineHTML(battle, perspective, overrideLabel = null) {
                     <div style="display:flex; gap:4px; width:100%;">${isAttPerspective ? defCols : attCols}</div>
                 </div>
             </div>
+        </div>
+    `;
+}
+
+// compact battle card for narrow containers (e.g. the synergy drop-downs).
+// same unit columns / hp bars / rank badges as the full card, but the two
+// lineups are stacked (guild player's team on top, opponent below).
+function createCompactBattleLineHTML(battle, perspective) {
+
+    const theme = RARITY_THEMES[battle.rarity] ?? RARITY_THEMES.common;
+    const isAttPerspective = perspective === 'attacker';
+
+    const attUnits      = battle.attUnits       || [];
+    const defUnits      = battle.defUnits       || [];
+    const attHP         = battle.attHP          || [];
+    const attMaxHP      = battle.attMaxHP       || [];
+    const defHPStart    = battle.defHPStart     || [];
+    const defMaxHPStart = battle.defMaxHPStart  || [];
+    const defHPEnd      = battle.defHPEnd       || [];
+    const defMaxHPEnd   = battle.defMaxHPEnd    || [];
+    const attDied       = battle.attDied        || [];
+    const defFought     = battle.defFought      || [];
+    const defDied       = battle.defDied        || [];
+
+    // result label (same rules as createBattleLineHTML)
+    let resultLabel;
+    if (battle.abandoned) {
+        resultLabel = `<span style="color:#7f43a7; font-weight:bold;">ABANDONED</span>`;
+    } else if (isAttPerspective) {
+        if (battle.battleScore >= 1100) {
+            resultLabel = `<span style="color:${theme.win}; font-weight:bold;">✅ WON (${battle.battleScore})</span>`;
+        } else {
+            const anyDefSurvived = defHPEnd.some((hp, i) => defUnits[i] && hp > 0);
+            resultLabel = anyDefSurvived
+                ? `<span style="color:${theme.loss}; font-weight:bold;">🚫 LOST (${battle.battleScore})</span>`
+                : `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEAN UP (${battle.battleScore})</span>`;
+        }
+    } else {
+        if (battle.battleScore >= 1100) {
+            resultLabel = `<span style="color:${theme.loss}; font-weight:bold;">💀 LOST (${battle.battleScore})</span>`;
+        } else {
+            const anyDefSurvived = defHPEnd.some((hp, i) => defUnits[i] && hp > 0);
+            resultLabel = anyDefSurvived
+                ? `<span style="color:${theme.win}; font-weight:bold;">🛡️ HELD (${battle.battleScore})</span>`
+                : `<span style="color:${theme.cleanup}; font-weight:bold;">🧹 CLEANED UP (${battle.battleScore})</span>`;
+        }
+    }
+
+    const buffsHTML = buffsToIcons(battle.battleBuffs);
+
+    function hpBar(current, max) {
+        const pct   = max > 0 ? Math.max(0, Math.min(100, (current / max) * 100)) : 0;
+        const color = pct > 50 ? theme.hpHigh : pct > 25 ? theme.hpMid : theme.hpLow;
+        return `
+            <div style="background:#222; border-radius:3px; height:5px; width:100%; margin-top:2px;" title="${current}/${max}">
+                <div style="width:${pct}%; background:${color}; height:100%; border-radius:3px;"></div>
+            </div>
+            <div style="font-size:9px; text-align:center; color:${theme.textMuted};">${current === max ? current : `${current}/${max}`}</div>
+        `;
+    }
+
+    function unitColumn(unitId, isAttSide, idx) {
+        if (!unitId) return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+            <div style="width:36px; height:36px; border-radius:50%; background:#45455e; border:2px solid #45455e;"></div>
+        </div>`;
+
+        const isDead      = isAttSide ? attDied[idx] : defDied[idx];
+        const fought      = isAttSide ? true         : defFought[idx];
+        const filterStyle = (!isAttSide && defFought[idx] === false) ? 'grayscale(100%) brightness(0.3)'
+                          : isDead ? 'grayscale(25%) brightness(0.7)'
+                          : 'none';
+
+        const rarity            = isAttSide ? (battle.attRarity || [])[idx] : (battle.defRarity || [])[idx];
+        const rarityBorderColor = RARITY_COLORS[rarity] ?? '#444';
+        const rankNum           = isAttSide ? (battle.attRankNum || [])[idx] : (battle.defRankNum || [])[idx];
+        const rankPadded        = rankNum === -1 ? 'unknown' : String(rankNum).padStart(2, '0');
+
+        let hpHTML = '';
+        if (isAttSide) {
+            const hp    = isDead ? 0 : (attHP[idx] || 0);
+            const maxHp = attMaxHP[idx] || 0;
+            hpHTML = hpBar(hp, maxHp);
+        } else {
+            if (fought === false) {
+                hpHTML = `<div style="font-size:10px; text-align:center; color:${theme.didNotFight}; line-height:1.4; margin-top:3px; font-weight:bold;">D.N.F.</div>`;
+            } else if (isDead) {
+                hpHTML = `<div style="font-size:10px; text-align:center; color:${theme.dead}; font-weight:bold;">DEAD</div>`;
+            } else {
+                hpHTML = hpBar(defHPEnd[idx] || 0, defMaxHPEnd[idx] || 0);
+            }
+        }
+
+        return `
+            <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+                <div style="position:relative; width:26px; height:26px;">
+                    <img src="${getUnitIcon(unitId)}" style="width:26px; height:26px; border-radius:50%; object-fit:cover; border:2px solid ${rarityBorderColor}; filter:${filterStyle};" title="${unitId}" onerror="this.style.display='none'">
+                    <img src="img/rank/rank_${rankPadded}.png" style="position:absolute; bottom:-6px; right:-6px; width:20px; height:20px; filter:${filterStyle};">
+                </div>
+                ${hpHTML}
+            </div>
+        `;
+    }
+
+    function mowColumn(unitId, rarity, lost) {
+        const borderColor = RARITY_COLORS[rarity] ?? '#4d4d4d';
+        const filterStyle = lost ? 'grayscale(25%) brightness(0.7)' : 'none';
+
+        if (!unitId || unitId === 'none') return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+            <div style="width:28px; height:28px; border-radius:50%; background:#45455e; border:2px solid #45455e;"></div>
+        </div>`;
+
+        return `<div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+            <img src="${getUnitIcon(unitId)}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:2px solid ${borderColor}; filter:${filterStyle};" title="${unitId}" onerror="this.style.display='none'">
+        </div>`;
+    }
+
+    const anyDefSurvived = defFought.some((f, i) => defUnits[i] && f !== false && !defDied[i]);
+    const attackerWon    = !anyDefSurvived;
+    const attLost        = !attackerWon;
+    const defLost        = attackerWon;
+
+    const attCols = attUnits.map((u, i) => unitColumn(u, true,  i)).join('') + mowColumn(battle.attMoW, battle.attMoWRarity, attLost);
+    const defCols = defUnits.map((u, i) => unitColumn(u, false, i)).join('') + mowColumn(battle.defMoW, battle.defMoWRarity, defLost);
+
+    // "our" side is whoever the perspective belongs to
+    // const ourName = isAttPerspective ? battle.attackerName : battle.defenderName;
+    // const oppName = isAttPerspective ? battle.defenderName : battle.attackerName;
+    const ourCols = isAttPerspective ? attCols : defCols;
+    const oppCols = isAttPerspective ? defCols : attCols;
+
+    const mapId   = getMapName(battle.battleTile);
+    const altName = MAP_ALTNAMES[mapId] ?? '';
+    const display = altName ? altName : mapId;
+
+    return `
+        <div style="background:#45455e; border-radius:8px; padding:8px; margin-bottom:8px; border-left:5px solid ${theme.border}; border-right:3px solid ${theme.border};">
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; margin-bottom:6px; font-size:11px;">
+                ${battle.battleTile ? `<button
+                    onclick="showMapOverlay('${battle.battleTile}', '${battle.battleId}')"
+                    style="background:${theme.border}; border:none; border-radius:4px; color:black; font-size:10px; padding:1px 4px; cursor:pointer;">🗺️ ${display}</button>` : ''}
+                <span style="white-space:nowrap;">${resultLabel}</span>
+                <span style="margin-left:auto; font-size:12px;" title="Buffs">${buffsHTML || ''}</span>
+            </div>
+
+            <div style="display:flex; gap:4px; width:100%;">${ourCols}</div>
+
+            <div style="display:flex; align-items:center; gap:6px; margin:6px 0;">
+                <div style="flex:1; height:1px; background:${theme.vs}; opacity:0.4;"></div>
+            </div>
+
+            <div style="display:flex; gap:4px; width:100%;">${oppCols}</div>
         </div>
     `;
 }
