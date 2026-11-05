@@ -881,7 +881,7 @@ function buildSynergyListHTML() {
 
     return `
         <p style="font-size:12px; color:#ccc; margin-bottom:10px; line-height:1.6;">
-            Synergies are popular, well-known team lineups that this tool recognizes automatically.
+            Synergies are strong or interesting team lineups that this tool recognizes automatically.
             A team is given a synergy when it contains <b>all</b> of the units listed below
             (and the machine of war, if one is listed). A team can match more than one synergy.
         </p>
