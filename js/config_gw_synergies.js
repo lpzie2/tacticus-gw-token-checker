@@ -66,12 +66,27 @@ const GW_SYNERGIES = {
         requiredMOW: null
     },
 
+    "Psyker Basher": {
+        requiredUnits: ["bloodMephiston", "templHelbrecht", "custoAtlacoya"],
+        requiredMOW: null
+    },
+
 
 
     // 2 unit synergies
 
     "Intitus": {
         requiredUnits: ["ultraApothecary", "ultraTitus"],
+        requiredMOW: null
+    },
+
+    "Anvil Icon": {
+        requiredUnits: ["astarLysander", "spaceRockfist"],
+        requiredMOW: null
+    },
+
+    "Fluxhammer Time": {
+        requiredUnits: ["astarLysander", "thousTerminator"],
         requiredMOW: null
     },
 

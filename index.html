@@ -22,9 +22,10 @@
                 <label for="jsonFile"       class="file-input-label">📁 Analyze Guild War JSON File</label>
                 
                 <div class="button-container">
-                    <button id="helpButton" class="help-button">❓Help</button>
-                    <button id="legendButton" class="help-button">📖 Legend</button>
-                    <button id="demoButton" class="help-button">🧪 Demo</button>
+                    <button id="helpButton"     class="help-button">❓Help</button>
+                    <button id="legendButton"   class="help-button">📖 Legend</button>
+                    <button id="synergyButton"  class="help-button">🧩 Synergies</button>
+                    <button id="demoButton"     class="help-button">🧪 Demo</button>
                 </div>
             </div>
             <span class="file-name" id="fileName">No file selected</span>
@@ -44,6 +45,15 @@
                 <button class="close-help" id="closeLegend">✕</button>
                 <h2 style="text-align:center; margin-bottom:16px;">Legend</h2>
                 <div id="legendContent"></div>
+            </div>
+        </div>
+
+        <!-- synergies overlay -->
+        <div id="synergyOverlay" class="help-overlay">
+            <div class="help-content" style="max-width:500px; color:#fcfcfc; max-height:85vh; overflow-y:auto;">
+                <button class="close-help" id="closeSynergy">✕</button>
+                <h2 style="text-align:center; margin-bottom:16px;">Synergies</h2>
+                <div id="synergyContent"></div>
             </div>
         </div>
 

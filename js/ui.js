@@ -859,6 +859,44 @@ function buildLegendHTML() {
     `;
 }
 
+// the synergies page html code
+function buildSynergyListHTML() {
+    const entries = Object.entries(GW_SYNERGIES);
+
+    const rowsHTML = entries.map(([name, definition]) => {
+        const requiredIds = [...(definition.requiredUnits || [])];
+        if (definition.requiredMOW) requiredIds.push(definition.requiredMOW);
+
+        const icons = requiredIds.map(id =>
+            `<img src="${getUnitIcon(id)}" title="${id}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:2px solid #555;" onerror="this.style.display='none'">`
+        ).join('');
+
+        return `
+            <tr>
+                <td style="padding:6px 14px 6px 0; font-size:13px; font-weight:bold; color:#fbbf24; white-space:nowrap;">${name}</td>
+                <td style="padding:6px 0;"><div style="display:flex; gap:4px; flex-wrap:wrap;">${icons}</div></td>
+            </tr>
+        `;
+    }).join('');
+
+    return `
+        <p style="font-size:12px; color:#ccc; margin-bottom:10px; line-height:1.6;">
+            Synergies are popular, well-known team lineups that this tool recognizes automatically.
+            A team is given a synergy when it contains <b>all</b> of the units listed below
+            (and the machine of war, if one is listed). A team can match more than one synergy.
+        </p>
+        <p style="font-size:12px; color:#ccc; margin-bottom:16px; line-height:1.6;">
+            Each guild has a Synergies section that shows how many people ran each one.
+            Click a synergy to see every fight that was fought with it. This value may be
+            larger that the first value since it takes into account cleanups and losses.
+        </p>
+        <h3 style="margin-bottom:10px; font-size:13px; color:#aaa;">🧩 ${entries.length} Tracked Synergies</h3>
+        <table style="border-collapse:collapse; width:100%;">
+            <tbody>${rowsHTML}</tbody>
+        </table>
+    `;
+}
+
 function openRankingOverlay(guild) {
     document.getElementById('rankingOverlay').classList.add('active');
     const { html, plainText } = buildRankingHTML(guild);

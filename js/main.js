@@ -121,6 +121,20 @@ document.getElementById('legendOverlay').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('active');
 });
 
+// synergies listeners
+document.getElementById('synergyButton').addEventListener('click', function() {
+    document.getElementById('synergyOverlay').classList.add('active');
+    document.getElementById('synergyContent').innerHTML = buildSynergyListHTML();
+});
+
+document.getElementById('closeSynergy').addEventListener('click', function() {
+    document.getElementById('synergyOverlay').classList.remove('active');
+});
+
+document.getElementById('synergyOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+});
+
 // ranking overlay listeners
 document.getElementById('closeRanking').addEventListener('click', function() {
     document.getElementById('rankingOverlay').classList.remove('active');
