@@ -1,7 +1,9 @@
 # tacticus-gw-token-checker
 how many gw tokens are left on both sides and who holds them. some basic stats as well.
 
-03 Sept 2026: Added the war map sometime 2 months ago, I guess. It steamlines a lot of the work warmasters do to present their guild with the tiles they are on and the map layout. Still no GW replay function. A lot of the pieces are in place though. Also added a war token performance overlay with pips of different color representing the usage of that token. And lastly, I have written out in text what buttons do to be more clear.
+25 Nov 2026: Added the 3 new war maps. Took a guess on their spawn points based on how I think the game pulls that data. Could be wrong, will update as needed. Thinking about adding a panel that's focused on the maps and how the def and atks did on there. Which requires batch processing first. Which requires refactoring the code a bit. Also added GW Synergies to replace GW Comps. I think this is a bit more informative, and easier to maintain.  
+
+03 Sept 2026: Added the war map sometime 2 months ago, I guess. It streamlines a lot of the work warmasters do to present their guild with the tiles they are on and the map layout. Still no GW replay function. A lot of the pieces are in place though. Also added a war token performance overlay with pips of different color representing the usage of that token. And lastly, I have written out in text what buttons do to be more clear.
 
 11 May 2026: Added maps two weeks ago, forgot to document. Added 2 more overlays that show all failed hits in your guild and top 10 performance battles. Got the tough maps and tough team bonuses working for the performance score. Planning to start work on tile mapping with images, with the eventual goal of a full battle replay showing the tiles hit and falling as the time runs through accurately. And maybe an automated grid solver if I can convince myself it's possible.
 
